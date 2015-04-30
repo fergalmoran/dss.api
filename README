@@ -1,0 +1,17 @@
+#Deep South Sounds
+an open source audio sharing site
+
+Technology Stack
+--------------
+##### Server
+* Django
+* Tastypie
+* NodeJs (https://github.com/fergalmoran/dss-realtime)
+* Celery
+* RabbitMq
+
+
+##### Client
+* Backbone
+* Marionette
+* RequireJs

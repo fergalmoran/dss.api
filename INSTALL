@@ -1,0 +1,29 @@
+#curl -u hb_client_2862_1:j2CbCM8H -H 'Accept: application/json' -H 'Content-type: application/json' http://c1.lon2.dediserve.com/virtual_machines.xml
+
+apt-get install git python-virtualenv postgresql-common libsndfile1-dev libpng++-dev libpng12-dev libboost-program-options-dev libjpeg-dev python-dev libsox-fmt-mp3
+virtualenv env
+source env/bin/activate
+
+git clone https://github.com/fergalmoran/dss.git dss
+cd dss
+pip install -r requirements.txt
+#can't get gstreamer working in a virtualenv
+#I installed it using apt and did this - it's dirty and horrid.
+cp /usr/lib/python2.7/dist-packages/pygst.py /home/fergalm/Dropbox/Private/deepsouthsounds.com/nixenv/lib/python2.7/site-packages/
+
+#setup db host
+
+sudo -u postgres createuser deepsouthsounds --no-superuser --createdb --no-createrole --pwprompt
+sudo -u postgres createdb deepsouthsounds --owner deepsouthsounds
+
+#skip this in production, start with a default
+if production:
+	python manage.py dbrestore
+else
+	python manage.py syncdb
+	python manage.py migrate
+
+#re-run compressor (stale paths will be in db)
+python manage.py compress --force
+
+git clone https://github.com/fergalmoran/dss.lib lib 
