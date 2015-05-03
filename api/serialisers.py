@@ -8,7 +8,7 @@ from spa.models.activity import ActivityDownload, ActivityPlay
 from spa.models.genre import Genre
 from spa.models.notification import Notification
 from spa.models.userprofile import UserProfile
-from spa.models.mix import Mix
+from spa.models.mix import Mix, MixUpdateException
 from spa.models.comment import Comment
 
 
@@ -153,28 +153,31 @@ class MixSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         # all nested representations need to be serialized separately here
-        likes = validated_data['likes']
+        try:
+            likes = validated_data['likes']
 
-        # get any likes that aren't in passed bundle
-        unliked = instance.likes.exclude(user__userprofile__slug__in=[l['slug'] for l in likes])
-        for ul in unliked:
-            # check that the user removing the like is an instance of the current user
-            # for now, only the current user can like stuff
-            if ul == self.context['request'].user.userprofile:
-                instance.update_liked(ul, False)
+            # get any likes that aren't in passed bundle
+            unliked = instance.likes.exclude(user__userprofile__slug__in=[l['slug'] for l in likes])
+            for ul in unliked:
+                # check that the user removing the like is an instance of the current user
+                # for now, only the current user can like stuff
+                if ul == self.context['request'].user.userprofile:
+                    instance.update_liked(ul, False)
 
-        for like in likes:
-            # check that the user adding the like is an instance of the current user
-            # for now, only the current user can like stuff
-            try:
-                user = UserProfile.objects.get(slug=like['slug'])
-                if user is not None and user == self.context['request'].user.userprofile:
-                    instance.update_favourite(user, True)
+            for like in likes:
+                # check that the user adding the like is an instance of the current user
+                # for now, only the current user can like stuff
+                try:
+                    user = UserProfile.objects.get(slug=like['slug'])
+                    if user is not None and user == self.context['request'].user.userprofile:
+                        instance.update_liked(user, True)
 
-            except UserProfile.DoesNotExist:
-                pass
-        validated_data.pop('likes', None)
-        return super(MixSerializer, self).update(instance, validated_data)
+                except UserProfile.DoesNotExist:
+                    pass
+            validated_data.pop('likes', None)
+            return super(MixSerializer, self).update(instance, validated_data)
+        except MixUpdateException, ex:
+            raise ex
 
     def is_valid(self, raise_exception=False):
         return super(MixSerializer, self).is_valid(raise_exception)

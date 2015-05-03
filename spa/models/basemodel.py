@@ -3,11 +3,12 @@ import os
 from datetime import datetime
 from dirtyfields import DirtyFieldsMixin
 from django.db import models
+from django.utils import simplejson
 from core.utils import url
 from dss import localsettings, settings
 
 
-class BaseModel(DirtyFieldsMixin, models.Model):
+class BaseModel(models.Model):
     logger = logging.getLogger(__name__)
 
     object_created = models.DateTimeField(auto_now_add=True, default=datetime.now())

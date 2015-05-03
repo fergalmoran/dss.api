@@ -12,7 +12,8 @@ from core.utils import url
 from core.utils.audio import Mp3FileNotFoundException
 from core.utils.audio.mp3 import mp3_length, tag_mp3
 from core.utils.url import unique_slugify, url_path_join
-from spa.models.activity import ActivityDownload, ActivityPlay, ActivityFavourite, ActivityLike
+from spa.models.activity import ActivityDownload, ActivityPlay, ActivityFavourite, \
+    ActivityLike  # , ActivityTestConcrete
 from spa.models.genre import Genre
 from dss import settings, localsettings
 from spa.models.userprofile import UserProfile
@@ -54,6 +55,10 @@ class MixManager(models.Manager):
             return super(MixManager, self).get(id=id_or_slug)
 
 
+class MixUpdateException(Exception):
+    pass
+
+
 class Mix(BaseModel):
     class Meta:
         app_label = 'spa'
@@ -81,7 +86,7 @@ class Mix(BaseModel):
     duration = models.IntegerField(null=True, blank=True)
     archive_path = models.CharField(max_length=2048, null=True, blank=True)
     archive_updated = models.BooleanField(default=False)
-    #archive_details_updated = models.BooleanField(default=False)
+    # archive_details_updated = models.BooleanField(default=False)
     slug = models.SlugField()
 
     genres = models.ManyToManyField(Genre)
@@ -142,7 +147,7 @@ class Mix(BaseModel):
         return 'http://%s%s' % (Site.objects.get_current().domain, self.get_absolute_url())
 
     def get_download_url(self):
-        return self.get_stream_url() #'HTTP://%s/audio/download/%s' % (Site.objects.get_current().domain, self.pk)
+        return self.get_stream_url()  # 'HTTP://%s/audio/download/%s' % (Site.objects.get_current().domain, self.pk)
 
     def get_waveform_path(self):
         return os.path.join(settings.MEDIA_ROOT, "waveforms/", "%s.%s" % (self.uid, "png"))
@@ -222,8 +227,9 @@ class Mix(BaseModel):
             if user.user.is_authenticated():
                 if value:
                     if self.favourites.filter(user=user).count() == 0:
-                        fav = ActivityFavourite(user=user)
-                        self.favourites.add(fav)
+                        fav = ActivityFavourite(user=user)  # , mix=self)
+                        fav.save()
+                        self.favourites.add(user)
                         self.save()
                 else:
                     self.favourites.remove(user)
@@ -239,7 +245,8 @@ class Mix(BaseModel):
             if user.user.is_authenticated():
                 if value:
                     if self.likes.filter(user=user).count() == 0:
-                        ActivityLike(user=user, mix=self).save()
+                        v = ActivityLike(user=user, mix=self)
+                        v.save()
                         self.likes.add(user)
                         self.save()
                 else:
@@ -247,6 +254,7 @@ class Mix(BaseModel):
                 self.save()
         except Exception, ex:
             self.logger.error("Exception updating like: %s" % ex.message)
+            raise MixUpdateException(ex.message)
 
     def is_favourited(self, user):
         if user is None:
@@ -263,4 +271,3 @@ class Mix(BaseModel):
             return self.likes.filter(user=user).count() != 0
 
         return False
-

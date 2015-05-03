@@ -116,6 +116,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'sorl.thumbnail',
     'spa',
+    'tinymce',
     'spa.signals',
     'core',
     #'schedule',

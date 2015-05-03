@@ -1,12 +1,15 @@
 import abc
 from django.contrib.auth.models import AnonymousUser, User
 
+from allauth.socialaccount.models import SocialToken
+from datetime import datetime
 from django.db import models
 from model_utils.managers import InheritanceManager
+
 from open_facebook import OpenFacebook
+
 from core.utils.url import wrap_full
 from dss import settings
-
 from spa.models.notification import Notification
 from spa.models.userprofile import UserProfile
 from spa.models.basemodel import BaseModel
@@ -24,11 +27,10 @@ ACTIVITYTYPES = (
 class Activity(BaseModel):
     objects = InheritanceManager()
     user = models.ForeignKey(UserProfile, null=True, blank=True)
-
     date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return "{0}".format(self.get_object_name())
+        return "%s" % self.get_object_name()
 
     def get_user(self):
         if self.user is not None:
@@ -60,8 +62,6 @@ class Activity(BaseModel):
             else:
                 action_type = "deepsouthsounds:play"
 
-            # TODO: re-enable this once I figure out psa
-            """
             social_account = SocialToken.objects.filter(account__user=self.user.user, account__provider='facebook')[0]
             facebook = OpenFacebook(social_account.token)
             notification_html = {
@@ -69,7 +69,6 @@ class Activity(BaseModel):
             }
             result = facebook.set('me/%s' % action_type, notification_html)
             print result
-            """
         except Exception, ex:
             print ex.message
             pass
@@ -95,8 +94,6 @@ class Activity(BaseModel):
             notification.notification_url = self.get_object_url()
             notification.verb = self.get_verb_past()
             notification.target = self.get_object_name()
-
-            notification._activity = self
             notification.save()
         except Exception, ex:
             print "Error creating activity notification: %s" % ex.message
@@ -105,7 +102,11 @@ class Activity(BaseModel):
         return '/api/v1/activity/%s' % self.id
 
     @abc.abstractmethod
-    def should_send_email(self):
+    def get_object_type(self):
+        return
+
+    @abc.abstractmethod
+    def get_object_slug(self):
         pass
 
     @abc.abstractmethod
@@ -113,19 +114,11 @@ class Activity(BaseModel):
         pass
 
     @abc.abstractmethod
-    def get_object_type(self):
-        return
-
-    @abc.abstractmethod
     def get_object_name(self):
-        return
-
-    @abc.abstractmethod
-    def get_object_url(self):
         pass
 
     @abc.abstractmethod
-    def get_object_slug(self):
+    def get_object_url(self):
         pass
 
     @abc.abstractmethod
@@ -136,17 +129,20 @@ class Activity(BaseModel):
         return self.get_object_name()
 
 
-class ActivityFavourite(Activity):
-    mix = models.ForeignKey('spa.Mix', related_name='activity_favourites')
+class ActivityLike(Activity):
+    mix = models.ForeignKey('spa.Mix', related_name='activity_likes')
 
-    def __unicode__(self):
-        return "%s - %s" % (self.mix.user.get_nice_name(), self.date)
-
-    def get_target_user(self):
-        return self.mix.user
+    class Meta:
+        app_label = 'spa'
 
     def get_object_type(self):
         return "mix"
+
+    def get_object_slug(self):
+        return self.mix.slug
+
+    def get_target_user(self):
+        return self.mix.user
 
     def get_object_name(self):
         return self.mix.title
@@ -154,44 +150,30 @@ class ActivityFavourite(Activity):
     def get_object_url(self):
         return self.mix.get_absolute_url()
 
-    def get_object_slug(self):
-        return self.mix.slug
-
     def get_object_singular(self):
         return "mix"
 
     def get_verb_past(self):
-        return "favourited"
-
-    def should_send_email(self):
-        return self.to_user.email_notifications.favourites.is_set
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.__to_user = self.mix.user
-        return super(Activity, self).save(force_insert, force_update, using, update_fields)
+        return "liked"
 
 
 class ActivityFollow(Activity):
     to_user = models.ForeignKey('spa.UserProfile', related_name='activity_follow')
 
-    def __unicode__(self):
-        return "%s - %s" % (self.to_user.get_nice_name(), self.date)
+    def get_object_type(self):
+        return "user"
+
+    def get_object_slug(self):
+        return self.to_user.slug
 
     def get_target_user(self):
         return self.to_user
-
-    def get_object_type(self):
-        return "user"
 
     def get_object_name(self):
         return self.to_user.get_nice_name()
 
     def get_object_url(self):
         return self.to_user.get_profile_url()
-
-    def get_object_slug(self):
-        return self.to_user.slug
 
     def get_object_singular(self):
         return "user"
@@ -202,26 +184,18 @@ class ActivityFollow(Activity):
     def get_object_name_for_notification(self):
         return "You"
 
-    def should_send_email(self):
-        return self.to_user.email_notifications.follows.is_set
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.__to_user = self.to_user
-        return super(Activity, self).save(force_insert, force_update, using, update_fields)
-
-
-class ActivityPlay(Activity):
-    mix = models.ForeignKey('spa.Mix', related_name='activity_plays')
-
-    def __unicode__(self):
-        return "%s - %s" % (self.mix.user.get_nice_name(), self.date)
-
-    def get_target_user(self):
-        return self.mix.user
+class ActivityFavourite(Activity):
+    mix = models.ForeignKey('spa.Mix', related_name='activity_favourites')
 
     def get_object_type(self):
         return "mix"
+
+    def get_object_slug(self):
+        return self.mix.slug
+
+    def get_target_user(self):
+        return self.mix.user
 
     def get_object_name(self):
         return self.mix.title
@@ -229,8 +203,27 @@ class ActivityPlay(Activity):
     def get_object_url(self):
         return self.mix.get_absolute_url()
 
-    def get_object_slug(self):
-        return self.mix.slug
+    def get_object_singular(self):
+        return "mix"
+
+    def get_verb_past(self):
+        return "favourited"
+
+
+class ActivityPlay(Activity):
+    mix = models.ForeignKey('spa.Mix', related_name='activity_plays')
+
+    def get_object_type(self):
+        return "mix"
+
+    def get_target_user(self):
+        return self.mix.user
+
+    def get_object_name(self):
+        return self.mix.title
+
+    def get_object_url(self):
+        return self.mix.get_absolute_url()
 
     def get_object_singular(self):
         return "mix"
@@ -238,65 +231,24 @@ class ActivityPlay(Activity):
     def get_verb_past(self):
         return "played"
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.__to_user = self.mix.user
-        return super(Activity, self).save(force_insert, force_update, using, update_fields)
-
-    def should_send_email(self):
-        return self.to_user.email_notifications.plays.is_set
-
-
-class ActivityLike(Activity):
-    mix = models.ForeignKey('spa.Mix', related_name='activity_likes')
-
-    def __unicode__(self):
-        return "%s - %s" % (self.mix.user.get_nice_name(), self.date)
-
-    def get_target_user(self):
-        return self.mix.user
-
-    def get_object_type(self):
-        return "mix"
-
-    def get_object_name(self):
-        return self.mix.title
-
-    def get_object_url(self):
-        return self.mix.get_absolute_url()
-
-    def get_object_slug(self):
-        return self.mix.slug
-
-    def get_object_singular(self):
-        return "mix"
-
-    def get_verb_past(self):
-        return "liked"
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.__to_user = self.mix.user
-        return super(Activity, self).save(force_insert, force_update, using, update_fields)
-
 
 class ActivityDownload(Activity):
     mix = models.ForeignKey('spa.Mix', related_name='activity_downloads')
 
-    def get_target_user(self):
-        return self.mix.user
-
     def get_object_type(self):
         return "mix"
+
+    def get_object_slug(self):
+        return self.mix.slug
+
+    def get_target_user(self):
+        return self.mix.user
 
     def get_object_name(self):
         return self.mix.title
 
     def get_object_url(self):
         return self.mix.get_absolute_url()
-
-    def get_object_slug(self):
-        return self.mix.slug
 
     def get_object_singular(self):
         return "mix"
@@ -304,20 +256,18 @@ class ActivityDownload(Activity):
     def get_verb_past(self):
         return "downloaded"
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.__to_user = self.mix.user
-        return super(Activity, self).save(force_insert, force_update, using, update_fields)
-
 
 class ActivityComment(Activity):
     mix = models.ForeignKey('spa.Mix', related_name='activity_comments')
 
-    def get_target_user(self):
-        return self.mix.user
-
     def get_object_type(self):
         return "mix"
+
+    def get_object_slug(self):
+        return self.mix.slug
+
+    def get_target_user(self):
+        return self.mix.user
 
     def get_object_name(self):
         return self.mix.title
@@ -325,16 +275,8 @@ class ActivityComment(Activity):
     def get_object_url(self):
         return self.mix.get_absolute_url()
 
-    def get_object_slug(self):
-        return self.mix.slug
-
     def get_object_singular(self):
         return "mix"
 
     def get_verb_past(self):
         return "commented on"
-
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        self.__to_user = self.mix.user
-        return super(Activity, self).save(force_insert, force_update, using, update_fields)

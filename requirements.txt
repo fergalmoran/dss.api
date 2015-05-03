@@ -35,3 +35,7 @@ pillow
 django-gravatar2
 
 mutagen
+
+django-enumfield
+
+ipython
