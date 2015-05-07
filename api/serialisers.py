@@ -91,7 +91,7 @@ class InlineActivitySerializer(serializers.ModelSerializer):
         except:
             pass
 
-        return "Anomymouse"
+        return settings.DEFAULT_USER_NAME
 
 
 class InlineActivityPlaySerializer(InlineActivitySerializer):
@@ -126,14 +126,13 @@ class MixSerializer(serializers.ModelSerializer):
             'waveform_url',
             'waveform_progress_url',
             'mix_image',
-            # 'stream_url',
             'download_allowed',
             'can_edit',
             'genres',
             'likes',
             'favourites',
-            'activity_plays',
-            'activity_downloads',
+            'plays',
+            'downloads',
             'is_liked',
         ]
 
@@ -147,16 +146,15 @@ class MixSerializer(serializers.ModelSerializer):
     genres = GenreSerializer(many=True, required=False, read_only=True)
     likes = LikeSerializer(many=True, required=False, read_only=False)  # slug_field='slug', many=True, read_only=True)
     favourites = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
-    activity_plays = InlineActivityPlaySerializer(many=True, read_only=True)
-    activity_downloads = InlineActivityDownloadSerializer(read_only=True)
+    plays = InlineActivityPlaySerializer(many=True, read_only=True, source='activity_plays')
+    downloads = InlineActivityDownloadSerializer(read_only=True, source='activity_downloads')
     is_liked = serializers.SerializerMethodField(read_only=True)
 
     def update(self, instance, validated_data):
         # all nested representations need to be serialized separately here
         try:
-            likes = validated_data['likes']
-
             # get any likes that aren't in passed bundle
+            likes = validated_data['likes']
             unliked = instance.likes.exclude(user__userprofile__slug__in=[l['slug'] for l in likes])
             for ul in unliked:
                 # check that the user removing the like is an instance of the current user
@@ -175,6 +173,13 @@ class MixSerializer(serializers.ModelSerializer):
                 except UserProfile.DoesNotExist:
                     pass
             validated_data.pop('likes', None)
+
+            # get any likes that aren't in passed bundle
+            plays = validated_data['downloads']
+            for play in plays:
+                instance.add_play(play)
+            validated_data.pop('downloads', None)
+
             return super(MixSerializer, self).update(instance, validated_data)
         except MixUpdateException, ex:
             raise ex

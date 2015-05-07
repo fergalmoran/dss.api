@@ -1,4 +1,5 @@
 from api.auth import ObtainAuthToken, ObtainUser, ObtainLogout
+from api.activity_helpers import ActivityPlayHelper
 from api.views import CommentViewSet, MixViewSet, UserProfileViewSet, NotificationViewSet, PartialMixUploadView, \
     GenreViewSet, ActivityViewSet, HitlistViewset, AttachedImageUploadView, DownloadItemView, SearchResultsView
 from django.conf.urls import url, patterns, include
@@ -33,6 +34,10 @@ urlpatterns = patterns(
     url(r'^login/', ObtainAuthToken.as_view()),
     url(r'^user/', ObtainUser.as_view()),
     url(r'^logout/', ObtainLogout.as_view()),
+    #url(r'^_tr/', RefreshToken.as_view()),
+
+
+    url(r'^_act/play', ActivityPlayHelper.as_view()),
 
     url('', include('social.apps.django_app.urls', namespace='social')),
 )

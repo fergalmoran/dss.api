@@ -24,9 +24,36 @@ def register_by_access_token(request, backend):
         raise LoginException("Unable to register_by_access_token: No token header provided")
 
     access_token = auth[1]
-    user = request.backend.do_auth(access_token)
-    return user
+    return request.backend.do_auth(access_token)
+"""
+class RefreshTokenView(APIView):
+    serializer_class = AuthTokenSerializer
+    model = Token
 
+    def post(self, request):
+        # Here we call PSA to authenticate like we would if we used PSA on server side.
+        try:
+            backend = request.META.get('HTTP_AUTH_BACKEND')
+            if backend is None:
+                # Work around django test client oddness
+                return Response("No Auth-Backend header specified", HTTP_400_BAD_REQUEST)
+
+            user = refresh_access_token(request, backend)
+
+            # If user is active we get or create the REST token and send it back with user data
+            if user and user.is_active:
+                token, created = Token.objects.get_or_create(user=user)
+                return Response({
+                    'slug': user.userprofile.slug,
+                    'token': token.key
+                })
+        except LoginException, ex:
+            return Response(ex.message, HTTP_400_BAD_REQUEST)
+        except HTTPError, ex:
+            if ex.response.status_code == 400:
+                return Response(ex.message, HTTP_401_UNAUTHORIZED)
+            return Response(ex.message, HTTP_400_BAD_REQUEST)
+"""
 
 class ObtainAuthToken(APIView):
     serializer_class = AuthTokenSerializer
@@ -52,6 +79,8 @@ class ObtainAuthToken(APIView):
         except LoginException, ex:
             return Response(ex.message, HTTP_400_BAD_REQUEST)
         except HTTPError, ex:
+            if ex.response.status_code == 400:
+                return Response(ex.message, HTTP_401_UNAUTHORIZED)
             return Response(ex.message, HTTP_400_BAD_REQUEST)
 
 
