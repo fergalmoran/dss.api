@@ -9,8 +9,6 @@ from mix import Mix
 from activity import Activity, ActivityFollow, ActivityLike, ActivityComment, ActivityDownload, ActivityFavourite, \
     ActivityPlay
 
-from testrel import TestRelBase, TestRelChild
-
 from notification import Notification
 from genre import Genre
 from tracklist import Tracklist
