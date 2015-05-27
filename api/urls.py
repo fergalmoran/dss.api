@@ -1,43 +1,38 @@
-from api.auth import ObtainAuthToken, ObtainUser, ObtainLogout
-from api.activity_helpers import ActivityPlayHelper
-from api.views import CommentViewSet, MixViewSet, UserProfileViewSet, NotificationViewSet, PartialMixUploadView, \
-    GenreViewSet, ActivityViewSet, HitlistViewset, AttachedImageUploadView, DownloadItemView, SearchResultsView
-from django.conf.urls import url, patterns, include
-from rest_framework_nested import routers
+from django.conf.urls import patterns, url, include
+from rest_framework.routers import DefaultRouter
 
-router = routers.SimpleRouter(trailing_slash=True)
-router.register(r'notification', NotificationViewSet)
-router.register(r'hitlist', HitlistViewset)
-router.register(r'comments', CommentViewSet)
-router.register(r'user', UserProfileViewSet, base_name='userprofile')
-router.register(r'activity', ActivityViewSet, base_name='activity')
+from api import views, auth, activity_helpers
 
-router.register(r'mix', MixViewSet)
-mix_router = routers.NestedSimpleRouter(router, r'mix', lookup='mix')
-mix_router.register('comments', CommentViewSet)
+router = DefaultRouter()  # trailing_slash=True)
 
-"""
-router.register(r'hitlist', HitlistViewset, base_name='hitlist')
-router.register(r'notification', NotificationViewSet, base_name='notification')
-"""
-router.register(r'genre', GenreViewSet, base_name='genre')
+router.register(r'user', views.UserProfileViewSet)
+router.register(r'mix', views.MixViewSet)
+
+
+router.register(r'notification', views.NotificationViewSet)
+router.register(r'hitlist', views.HitlistViewSet)
+router.register(r'comments', views.CommentViewSet)
+router.register(r'activity', views.ActivityViewSet, base_name='activity')
+router.register(r'genre', views.GenreViewSet, base_name='genre')
+
 urlpatterns = patterns(
     '',
     url(r'^', include(router.urls)),
-    url(r'^', include(mix_router.urls)),
-    url(r'_download/', DownloadItemView.as_view()),
-    url(r'_upload/$', PartialMixUploadView.as_view()),
-    url(r'_image/$', AttachedImageUploadView.as_view()),
-    url(r'_search/$', SearchResultsView.as_view()),
+    # url(r'^', include(mix_router.urls)),
+    url(r'_download/', views.DownloadItemView.as_view()),
+    url(r'_upload/$', views.PartialMixUploadView.as_view()),
+    url(r'_image/$', views.AttachedImageUploadView.as_view()),
+    url(r'_search/$', views.SearchResultsView.as_view()),
     url(r'^', include(router.urls)),
 
-    url(r'^login/', ObtainAuthToken.as_view()),
-    url(r'^user/', ObtainUser.as_view()),
-    url(r'^logout/', ObtainLogout.as_view()),
-    #url(r'^_tr/', RefreshToken.as_view()),
+    url(r'^login/', auth.ObtainAuthToken.as_view()),
+    url(r'^logout/', auth.ObtainLogout.as_view()),
+
+    # url(r'^_tr/', RefreshToken.as_view()),
+    url(r'^__user/', auth.ObtainUser.as_view()),
 
 
-    url(r'^_act/play', ActivityPlayHelper.as_view()),
+    url(r'^_act/play', activity_helpers.ActivityPlayHelper.as_view()),
 
     url('', include('social.apps.django_app.urls', namespace='social')),
 )

@@ -1,8 +1,9 @@
-import json
-# from django.core.serializers import serialize
 from django.db.models import Count
 from rest_framework import serializers
+from core.utils.html import strip_tags
+
 from dss import settings
+from spa import models
 from spa.models import Activity
 from spa.models.activity import ActivityDownload, ActivityPlay
 from spa.models.genre import Genre
@@ -10,41 +11,6 @@ from spa.models.notification import Notification
 from spa.models.userprofile import UserProfile
 from spa.models.mix import Mix, MixUpdateException
 from spa.models.comment import Comment
-
-
-class InlineUserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = (
-            'slug',
-            'first_name',
-            'last_name',
-            'display_name',
-            'avatar_image',
-            'avatar_image_tiny',
-        )
-
-    first_name = serializers.ReadOnlyField(source='get_first_name')
-    last_name = serializers.ReadOnlyField(source='get_last_name')
-    display_name = serializers.ReadOnlyField(source='get_nice_name')
-    avatar_image = serializers.SerializerMethodField()
-    avatar_image_tiny = serializers.SerializerMethodField()
-
-    def get_avatar_image(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
-
-    def get_avatar_image_tiny(self, obj):
-        return obj.get_sized_avatar_image(32, 32)
-
-    def to_representation(self, instance):
-        if instance.user.is_anonymous():
-            return {
-                'avatar_image': settings.DEFAULT_USER_IMAGE,
-                'display_name': settings.DEFAULT_USER_NAME,
-                'slug': ''
-            }
-
-        return super(serializers.ModelSerializer, self).to_representation(instance)
 
 
 class InlineMixSerializer(serializers.ModelSerializer):
@@ -114,7 +80,7 @@ class InlineActivityDownloadSerializer(InlineActivitySerializer):
 
 class MixSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Mix
+        model = models.Mix
         fields = [
             'id',
             'slug',
@@ -137,13 +103,13 @@ class MixSerializer(serializers.ModelSerializer):
         ]
 
     slug = serializers.ReadOnlyField(required=False)
-    user = InlineUserProfileSerializer(many=False, required=False, read_only=True)
+    user = serializers.SlugRelatedField(slug_field='slug', read_only=True)
     waveform_url = serializers.ReadOnlyField(source='get_waveform_url')
     waveform_progress_url = serializers.ReadOnlyField(source='get_waveform_progress_url')
     mix_image = serializers.ReadOnlyField(source='get_image_url')
     can_edit = serializers.SerializerMethodField()
 
-    genres = GenreSerializer(many=True, required=False, read_only=True)
+    genres = GenreSerializer(many=True, required=False, read_only=False)
     likes = LikeSerializer(many=True, required=False, read_only=False)  # slug_field='slug', many=True, read_only=True)
     favourites = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
     plays = InlineActivityPlaySerializer(many=True, read_only=True, source='activity_plays')
@@ -175,10 +141,17 @@ class MixSerializer(serializers.ModelSerializer):
             validated_data.pop('likes', None)
 
             # get any likes that aren't in passed bundle
-            plays = validated_data['downloads']
-            for play in plays:
-                instance.add_play(play)
-            validated_data.pop('downloads', None)
+            if 'downloads' in validated_data:
+                plays = validated_data['downloads'] or []
+                for play in plays:
+                    instance.add_play(play)
+                validated_data.pop('downloads', None)
+
+            if 'genres' in validated_data:
+                genres = validated_data['genres'] or []
+                for genre in genres:
+                    instance.add_genre(genre)
+                validated_data.pop('genres', None)
 
             return super(MixSerializer, self).update(instance, validated_data)
         except MixUpdateException, ex:
@@ -188,7 +161,7 @@ class MixSerializer(serializers.ModelSerializer):
         return super(MixSerializer, self).is_valid(raise_exception)
 
     def get_avatar_image(self, obj):
-        return obj.user.get_sized_avatar_image(32, 32)
+        return obj.user.get_sized_avatar_image(64, 64)
 
     def get_can_edit(self, obj):
         user = self.context['request'].user
@@ -210,9 +183,55 @@ class MixSerializer(serializers.ModelSerializer):
         return obj.is_liked(user) if user.is_authenticated() else False
 
 
+class InlineUserProfileSerializer(serializers.ModelSerializer):
+    profile_image_small = serializers.SerializerMethodField()
+    profile_image_medium = serializers.SerializerMethodField()
+    profile_image_header = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = (
+            'slug',
+            'first_name',
+            'last_name',
+            'display_name',
+            'profile_image_small',
+            'profile_image_medium',
+            'profile_image_header',
+        )
+
+    first_name = serializers.ReadOnlyField(source='get_first_name')
+    last_name = serializers.ReadOnlyField(source='get_last_name')
+    display_name = serializers.ReadOnlyField(source='get_nice_name')
+
+    def get_avatar_image(self, obj):
+        return obj.get_sized_avatar_image(64, 64)
+
+    def get_avatar_image_tiny(self, obj):
+        return obj.get_sized_avatar_image(64, 64)
+
+    def to_representation(self, instance):
+        if instance.user.is_anonymous():
+            return {
+                'avatar_image': settings.DEFAULT_USER_IMAGE,
+                'display_name': settings.DEFAULT_USER_NAME,
+                'slug': ''
+            }
+
+        return super(serializers.ModelSerializer, self).to_representation(instance)
+
+    def get_profile_image_small(self, obj):
+        return obj.get_sized_avatar_image(64, 64)
+
+    def get_profile_image_medium(self, obj):
+        return obj.get_sized_avatar_image(170, 170)
+
+    def get_profile_image_header(self, obj):
+        return obj.get_sized_avatar_image(1200, 150)
+
+
 class UserProfileSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
-    mixes = InlineMixSerializer(many=True, required=False)
     likes = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
     favourites = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
     following = InlineUserProfileSerializer(many=True, read_only=True)
@@ -224,6 +243,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     date_joined = serializers.SerializerMethodField()
     last_login = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
+    description = serializers.SerializerMethodField()
     profile_image_small = serializers.SerializerMethodField()
     profile_image_medium = serializers.SerializerMethodField()
     profile_image_header = serializers.SerializerMethodField()
@@ -246,7 +266,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'profile_image_medium',
             'profile_image_header',
             'slug',
-            'mixes',
             'likes',
             'isme',
             'favourites',
@@ -258,11 +277,14 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_title(self, obj):
         try:
             if obj.description:
-                return obj.description[:75] + (obj.description[75:] and '..')
+                return strip_tags(obj.description[:128] + (obj.description[128:] and '..'))
             else:
                 return settings.DEFAULT_USER_TITLE
         except:
             return settings.DEFAULT_USER_TITLE
+
+    def get_description(self, obj):
+        return obj.description if obj.description else settings.DEFAULT_USER_TITLE
 
     def get_roles(self, obj):
         return obj.get_roles()
@@ -276,15 +298,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_last_login(self, obj):
         return obj.user.last_login
 
-    def get_profile_image_small(self, obj):
-        return obj.get_sized_avatar_image(32, 32)
-
-    def get_profile_image_medium(self, obj):
-        return obj.get_sized_avatar_image(170, 170)
-
-    def get_profile_image_header(self, obj):
-        return obj.get_sized_avatar_image(1200, 150)
-
     def get_top_tags(self, obj):
         return list(
             Genre.objects.filter(mix__user__slug='fergalmoran').
@@ -292,11 +305,19 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 order_by('-total').
                 values('total', 'description', 'slug')[0:3])
 
+    def get_profile_image_small(self, obj):
+        return obj.get_sized_avatar_image(64, 64)
+
+    def get_profile_image_medium(self, obj):
+        return obj.get_sized_avatar_image(170, 170)
+
+    def get_profile_image_header(self, obj):
+        return obj.get_sized_avatar_image(1200, 150)
+
 
 class CommentSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.SlugRelatedField(slug_field='slug', read_only=True)
+    user = InlineUserProfileSerializer(source='get_comment_user', read_only=True)
     avatar_image = serializers.SerializerMethodField()
-    user_display_name = serializers.SerializerMethodField('get_display_name')
     mix = serializers.PrimaryKeyRelatedField(read_only=True)
     can_edit = serializers.SerializerMethodField()
 
@@ -308,27 +329,35 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
             'time_index',
             'date_created',
             'user',
-            'user_display_name',
             'avatar_image',
             'mix',
-            'can_edit',
+            'can_edit'
         )
+
+    def get_comment_user(self, obj):
+        try:
+            if obj.user is not None:
+                return obj.user.get_nice_name()
+        except:
+            pass
+
+        return settings.DEFAULT_USER_NAME
 
     def get_display_name(self, obj):
         if obj.user is not None:
-            return obj.user.get_nice_name()
+            return obj.user.userprofile.get_nice_name()
         else:
             return settings.DEFAULT_USER_NAME
 
     def get_avatar_image(self, obj):
         if obj.user is not None:
-            return obj.user.get_sized_avatar_image(48, 48)
+            return obj.user.userprofile.get_sized_avatar_image(48, 48)
         else:
             return settings.DEFAULT_USER_IMAGE
 
     def get_can_edit(self, obj):
         user = self.context['request'].user
-        if user.is_authenticated():
+        if user is not None and user.is_authenticated():
             return user.is_staff or obj.user.id == user.userprofile.id
 
         return False

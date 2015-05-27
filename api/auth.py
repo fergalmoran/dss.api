@@ -18,7 +18,6 @@ class LoginException(Exception):
 
 @strategy()
 def register_by_access_token(request, backend):
-    strat = load_strategy(request)
     auth = get_authorization_header(request).split()
     if not auth or auth[0].lower() != b'social':
         raise LoginException("Unable to register_by_access_token: No token header provided")
@@ -93,7 +92,6 @@ class ObtainUser(APIView):
     model = Token
 
     def get(self, request):
-        serializer = self.serializer_class(data=request.DATA)
         if request.META.get('HTTP_AUTHORIZATION'):
 
             auth = request.META.get('HTTP_AUTHORIZATION').split()
@@ -107,7 +105,7 @@ class ObtainUser(APIView):
                 return Response({'id': token.user_id, 'name': token.user.username, 'firstname': token.user.first_name,
                                  'userRole': 'user', 'token': token.key})
         else:
-            return Response(serializer.errors, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ObtainLogout(APIView):

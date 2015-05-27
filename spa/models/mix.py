@@ -210,6 +210,19 @@ class Mix(BaseModel):
         except Exception, e:
             self.logger.exception("Error adding mix download: %s" % e.message)
 
+    def add_genre(self, new_genre):
+        # first look for genre by slug
+        genre = Genre.objects.get(slug=new_genre['slug'])
+        if not genre:
+            # need to find a genre by description
+            genre = Genre.objects.get(description__iexact=new_genre['description'])
+            if not genre:
+                genre = Genre(description=new_genre['description'])
+
+        if genre:
+            self.genres.add(genre)
+            self.save()
+
     def add_play(self, user):
         try:
             if user.is_authenticated():

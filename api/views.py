@@ -6,36 +6,41 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Count
 from django.http.response import HttpResponse
-from django.utils.encoding import smart_str
 from rest_framework import viewsets
 from rest_framework import views
 from rest_framework.decorators import detail_route
+from rest_framework.permissions import BasePermission
 from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, \
     HTTP_200_OK, HTTP_204_NO_CONTENT
-from rest_framework import filters
 
-from api.serialisers import MixSerializer, UserProfileSerializer, NotificationSerializer, \
-    ActivitySerializer, HitlistSerializer, CommentSerializer, GenreSerializer
+from api import serializers
 from dss import settings
-from core.tasks import create_waveform_task, archive_mix_task
+from core.tasks import create_waveform_task
 from spa.models.genre import Genre
-from spa.models.activity import Activity, ActivityPlay
+from spa.models.activity import ActivityPlay
 from spa.models.mix import Mix
 from spa.models.comment import Comment
 from spa.models.notification import Notification
 from spa.models.userprofile import UserProfile
 
-
 logger = logging.getLogger(__name__)
+
+
+class AnonymousWriteUserDelete(BasePermission):
+    def has_permission(self, request, view):
+        return True
+
+    def has_object_permission(self, request, view, obj):
+        return True
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
-    serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,)
+    serializer_class = serializers.CommentSerializer
+    permission_classes = (AnonymousWriteUserDelete,)
     filter_fields = (
         'comment',
         'mix__slug',
@@ -49,30 +54,45 @@ class CommentViewSet(viewsets.ModelViewSet):
             try:
                 mix = Mix.objects.get(pk=self.request.DATA['mix_id'])
                 if mix is not None:
-                    serializer.save(mix=mix, user=self.request.user.userprofile)
+                    serializer.save(
+                        mix=mix,
+                        user=self.request.user if self.request.user.is_authenticated() else None
+                    )
             except Mix.DoesNotExist:
                 pass
-
+            except Exception, ex:
+                pass
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.annotate(mix_count=Count('mixes')).order_by('-mix_count')
-    serializer_class = UserProfileSerializer
+    serializer_class = serializers.UserProfileSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'slug'
     filter_fields = (
         'slug',
     )
 
+    def get_queryset(self):
+        if 'following' in self.request.QUERY_PARAMS:
+            ret = UserProfile.objects.filter(following__slug__in=[self.request.QUERY_PARAMS['following']])
+        elif 'followers' in self.request.QUERY_PARAMS:
+            ret = UserProfile.objects.filter(followers__slug__in=[self.request.QUERY_PARAMS['followers']])
+        else:
+            ret = super(UserProfileViewSet, self).get_queryset()
+
+        return ret
+
 
 class MixViewSet(viewsets.ModelViewSet):
     queryset = Mix.objects.all()
-    serializer_class = MixSerializer
-    lookup_field = 'slug'
+    serializer_class = serializers.MixSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+    lookup_field = 'slug'
+
     filter_fields = (
         'waveform_generated',
         'slug',
-        'user',
+        'user__slug',
         'is_featured',
     )
 
@@ -126,7 +146,7 @@ class SearchResultsView(views.APIView):
                      'slug': mix.slug,
                      'url': mix.get_absolute_url(),
                      'description': mix.description
-            } for mix in Mix.objects.filter(title__icontains=q)[0:10]]
+                 } for mix in Mix.objects.filter(title__icontains=q)[0:10]]
             return Response(m)
 
         return HttpResponse(status=HTTP_204_NO_CONTENT)
@@ -165,14 +185,14 @@ class PartialMixUploadView(views.APIView):
             raise
 
 
-class HitlistViewset(viewsets.ModelViewSet):
+class HitlistViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all().annotate(mix_count=Count('mixes')).order_by('-mix_count')[0:10]
-    serializer_class = HitlistSerializer
+    serializer_class = serializers.HitlistSerializer
 
 
 class ActivityViewSet(viewsets.ModelViewSet):
-    queryset = ActivityPlay.objects.all() #select_subclasses()
-    serializer_class = ActivitySerializer
+    queryset = ActivityPlay.objects.all()  # select_subclasses()
+    serializer_class = serializers.ActivitySerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -194,7 +214,7 @@ class DownloadItemView(views.APIView):
 
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
-    serializer_class = NotificationSerializer
+    serializer_class = serializers.NotificationSerializer
 
     def get_queryset(self):
         user = self.request.user
@@ -206,7 +226,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
 class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
-    serializer_class = GenreSerializer
+    serializer_class = serializers.GenreSerializer
 
     def get_queryset(self):
         if 'q' in self.request.QUERY_PARAMS:

@@ -1,4 +1,5 @@
 import logging
+import os
 import urlparse
 
 from bitfield.models import BitField
@@ -14,7 +15,6 @@ from core.utils.file import generate_save_file_name
 from core.utils.url import unique_slugify
 from dss import settings
 from spa.models.basemodel import BaseModel
-
 
 logger = logging.getLogger(__name__)
 
@@ -180,7 +180,10 @@ class UserProfile(BaseModel):
             if gravatar_exists:
                 return get_gravatar_url(self.email)
         else:
-            return self.avatar_image
+            if os.path.exists(self.avatar_image.file.name):
+                return self.avatar_image
+            else:
+                return self.get_default_avatar_image()
 
         return UserProfile.get_default_avatar_image()
 
@@ -202,4 +205,3 @@ class UserProfile(BaseModel):
     @classmethod
     def get_default_display_name(cls):
         return settings.DEFAULT_USER_NAME
-
