@@ -319,35 +319,40 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
     user = InlineUserProfileSerializer(source='get_comment_user', read_only=True)
     avatar_image = serializers.SerializerMethodField()
     mix = serializers.PrimaryKeyRelatedField(read_only=True)
+    display_name = serializers.SerializerMethodField()
+    slug = serializers.SerializerMethodField()
     can_edit = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
         fields = (
             'id',
+            'user',
             'comment',
             'time_index',
             'date_created',
             'user',
             'avatar_image',
             'mix',
+            'display_name',
+            'slug',
             'can_edit'
         )
 
     def get_comment_user(self, obj):
-        try:
-            if obj.user is not None:
-                return obj.user.get_nice_name()
-        except:
-            pass
-
-        return settings.DEFAULT_USER_NAME
+        return UserProfile.get_user(self.user)
 
     def get_display_name(self, obj):
         if obj.user is not None:
             return obj.user.userprofile.get_nice_name()
         else:
             return settings.DEFAULT_USER_NAME
+
+    def get_slug(self, obj):
+        if obj.user is not None:
+            return obj.user.userprofile.slug
+        else:
+            return ""
 
     def get_avatar_image(self, obj):
         if obj.user is not None:

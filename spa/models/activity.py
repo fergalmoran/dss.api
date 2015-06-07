@@ -33,18 +33,7 @@ class Activity(BaseModel):
         return "%s" % self.get_object_name()
 
     def get_user(self):
-        if self.user is not None:
-            return self.user
-        else:
-            username = 'anonymous'
-            u = User(username=username, first_name='Anonymous', last_name='User')
-            u.set_unusable_password()
-
-            u.username = u.id
-
-            # comment out the next two lines if you aren't using profiles
-            p = UserProfile(user=u)
-            return p
+        return UserProfile.get_user(self.user)
 
     def post_social(self):
         if settings.DEBUG:

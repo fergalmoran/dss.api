@@ -205,3 +205,19 @@ class UserProfile(BaseModel):
     @classmethod
     def get_default_display_name(cls):
         return settings.DEFAULT_USER_NAME
+
+    @classmethod
+    def get_user(cls, user):
+        if user is not None:
+            return user
+        else:
+            username = 'anonymous'
+            u = User(username=username, first_name='Anonymous', last_name='User')
+            u.set_unusable_password()
+
+            u.username = u.id
+
+            # comment out the next two lines if you aren't using profiles
+            p = UserProfile(user=u)
+            return p
+

@@ -8,6 +8,7 @@ from core.utils import url
 from dss import localsettings, settings
 
 
+
 class BaseModel(models.Model):
     logger = logging.getLogger(__name__)
 
