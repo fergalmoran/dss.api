@@ -173,6 +173,7 @@ class Mix(BaseModel):
                 return "%s/%s" % (settings.MEDIA_URL, ret.name)
         except Exception, ex:
             try:
+                self.logger.info("Getting sized image") 
                 return self.user.get_sized_avatar_image(170, 170)
             except Exception, ex:
                 self.logger.error("Mix: error getting mix image %s" % ex.message)
