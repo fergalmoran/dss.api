@@ -167,16 +167,15 @@ class Mix(BaseModel):
         return self.get_waveform_url(waveform_type="_progress")
 
     def get_image_url(self, size='200x200', default=''):
+        import ipdb; ipdb.set_trace()
         try:
             if self.mix_image.name and self.mix_image.storage.exists(self.mix_image.name):
                 ret = get_thumbnail(self.mix_image, size, crop='center')
                 return "%s/%s" % (settings.MEDIA_URL, ret.name)
-        except Exception, ex:
-            try:
-                self.logger.info("Getting sized image") 
+            else:
                 return self.user.get_sized_avatar_image(170, 170)
-            except Exception, ex:
-                self.logger.error("Mix: error getting mix image %s" % ex.message)
+        except Exception, ex:
+            self.logger.error("Mix: error getting mix image %s" % ex.message)
 
         return super(Mix, self).get_image_url(self.mix_image, settings.STATIC_URL + 'images/default-track-200.png')
 
