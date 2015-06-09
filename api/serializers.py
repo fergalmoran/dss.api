@@ -109,8 +109,8 @@ class MixSerializer(serializers.ModelSerializer):
     mix_image = serializers.ReadOnlyField(source='get_image_url')
     can_edit = serializers.SerializerMethodField()
 
-    genres = GenreSerializer(many=True, required=False, read_only=False)
-    likes = LikeSerializer(many=True, required=False, read_only=False)  # slug_field='slug', many=True, read_only=True)
+    genres = GenreSerializer(many=True, required=False, read_only=True)
+    likes = LikeSerializer(many=True, required=False, read_only=True)  # slug_field='slug', many=True, read_only=True)
     favourites = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
     plays = InlineActivityPlaySerializer(many=True, read_only=True, source='activity_plays')
     downloads = InlineActivityDownloadSerializer(read_only=True, source='activity_downloads')
@@ -120,7 +120,7 @@ class MixSerializer(serializers.ModelSerializer):
         # all nested representations need to be serialized separately here
         try:
             # get any likes that aren't in passed bundle
-            likes = validated_data['likes']
+            likes = self.initial_data['likes']
             unliked = instance.likes.exclude(user__userprofile__slug__in=[l['slug'] for l in likes])
             for ul in unliked:
                 # check that the user removing the like is an instance of the current user
@@ -138,7 +138,6 @@ class MixSerializer(serializers.ModelSerializer):
 
                 except UserProfile.DoesNotExist:
                     pass
-            validated_data.pop('likes', None)
 
             # get any likes that aren't in passed bundle
             if 'downloads' in validated_data:

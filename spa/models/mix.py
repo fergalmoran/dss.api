@@ -167,7 +167,6 @@ class Mix(BaseModel):
         return self.get_waveform_url(waveform_type="_progress")
 
     def get_image_url(self, size='200x200', default=''):
-        import ipdb; ipdb.set_trace()
         try:
             if self.mix_image.name and self.mix_image.storage.exists(self.mix_image.name):
                 ret = get_thumbnail(self.mix_image, size, crop='center')
