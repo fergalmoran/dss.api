@@ -209,11 +209,10 @@ REST_FRAMEWORK = {
     'MAX_PAGINATE_BY': 100  # Maximum limit allowed when using `?page_size=xxx`.}
 }
 
-
-DEFAULT_USER_IMAGE = 'assets/images/default-avatar-32.png'
+DEFAULT_TRACK_IMAGE = 'assets/images/dyn/default-track-200.png'
+DEFAULT_USER_IMAGE = 'assets/images/dyn/default-avatar-32.png'
 DEFAULT_USER_NAME = 'Anonymouse'
 DEFAULT_USER_TITLE = 'Just another DSS lover'
-
 
 SITE_NAME = 'Deep South Sounds'
 THUMBNAIL_PREFIX = 'cache/_tn/'
