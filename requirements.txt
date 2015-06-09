@@ -39,3 +39,4 @@ mutagen
 django-enumfield
 
 ipython
+ipdb
