@@ -191,8 +191,6 @@ class Mix(BaseModel):
         download_name = smart_str('{0} - {1}.{2}'.format(settings.SITE_NAME, self.title, self.filetype))
         return blob_name, download_name
 
-    # used for podcast xmlo, allo.
-    We're back again'
     def get_date_as_rfc822(self):
         return rfc822.formatdate(
             rfc822.mktime_tz(rfc822.parsedate_tz(self.upload_date.strftime("%a, %d %b %Y %H:%M:%S"))))
