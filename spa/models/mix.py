@@ -174,7 +174,7 @@ class Mix(BaseModel):
             else:
                 return self.user.get_sized_avatar_image(170, 170)
         except Exception, ex:
-            self.logger.error("Mix: error getting mix image %s" % ex.message)
+            pass
 
         return super(Mix, self).get_image_url(self.mix_image, settings.DEFAULT_TRACK_IMAGE)
 
