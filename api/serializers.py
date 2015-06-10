@@ -238,6 +238,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.ReadOnlyField(source='get_first_name')
     last_name = serializers.ReadOnlyField(source='get_last_name')
     display_name = serializers.ReadOnlyField(source='get_nice_name')
+    mix_count = serializers.SerializerMethodField()
     isme = serializers.SerializerMethodField()
     date_joined = serializers.SerializerMethodField()
     last_login = serializers.SerializerMethodField()
@@ -266,6 +267,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'profile_image_header',
             'slug',
             'likes',
+            'mix_count',
             'isme',
             'favourites',
             'following',
@@ -290,6 +292,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_isme(self, obj):
         return self.context['request'].user.pk == obj.user_id
+
+    def get_mix_count(self, obj):
+        return obj.mix_count
 
     def get_date_joined(self, obj):
         return obj.user.date_joined
