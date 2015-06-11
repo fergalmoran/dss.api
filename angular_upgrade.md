@@ -1,3 +1,6 @@
+#perform outstanding migrations
+    python manage.py migrate
+
 #update poorly saved descriptions
     update spa_userprofile set description = '' where description like('Just another%')
 
@@ -6,4 +9,3 @@
     
 #jiggle the waveforms
     python manage.py zoom_convert_waveforms
-    

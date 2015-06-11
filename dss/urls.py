@@ -13,6 +13,7 @@ urlpatterns = patterns(
     url(r'^api/v2/', include('api.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     (r'^grappelli/', include('grappelli.urls')),
+    (r'^social/', include('spa.social.urls')),
 )
 handler500 = 'spa.views.debug_500'
 
