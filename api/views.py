@@ -170,7 +170,7 @@ class PartialMixUploadView(views.APIView):
             response = 'File creation in progress'
 
             try:
-                input_file = in_file = os.path.join(file_storage.base_location, cache_file)
+                input_file = os.path.join(file_storage.base_location, cache_file)
 
                 # Chain the waveform & archive tasks together
                 # Probably not the best place for them but will do for now
