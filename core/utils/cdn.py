@@ -26,7 +26,8 @@ def upload_to_azure(in_file, filetype, uid):
             )
             print "Uploaded"
             return obj
-
+    else:
+        print "infile not found"
     return None
 
 

@@ -24,14 +24,18 @@ def create_waveform_task(in_file, uid):
         print "Moving cache audio clip from %s to %s" % (in_file, new_file)
         shutil.move(in_file, new_file)
         print "Uid: %s" % uid
+        return new_file
     else:
         print "Outfile is missing"
 
 
 @task(time_limit=3600)
-def archive_mix_task(in_file, uid):
+def archive_mix_task(in_file, filetype, uid):
     print "Sending {0} to azure".format(uid)
-    upload_to_azure(in_file, uid)
+    try:
+        upload_to_azure(in_file, filetype, uid)
+    except Exception, ex:
+        print "Unable to upload: %s".format(ex.message)
 
 @task
 def update_geo_info_task(ip_address, profile_id):

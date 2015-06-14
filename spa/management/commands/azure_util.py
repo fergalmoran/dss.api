@@ -10,7 +10,7 @@ class Command(NoArgsCommand):
             mixes = Mix.objects.filter(archive_updated=False)
             for mix in mixes:
                 blob_name, download_name = mix.get_cdn_details()
-                upload_to_azure(blob_name, download_name)
+                upload_to_azure(blob_name, "mp3", download_name)
                 mix.archive_updated = True
                 mix.save()
 

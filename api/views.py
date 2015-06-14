@@ -17,8 +17,9 @@ from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP
     HTTP_200_OK, HTTP_204_NO_CONTENT
 
 from api import serializers
+from core.utils.cdn import upload_to_azure
 from dss import settings
-from core.tasks import create_waveform_task
+from core.tasks import create_waveform_task, archive_mix_task
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
 from spa.models.mix import Mix
@@ -62,6 +63,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 pass
             except Exception, ex:
                 pass
+
 
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.annotate(mix_count=Count('mixes')).order_by('-mix_count')
@@ -168,8 +170,15 @@ class PartialMixUploadView(views.APIView):
             response = 'File creation in progress'
 
             try:
-                create_waveform_task.delay(in_file=os.path.join(file_storage.base_location, cache_file), uid=uid)
-            except Exception, ex:
+                input_file = in_file = os.path.join(file_storage.base_location, cache_file)
+
+                # Chain the waveform & archive tasks together
+                # Probably not the best place for them but will do for now
+                # First argument to archive_mix_task is not specified as it is piped from create_waveform_task
+                (create_waveform_task.s(input_file, uid) |
+                 archive_mix_task.s(filetype='mp3', uid=uid)).delay()
+
+            except Exception:
                 response = \
                     'Unable to connect to waveform generation task, there may be a delay in getting your mix online'
 
