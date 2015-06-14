@@ -169,7 +169,6 @@ class PartialMixUploadView(views.APIView):
 
             try:
                 create_waveform_task.delay(in_file=os.path.join(file_storage.base_location, cache_file), uid=uid)
-                create_waveform_task.delay(in_file=os.path.join(file_storage.base_location, cache_file), uid=uid)
             except Exception, ex:
                 response = \
                     'Unable to connect to waveform generation task, there may be a delay in getting your mix online'
