@@ -2,6 +2,7 @@ import shutil
 from celery.task import task
 import os
 from core.utils.cdn import upload_to_azure
+from spa.signals import waveform_generated_signal
 
 try:
     from django.contrib.gis.geoip import GeoIP
@@ -24,6 +25,7 @@ def create_waveform_task(in_file, uid):
         print "Moving cache audio clip from %s to %s" % (in_file, new_file)
         shutil.move(in_file, new_file)
         print "Uid: %s" % uid
+        waveform_generated_signal.send(sender=None, uid=uid)
         return new_file
     else:
         print "Outfile is missing"

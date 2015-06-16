@@ -117,6 +117,7 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'spa',
     'tinymce',
+    'gunicorn',
     'spa.signals',
     'core',
     #'schedule',
