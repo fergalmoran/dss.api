@@ -5,12 +5,12 @@ from django.core.urlresolvers import reverse_lazy
 import djcelery
 from django.conf import global_settings
 
-from dss import logsettings
 from utils import here
 
 from localsettings import *
 from storagesettings import *
 from paymentsettings import *
+from logsettings import *
 from psa import *
 
 DEVELOPMENT = DEBUG
@@ -143,8 +143,6 @@ INSTALLED_APPS = (
 # where to redirect users to after logging in
 LOGIN_REDIRECT_URL = reverse_lazy('home')
 LOGOUT_URL = reverse_lazy('home')
-
-LOGGING = logsettings.LOGGING
 
 FACEBOOK_APP_ID = '154504534677009'
 

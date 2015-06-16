@@ -208,6 +208,9 @@ class ActivityPlay(Activity):
     def get_target_user(self):
         return self.mix.user
 
+    def get_object_slug(self):
+        return self.mix.slug
+
     def get_object_name(self):
         return self.mix.title
 

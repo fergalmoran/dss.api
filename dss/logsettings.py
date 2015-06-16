@@ -1,7 +1,8 @@
 import os
-import localsettings
+from dss import localsettings
+
 if os.name == 'posix':
-    LOG_FILE = '/tmp/dss.log'
+    LOG_FILE = localsettings.DSS_TEMP_PATH + '/dss.log'
 else:
     LOG_FILE = 'c:\\temp\\dss.log'
 

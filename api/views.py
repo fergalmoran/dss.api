@@ -207,8 +207,13 @@ class ActivityViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated():
             raise PermissionDenied("Not allowed")
 
-        return ActivityPlay.objects.filter(mix__user=user).order_by("-id")
+        ret = ActivityPlay.objects.filter(mix__user=user).order_by("-id")
 
+        if len(ret) >0:
+            logger.debug("Activity returned: %s".format(ret[0].get_object_slug()))
+            return ret
+        else:
+            return []
 
 class DownloadItemView(views.APIView):
     def get(self, request, *args, **kwargs):
