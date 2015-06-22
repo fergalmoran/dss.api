@@ -1,9 +1,13 @@
 import datetime
 from rest_framework.response import Response
-from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED
+from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_200_OK
 from rest_framework.views import APIView
 from dss import settings
-from spa.models import Mix
+from spa.models import Mix, UserProfile
+
+
+class Helper(APIView):
+    pass
 
 
 class ActivityHelper(APIView):
@@ -25,3 +29,12 @@ class ActivityPlayHelper(ActivityHelper):
                 pass
 
         return Response("Invalid URI or object does not exist", HTTP_400_BAD_REQUEST)
+
+
+class UserSlugCheckHelper(Helper):
+    def get(self, request):
+        try:
+            UserProfile.objects.get(slug=self.request.QUERY_PARAMS.get('slug'))
+            return Response(status=HTTP_204_NO_CONTENT)
+        except UserProfile.DoesNotExist:
+            return Response(status=HTTP_200_OK)

@@ -1,5 +1,6 @@
 from django.db.models import Count
 from rest_framework import serializers
+from api.fields import DisplayNameField
 from core.utils.html import strip_tags
 
 from dss import settings
@@ -100,6 +101,7 @@ class MixSerializer(serializers.ModelSerializer):
             'plays',
             'downloads',
             'is_liked',
+
         ]
 
     slug = serializers.ReadOnlyField(required=False)
@@ -235,16 +237,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
     favourites = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
     following = InlineUserProfileSerializer(many=True, read_only=True)
     followers = InlineUserProfileSerializer(many=True, read_only=True)
-    first_name = serializers.ReadOnlyField(source='get_first_name')
-    last_name = serializers.ReadOnlyField(source='get_last_name')
-    display_name = serializers.ReadOnlyField(source='get_nice_name')
     mix_count = serializers.SerializerMethodField()
     isme = serializers.SerializerMethodField()
     email = serializers.SerializerMethodField()
     date_joined = serializers.SerializerMethodField()
     last_login = serializers.SerializerMethodField()
     title = serializers.SerializerMethodField()
-    description = serializers.SerializerMethodField()
     profile_image_small = serializers.SerializerMethodField()
     profile_image_medium = serializers.SerializerMethodField()
     profile_image_header = serializers.SerializerMethodField()
@@ -255,6 +253,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         lookup_field = 'slug'
         fields = (
+            'id',
             'roles',
             'date_joined',
             'last_login',
@@ -275,7 +274,20 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'following',
             'followers',
             'top_tags',
+            'activity_sharing_facebook',
+            'activity_sharing_twitter',
+            'email_notifications',
         )
+
+    def ___update(self, instance, validated_data):
+
+        if 'display_name' in self.initial_data and self.initial_data['display_name'] != instance.display_name:
+            first, sep, second = self.initial_data['display_name'].partition(" ")
+            instance.user.first_name = first
+            instance.user.last_name = second
+            instance.save()
+
+        return super(UserProfileSerializer, self).update(instance, validated_data)
 
     def get_title(self, obj):
         try:
@@ -286,11 +298,12 @@ class UserProfileSerializer(serializers.ModelSerializer):
         except:
             return settings.DEFAULT_USER_TITLE
 
-    def get_description(self, obj):
-        return obj.description if obj.description else settings.DEFAULT_USER_TITLE
-
     def get_roles(self, obj):
-        return obj.get_roles()
+        try:
+            return obj.get_roles()
+        except Exception, ex:
+            print "Error getting roles: " + ex.message
+            return []
 
     def get_isme(self, obj):
         return self.context['request'].user.pk == obj.user_id

@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url, include
 from rest_framework.routers import DefaultRouter
 
-from api import views, auth, activity_helpers
+from api import views, auth, helpers
 
 router = DefaultRouter()  # trailing_slash=True)
 
@@ -29,10 +29,11 @@ urlpatterns = patterns(
     url(r'^logout/', auth.ObtainLogout.as_view()),
 
     # url(r'^_tr/', RefreshToken.as_view()),
-    url(r'^__user/', auth.ObtainUser.as_view()),
+    url(r'^__u/checkslug', helpers.UserSlugCheckHelper.as_view()),
+    url(r'^__u/', auth.ObtainUser.as_view()),
 
 
-    url(r'^_act/play', activity_helpers.ActivityPlayHelper.as_view()),
+    url(r'^_act/play', helpers.ActivityPlayHelper.as_view()),
 
     url('', include('social.apps.django_app.urls', namespace='social')),
 )
