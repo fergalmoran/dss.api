@@ -28,6 +28,10 @@ class UserProfileManager(models.Manager):
         return super(UserProfileManager, self).get_query_set().annotate(mix_count=Count('mixes'))
 
 
+class UserUpdateException(Exception):
+    pass
+
+
 class UserProfile(BaseModel):
     class Meta:
         app_label = 'spa'
@@ -221,3 +225,27 @@ class UserProfile(BaseModel):
             p = UserProfile(user=u)
             return p
 
+    def add_following(self, user):
+        from spa.models.activity import ActivityFollow
+        try:
+            if user is None:
+                return
+            if user.user.is_authenticated():
+                v = ActivityFollow(user=self, to_user=user)
+                v.save()
+                self.following.add(user)
+                self.save()
+        except Exception, ex:
+            self.logger.error("Exception updating like: %s" % ex.message)
+            raise UserUpdateException(ex.message)
+
+    def remove_following(self, user):
+        try:
+            if user is None:
+                return
+            if user.user.is_authenticated():
+                self.following.remove(user)
+                self.save()
+        except Exception, ex:
+            self.logger.error("Exception updating like: %s" % ex.message)
+            raise UserUpdateException(ex.message)

@@ -28,6 +28,58 @@ class InlineMixSerializer(serializers.ModelSerializer):
     mix_image = serializers.ReadOnlyField(source='get_image_url')
 
 
+class InlineUserProfileSerializer(serializers.ModelSerializer):
+    is_following = serializers.SerializerMethodField()
+    profile_image_small = serializers.SerializerMethodField()
+    profile_image_medium = serializers.SerializerMethodField()
+    profile_image_header = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = (
+            'slug',
+            'first_name',
+            'last_name',
+            'display_name',
+            'is_following',
+            'profile_image_small',
+            'profile_image_medium',
+            'profile_image_header',
+        )
+
+    first_name = serializers.ReadOnlyField(source='get_first_name')
+    last_name = serializers.ReadOnlyField(source='get_last_name')
+    display_name = serializers.ReadOnlyField(source='get_nice_name')
+
+    def get_avatar_image(self, obj):
+        return obj.get_sized_avatar_image(64, 64)
+
+    def get_avatar_image_tiny(self, obj):
+        return obj.get_sized_avatar_image(64, 64)
+
+    def to_representation(self, instance):
+        if instance.user.is_anonymous():
+            return {
+                'avatar_image': settings.DEFAULT_USER_IMAGE,
+                'display_name': settings.DEFAULT_USER_NAME,
+                'slug': ''
+            }
+
+        return super(serializers.ModelSerializer, self).to_representation(instance)
+
+    def get_is_following(self, obj):
+        return obj.is_follower(self.context['request'].user)
+
+    def get_profile_image_small(self, obj):
+        return obj.get_sized_avatar_image(64, 64)
+
+    def get_profile_image_medium(self, obj):
+        return obj.get_sized_avatar_image(170, 170)
+
+    def get_profile_image_header(self, obj):
+        return obj.get_sized_avatar_image(1200, 150)
+
+
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
@@ -105,7 +157,8 @@ class MixSerializer(serializers.ModelSerializer):
         ]
 
     slug = serializers.ReadOnlyField(required=False)
-    user = serializers.SlugRelatedField(slug_field='slug', read_only=True)
+    # user = serializers.SlugRelatedField(slug_field='slug', read_only=True)
+    user = InlineUserProfileSerializer(read_only=True)
     waveform_url = serializers.ReadOnlyField(source='get_waveform_url')
     waveform_progress_url = serializers.ReadOnlyField(source='get_waveform_progress_url')
     mix_image = serializers.ReadOnlyField(source='get_image_url')
@@ -184,53 +237,6 @@ class MixSerializer(serializers.ModelSerializer):
         return obj.is_liked(user) if user.is_authenticated() else False
 
 
-class InlineUserProfileSerializer(serializers.ModelSerializer):
-    profile_image_small = serializers.SerializerMethodField()
-    profile_image_medium = serializers.SerializerMethodField()
-    profile_image_header = serializers.SerializerMethodField()
-
-    class Meta:
-        model = UserProfile
-        fields = (
-            'slug',
-            'first_name',
-            'last_name',
-            'display_name',
-            'profile_image_small',
-            'profile_image_medium',
-            'profile_image_header',
-        )
-
-    first_name = serializers.ReadOnlyField(source='get_first_name')
-    last_name = serializers.ReadOnlyField(source='get_last_name')
-    display_name = serializers.ReadOnlyField(source='get_nice_name')
-
-    def get_avatar_image(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
-
-    def get_avatar_image_tiny(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
-
-    def to_representation(self, instance):
-        if instance.user.is_anonymous():
-            return {
-                'avatar_image': settings.DEFAULT_USER_IMAGE,
-                'display_name': settings.DEFAULT_USER_NAME,
-                'slug': ''
-            }
-
-        return super(serializers.ModelSerializer, self).to_representation(instance)
-
-    def get_profile_image_small(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
-
-    def get_profile_image_medium(self, obj):
-        return obj.get_sized_avatar_image(170, 170)
-
-    def get_profile_image_header(self, obj):
-        return obj.get_sized_avatar_image(1200, 150)
-
-
 class UserProfileSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
     likes = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
@@ -279,14 +285,21 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'email_notifications',
         )
 
-    def ___update(self, instance, validated_data):
+    def update(self, instance, validated_data):
+        following = self.initial_data['following']
+        unfollowed = instance.following.exclude(user__userprofile__slug__in=[l['slug'] for l in following])
+        for uf in unfollowed:
+            # check that the user removing the follow is an instance of the current user
+            # for now, only the current user can follow/unfollow stuff
+            instance.remove_following(uf)
 
-        if 'display_name' in self.initial_data and self.initial_data['display_name'] != instance.display_name:
-            first, sep, second = self.initial_data['display_name'].partition(" ")
-            instance.user.first_name = first
-            instance.user.last_name = second
-            instance.save()
-
+        for follow in following:
+            try:
+                user = UserProfile.objects.get(slug=follow['slug'])
+                if user not in instance.following.all():
+                    instance.add_following(user)
+            except UserProfile.DoesNotExist:
+                pass
         return super(UserProfileSerializer, self).update(instance, validated_data)
 
     def get_title(self, obj):
