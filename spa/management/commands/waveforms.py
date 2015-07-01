@@ -1,6 +1,7 @@
 from optparse import make_option
 import os
 from django.core.management.base import NoArgsCommand, BaseCommand
+from spa.management.commands import helpers
 
 from spa.models.mix import Mix
 from core.tasks import create_waveform_task
@@ -18,20 +19,30 @@ class Command(BaseCommand):
 
     @staticmethod
     def _get_file(mix):
-        #Check for file in mix directory
-        processed_file = ""
         try:
-            processed_file = mix.get_absolute_path()
-            if not os.path.isfile(processed_file):
-                processed_file = mix.get_cache_path()
+            if mix.archive_updated:
+                print "Mix is archived: boo hoo"
+                file_name = "/tmp/%s.mp3" % mix.uid
+                url = mix.get_stream_url()
+                print "Downloading: %s To: %s" % (url, file_name)
+                helpers.download_file(url, file_name)
+                if not os.path.isfile(file_name):
+                    print "File failed to download"
+                else:
+                    return file_name
+            else:
+                processed_file = mix.get_absolute_path()
                 if not os.path.isfile(processed_file):
-                    print "File for [%s] not found tried\n\t%s\n\t%s" % (mix.title, processed_file, processed_file)
-                    return ""
+                    processed_file = mix.get_cache_path()
+                    if not os.path.isfile(processed_file):
+                        print "File for [%s] not found tried\n\t%s\n\t%s" % (mix.title, processed_file, processed_file)
+                        return ""
+                return processed_file
 
         except Exception, ex:
             print "Error generating waveform: %s" % ex.message
 
-        return processed_file
+        return ""
 
     def handle(self, *args, **options):
         print "Scanning for missing waveforms"

@@ -3,32 +3,9 @@ from django.core.management.base import NoArgsCommand
 from core.utils.waveform import generate_waveform
 from dss import settings
 from spa.models.mix import Mix
-
+import helpers
 
 class Command(NoArgsCommand):
-    def _download_file(self, url, file_name):
-        import urllib2
-
-        u = urllib2.urlopen(url)
-        f = open(file_name, 'wb')
-        meta = u.info()
-        file_size = int(meta.getheaders("Content-Length")[0])
-        print "Downloading: %s Bytes: %s" % (file_name, file_size)
-
-        file_size_dl = 0
-        block_sz = 8192
-        while True:
-            file_buffer = u.read(block_sz)
-            if not file_buffer:
-                break
-
-            file_size_dl += len(file_buffer)
-            f.write(file_buffer)
-            status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
-            status += chr(8) * (len(status) + 1)
-            print status,
-
-        f.close()
 
     def _convert_remote(self):
         mixes = Mix.objects.exclude(waveform_version=2)
@@ -38,7 +15,7 @@ class Command(NoArgsCommand):
             file_name = "/tmp/%s.mp3" % mix.uid
             url = mix.get_stream_url()
             print "Downloading: %s To: %s" % (url, file_name)
-            self._download_file(url, file_name)
+            helpers.download_file(url, file_name)
             if not os.path.isfile(file_name):
                 print "File failed to download"
             else:

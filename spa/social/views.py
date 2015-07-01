@@ -16,7 +16,6 @@ from spa.models import Playlist
 from spa.models.mix import Mix
 from spa.models.userprofile import UserProfile
 
-
 logger = logging.getLogger(__name__)
 
 """
@@ -38,22 +37,25 @@ def facebook_mix(request, slug):
     except Mix.DoesNotExist:
         raise Http404
 
-    image = mix.get_image_url('400x400')
-    mix_url = mix.get_absolute_url()
-    default = _getPayload(request)
-    extras = {
-        "description": mix.description.replace('<br />', '\n'),
-        "title": mix.title,
-        "image_url": image,
-        "mix_url": 'http://%s%s' % (Site.objects.get_current().domain, mix_url)
-    }
-    payload = dict(default.items() + extras.items())
-    response = render_to_response(
-        'social/facebook/mix.html',
-        payload,
-        context_instance=RequestContext(request)
-    )
-    return response
+    try:
+        image = mix.get_image_url('400x400')
+        mix_url = mix.get_absolute_url()
+        default = _getPayload(request)
+        extras = {
+            "description": mix.description.replace('<br />', '\n'),
+            "title": mix.title,
+            "image_url": image,
+            "mix_url": 'http://%s%s' % (Site.objects.get_current().domain, mix_url)
+        }
+        payload = dict(default.items() + extras.items())
+        response = render_to_response(
+            'social/facebook/mix.html',
+            payload,
+            context_instance=RequestContext(request)
+        )
+        return response
+    except Exception, ex:
+        logger.error(ex.message)
 
 
 def playlist(request, args):
@@ -156,7 +158,8 @@ def post_like(request, mix):
 
 def delete_like(request, uid):
     try:
-        tokens = SocialToken.objects.filter(account__user=request.user, account__provider='facebook')
+        tokens = SocialToken.objects.filter(account__user=request.user,
+                                            account__provider='facebook')
         for token in tokens:
             url = "https://graph.facebook.com/%s" % uid
             values = {

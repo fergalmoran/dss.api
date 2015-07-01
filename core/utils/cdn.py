@@ -12,8 +12,6 @@ def upload_to_azure(in_file, filetype, uid):
     if os.path.isfile(in_file):
         print "Uploading file for: %s" % in_file
         file_name = "%s.%s" % (uid, filetype)
-        archive_path = url_path_join(settings.AZURE_ITEM_BASE_URL, settings.AZURE_CONTAINER, file_name)
-
         cls = get_driver(Provider.AZURE_BLOBS)
         driver = cls(settings.AZURE_ACCOUNT_NAME, settings.AZURE_ACCOUNT_KEY)
         container = driver.get_container(container_name=settings.AZURE_CONTAINER)

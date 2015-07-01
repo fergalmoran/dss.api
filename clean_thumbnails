@@ -1,0 +1,5 @@
+python manage.py thumbnail cleanup
+python manage.py thumbnail clear
+python manage.py thumbnail clear_delete_referenced
+python manage.py thumbnail clear_delete_all
+
