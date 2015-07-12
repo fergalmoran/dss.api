@@ -75,10 +75,10 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     )
 
     def get_queryset(self):
-        if 'following' in self.request.QUERY_PARAMS:
-            ret = UserProfile.objects.filter(following__slug__in=[self.request.QUERY_PARAMS['following']])
-        elif 'followers' in self.request.QUERY_PARAMS:
-            ret = UserProfile.objects.filter(followers__slug__in=[self.request.QUERY_PARAMS['followers']])
+        if 'following' in self.request.query_params:
+            ret = UserProfile.objects.filter(following__slug__in=[self.request.query_params['following']])
+        elif 'followers' in self.request.query_params:
+            ret = UserProfile.objects.filter(followers__slug__in=[self.request.query_params['followers']])
         else:
             ret = super(UserProfileViewSet, self).get_queryset()
 
@@ -104,7 +104,7 @@ class MixViewSet(viewsets.ModelViewSet):
         return Response({'url': mix.get_stream_url()})
 
     def get_queryset(self):
-        if 'friends' in self.request.QUERY_PARAMS:
+        if 'friends' in self.request.query_params:
             if self.request.user.is_authenticated():
                 rows = Mix.objects.filter(user__in=self.request.user.userprofile.following.all())
                 return rows
@@ -242,10 +242,10 @@ class GenreViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.GenreSerializer
 
     def get_queryset(self):
-        if 'q' in self.request.QUERY_PARAMS:
+        if 'q' in self.request.query_params:
             rows = Genre.objects \
                 .annotate(used=Count('mix')) \
-                .filter(description__icontains=self.request.QUERY_PARAMS['q']) \
+                .filter(description__icontains=self.request.query_params['q']) \
                 .only('description') \
                 .order_by('-used')
             return rows

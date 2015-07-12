@@ -16,6 +16,7 @@ django-model_utils
 django-dbbackup
 django-user-agents
 south
+redis
 
 sorl-thumbnail
 
@@ -24,6 +25,8 @@ git+git://github.com/Azure/azure-sdk-for-python.git#azure
 git+git://github.com/tschellenbach/Django-facebook.git#django-facebook
 git+git://github.com/llazzaro/django-scheduler.git#django-scheduler
 git+git://github.com/omab/python-social-auth.git#egg=python-social-auth
+django-allauth
+django-tinymce
 apache-libcloud
 mandrill
 djrill

@@ -1,6 +1,6 @@
 #curl -u hb_client_2862_1:j2CbCM8H -H 'Accept: application/json' -H 'Content-type: application/json' http://c1.lon2.dediserve.com/virtual_machines.xml
 
-apt-get install git python-virtualenv postgresql-common libsndfile1-dev libpng++-dev libpng12-dev libboost-program-options-dev libjpeg-dev python-dev libsox-fmt-mp3
+apt-get install git python-virtualenv postgresql-common libsndfile1-dev libpng++-dev libpng12-dev libboost-program-options-dev libjpeg-dev python-dev libsox-fmt-mp3 postgresql-server-dev-all postgresql-client
 virtualenv env
 source env/bin/activate
 

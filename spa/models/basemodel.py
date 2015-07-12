@@ -1,12 +1,12 @@
 import logging
 import os
 from datetime import datetime
-from dirtyfields import DirtyFieldsMixin
+import json
+
 from django.db import models
-from django.utils import simplejson
+
 from core.utils import url
 from dss import localsettings, settings
-
 
 
 class BaseModel(models.Model):
@@ -20,7 +20,7 @@ class BaseModel(models.Model):
         app_label = 'spa'
 
     def tosimplejson(self):
-        return simplejson.dump(self)
+        return json.dumps(self)
 
     @classmethod
     def get_lookup(cls, filter_field, transform=None, filter=None):

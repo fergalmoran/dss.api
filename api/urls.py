@@ -34,6 +34,7 @@ urlpatterns = patterns(
 
 
     url(r'^_act/play', helpers.ActivityPlayHelper.as_view()),
+    url(r'^_chat/', helpers.ChatHelper.as_view()),
 
     url('', include('social.apps.django_app.urls', namespace='social')),
 )

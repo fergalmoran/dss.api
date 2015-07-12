@@ -4,21 +4,35 @@ from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED, HTTP_2
 from rest_framework.views import APIView
 from dss import settings
 from spa.models import Mix, UserProfile
-
+from core.utils import session
 
 class Helper(APIView):
     pass
 
 
 class ActivityHelper(APIView):
-    pass
+    def get_session(self, request):
+        sessions = session.get_active_sessions(request.session)
+
+        return sessions[0]
+
+
+class ChatHelper(ActivityHelper):
+    def post(self, request):
+        # do some persistence stuff with the chat
+        from core.realtime import chat
+
+        user = self.get_session(request)
+
+        chat.post_chat(request.DATA['user'], request.DATA['message'])
+        return Response(request.DATA['message'], HTTP_201_CREATED)
 
 
 class ActivityPlayHelper(ActivityHelper):
     def post(self, request):
-        if 'id' in self.request.QUERY_PARAMS:
+        if 'id' in self.request.query_params:
             try:
-                mix = Mix.objects.get(slug=self.request.QUERY_PARAMS.get('id'))
+                mix = Mix.objects.get(slug=self.request.query_params.get('id'))
                 mix.add_play(request.user)
                 data = {
                     'user': request.user.userprofile.get_nice_name() if request.user.is_authenticated() else settings.DEFAULT_USER_NAME,
@@ -34,7 +48,7 @@ class ActivityPlayHelper(ActivityHelper):
 class UserSlugCheckHelper(Helper):
     def get(self, request):
         try:
-            UserProfile.objects.get(slug=self.request.QUERY_PARAMS.get('slug'))
+            UserProfile.objects.get(slug=self.request.query_params.get('slug'))
             return Response(status=HTTP_204_NO_CONTENT)
         except UserProfile.DoesNotExist:
             return Response(status=HTTP_200_OK)
