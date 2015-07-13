@@ -51,9 +51,9 @@ class CommentViewSet(viewsets.ModelViewSet):
     )
 
     def perform_create(self, serializer):
-        if 'mix_id' in self.request.DATA:
+        if 'mix_id' in self.request.data:
             try:
-                mix = Mix.objects.get(pk=self.request.DATA['mix_id'])
+                mix = Mix.objects.get(pk=self.request.data['mix_id'])
                 if mix is not None:
                     serializer.save(
                         mix=mix,
@@ -121,11 +121,11 @@ class AttachedImageUploadView(views.APIView):
     parser_classes = (FileUploadParser,)
 
     def post(self, request):
-        if request.FILES['file'] is None or request.DATA.get('data') is None:
+        if request.FILES['file'] is None or request.data.get('data') is None:
             return Response(status=HTTP_400_BAD_REQUEST)
 
         file_obj = request.FILES['file']
-        file_hash = request.DATA.get('data')
+        file_hash = request.data.get('data')
         try:
             mix = Mix.objects.get(uid=file_hash)
             if mix:

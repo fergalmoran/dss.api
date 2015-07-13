@@ -32,6 +32,7 @@ mandrill
 djrill
 
 djangorestframework
+djangorestframework-jwt
 drf-nested-routers
 django-celery
 pillow

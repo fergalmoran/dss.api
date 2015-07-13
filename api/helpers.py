@@ -24,8 +24,8 @@ class ChatHelper(ActivityHelper):
 
         user = self.get_session(request)
 
-        chat.post_chat(request.DATA['user'], request.DATA['message'])
-        return Response(request.DATA['message'], HTTP_201_CREATED)
+        chat.post_chat(request.data['user'], request.data['message'])
+        return Response(request.data['message'], HTTP_201_CREATED)
 
 
 class ActivityPlayHelper(ActivityHelper):

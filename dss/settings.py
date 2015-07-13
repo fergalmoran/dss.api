@@ -201,7 +201,9 @@ REST_FRAMEWORK = {
         'rest_framework.filters.OrderingFilter',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
     'PAGINATE_BY': 12,  # Default to 10
     'PAGINATE_BY_PARAM': 'limit',  # Allow client to override, using `?page_size=xxx`.
