@@ -2,6 +2,7 @@ from django.conf.urls import patterns, url, include
 from rest_framework.routers import DefaultRouter
 
 from api import views, auth, helpers
+from api.auth import FacebookView
 
 router = DefaultRouter()  # trailing_slash=True)
 
@@ -25,8 +26,8 @@ urlpatterns = patterns(
     url(r'_search/$', views.SearchResultsView.as_view()),
     url(r'^', include(router.urls)),
 
-    url(r'^login/', auth.ObtainAuthToken.as_view()),
-    url(r'^logout/', auth.ObtainLogout.as_view()),
+    #url(r'^login/', auth.ObtainAuthToken.as_view()),
+    #url(r'^logout/', auth.ObtainLogout.as_view()),
 
     # url(r'^_tr/', RefreshToken.as_view()),
     url(r'^__u/checkslug', helpers.UserSlugCheckHelper.as_view()),
@@ -35,6 +36,7 @@ urlpatterns = patterns(
 
     url(r'^_act/play', helpers.ActivityPlayHelper.as_view()),
     url(r'^_chat/', helpers.ChatHelper.as_view()),
+    url(r'^_login/', FacebookView.as_view()),
 
     url('', include('social.apps.django_app.urls', namespace='social')),
 )
