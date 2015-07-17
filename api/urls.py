@@ -1,7 +1,9 @@
 from django.conf.urls import patterns, url, include
 from rest_framework import permissions
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.routers import DefaultRouter
 from rest_framework.views import APIView
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from api import views, auth, helpers
 from api.auth import FacebookView
@@ -21,11 +23,12 @@ router.register(r'genre', views.GenreViewSet, base_name='genre')
 
 
 class DebugView(APIView):
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (IsAuthenticated, )
+    authentication_classes = (JSONWebTokenAuthentication, )
 
     def post(self, request, format=None):
         return Response({
-            'status': 'Hello',
+            'status': request.user.first_name,
             'message': 'Sailor'
         }, status=status.HTTP_200_OK)
 
