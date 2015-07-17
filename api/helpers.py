@@ -22,8 +22,7 @@ class ChatHelper(ActivityHelper):
         # do some persistence stuff with the chat
         from core.realtime import chat
 
-        user = self.get_session(request)
-
+        #user = self.get_session(request)
         chat.post_chat(request.data['user'], request.data['message'])
         return Response(request.data['message'], HTTP_201_CREATED)
 

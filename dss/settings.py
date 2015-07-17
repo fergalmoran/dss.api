@@ -1,6 +1,7 @@
 # e Django settings for dss project.
 import os
 import mimetypes
+from datetime import timedelta
 from django.core.urlresolvers import reverse_lazy
 import djcelery
 from django.conf import global_settings
@@ -217,3 +218,9 @@ DEFAULT_USER_TITLE = 'Just another DSS lover'
 
 SITE_NAME = 'Deep South Sounds'
 THUMBNAIL_PREFIX = 'cache/_tn/'
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=1800),
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
+}

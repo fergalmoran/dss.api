@@ -18,8 +18,6 @@ from dss import settings
 
 @psa()
 def auth_by_token(request, backend):
-    token = request.data.get('access_token')
-    user = request.user
     user = request.backend.do_auth(
         access_token=request.data.get('access_token')
     )
@@ -40,7 +38,7 @@ class FacebookView(APIView):
             except Exception, e:
                 return Response({
                     'status': 'Bad request',
-                    'message': 'Could not authenticate with the provided token' if settings.DEBUG else e.message
+                    'message': 'Could not authenticate with the provided token' if not settings.DEBUG else e.message
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             if user:
