@@ -23,7 +23,15 @@ class ChatHelper(ActivityHelper):
         from core.realtime import chat
 
         #user = self.get_session(request)
-        chat.post_chat(request.data['user'], request.data['message'])
+        u = request.user
+        if not u.is_anonymous():
+            image = u.userprofile.get_sized_avatar_image(32, 32)
+            user = u.userprofile.get_nice_name()
+        else:
+            image = settings.DEFAULT_USER_IMAGE
+            user = settings.DEFAULT_USER_NAME
+
+        chat.post_chat(request.data['user'], image, user, request.data['message'])
         return Response(request.data['message'], HTTP_201_CREATED)
 
 
