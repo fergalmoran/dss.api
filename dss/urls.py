@@ -15,7 +15,6 @@ urlpatterns = patterns(
     (r'^grappelli/', include('grappelli.urls')),
     (r'^social/', include('spa.social.urls')),
 )
-handler500 = 'spa.views.debug_500'
 
 if settings.DEBUG:
     from django.views.static import serve
