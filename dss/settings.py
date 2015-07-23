@@ -117,7 +117,6 @@ INSTALLED_APPS = (
     'corsheaders',
     'sorl.thumbnail',
     'spa',
-    'tinymce',
     'gunicorn',
     'spa.signals',
     'core',
