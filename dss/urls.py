@@ -9,7 +9,6 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^api/docs/', include('rest_framework_swagger.urls')),
     url(r'^api/v2/', include('api.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     (r'^grappelli/', include('grappelli.urls')),

@@ -71,12 +71,6 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.contrib.auth.context_processors.auth',
-
-
-    # TODO: remove..
-    # `allauth` specific context processors
-    "allauth.account.context_processors.account",
-    "allauth.socialaccount.context_processors.socialaccount",
 )
 
 
@@ -138,7 +132,6 @@ INSTALLED_APPS = (
     'djrill',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_swagger',
 )
 
 # where to redirect users to after logging in
