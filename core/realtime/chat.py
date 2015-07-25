@@ -1,7 +1,8 @@
 import json
 import datetime
 import redis
-import settings
+from dss import settings
+
 
 def post_chat(session, image, user, message):
     r = redis.StrictRedis(host=settings.REDIS_HOST, port=6379, db=0)
