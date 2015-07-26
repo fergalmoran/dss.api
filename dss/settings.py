@@ -116,7 +116,7 @@ INSTALLED_APPS = (
     'core',
     #'schedule',
     'django_user_agents',
-
+    'storages',
     'social.apps.django_app.default',
 
     # TODO: remove
@@ -209,7 +209,8 @@ DEFAULT_USER_NAME = 'Anonymouse'
 DEFAULT_USER_TITLE = 'Just another DSS lover'
 
 SITE_NAME = 'Deep South Sounds'
-THUMBNAIL_PREFIX = 'cache/_tn/'
+THUMBNAIL_PREFIX = '_tn/'
+THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': timedelta(seconds=900),
