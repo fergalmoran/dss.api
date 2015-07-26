@@ -1,4 +1,5 @@
 import os
+import sys
 from dss import localsettings
 
 if os.name == 'posix':
@@ -20,11 +21,14 @@ LOGGING = {
     },
     'handlers': {
         'file': {
-            'level': 'DEBUG',
+            'level': 'INFO',
             'class': 'logging.FileHandler',
             'filename': LOG_FILE,
             'formatter': 'verbose'
-        },
+        }, 'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        }
     },
     'loggers': {
         'django': {
@@ -33,7 +37,7 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'spa': {
-            'handlers': ['file'],
+            'handlers': ['file', 'console'],
             'level': 'DEBUG',
         },
     }

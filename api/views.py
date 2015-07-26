@@ -27,7 +27,7 @@ from spa.models.comment import Comment
 from spa.models.notification import Notification
 from spa.models.userprofile import UserProfile
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('spa')
 
 
 class AnonymousWriteUserDelete(BasePermission):
@@ -175,7 +175,7 @@ class PartialMixUploadView(views.APIView):
 
             try:
                 logger.debug("Received input file")
-                logger.debug("Storage is %s".format(file_storate.base_location))
+                logger.debug("Storage is {0}".format(file_storate.base_location))
                 input_file = os.path.join(file_storage.base_location, cache_file)
                 logger.debug("Input file generating")
 
@@ -186,7 +186,7 @@ class PartialMixUploadView(views.APIView):
                  archive_mix_task.s(filetype='mp3', uid=uid)).delay()
 
             except Exception, ex:
-                logger.error("Unable to connect to celery: %s".format(ex.message))
+                logger.error("Unable to connect to celery: {0}".format(ex.message))
                 response = \
                     'Unable to connect to waveform generation task, there may be a delay in getting your mix online'
 
@@ -218,7 +218,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
         ret = ActivityPlay.objects.filter(mix__user=user).order_by("-id")
 
         if len(ret) > 0:
-            logger.debug("Activity returned: %s".format(ret[0].get_object_slug()))
+            logger.debug("Activity returned: {0}".format(ret[0].get_object_slug()))
             return ret
         else:
             return []
