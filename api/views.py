@@ -177,18 +177,18 @@ class PartialMixUploadView(views.APIView):
                 logger.debug("Received input file")
                 logger.debug("Storage is {0}".format(file_storage.base_location))
                 input_file = os.path.join(file_storage.base_location, cache_file)
-                logger.debug("Input file generating")
 
                 # Chain the waveform & archive tasks together
                 # Probably not the best place for them but will do for now
                 # First argument to archive_mix_task is not specified as it is piped from create_waveform_task
                 (create_waveform_task.s(input_file, uid) |
                  archive_mix_task.s(filetype='mp3', uid=uid)).delay()
+                logger.debug("Waveform task started")
 
             except Exception, ex:
-                logger.error("Unable to connect to celery: {0}".format(ex.message))
+                logger.error("Unable to connect to rabbitmq: {0}".format(ex.message))
                 response = \
-                    'Unable to connect to waveform generation task, there may be a delay in getting your mix online'
+                    'Unable to connect to rabbitmq, there may be a delay in getting your mix online'
 
             file_dict = {
                 'response': response,
