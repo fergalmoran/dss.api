@@ -39,7 +39,6 @@ DATABASES = {
 import sys
 
 if 'test' in sys.argv or 'test_coverage' in sys.argv:
-    print "Testing"
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
 
 ROOT_URLCONF = 'dss.urls'
