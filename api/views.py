@@ -175,7 +175,7 @@ class PartialMixUploadView(views.APIView):
 
             try:
                 logger.debug("Received input file")
-                logger.debug("Storage is {0}".format(file_storate.base_location))
+                logger.debug("Storage is {0}".format(file_storage.base_location))
                 input_file = os.path.join(file_storage.base_location, cache_file)
                 logger.debug("Input file generating")
 
