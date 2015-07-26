@@ -161,16 +161,23 @@ class PartialMixUploadView(views.APIView):
     # noinspection PyBroadException
     def post(self, request):
         try:
+            logger.info("Received post file")
             uid = request.META.get('HTTP_UPLOAD_HASH')
-            in_file = request.FILES['file'] if request.FILES else None
+            in_file = request.data['file'] if request.data else None
             file_name, extension = os.path.splitext(in_file.name)
 
+            logger.info("Constructing storage")
             file_storage = FileSystemStorage(location=os.path.join(settings.CACHE_ROOT, "mixes"))
             cache_file = file_storage.save("%s%s" % (uid, extension), ContentFile(in_file.read()))
             response = 'File creation in progress'
 
+            logger.info("Storage constructed")
+
             try:
+                logger.debug("Received input file")
+                logger.debug("Storage is %s".format(file_storate.base_location))
                 input_file = os.path.join(file_storage.base_location, cache_file)
+                logger.debug("Input file generating")
 
                 # Chain the waveform & archive tasks together
                 # Probably not the best place for them but will do for now
@@ -178,7 +185,8 @@ class PartialMixUploadView(views.APIView):
                 (create_waveform_task.s(input_file, uid) |
                  archive_mix_task.s(filetype='mp3', uid=uid)).delay()
 
-            except Exception:
+            except Exception, ex:
+                logger.error("Unable to connect to celery: %s".format(ex.message))
                 response = \
                     'Unable to connect to waveform generation task, there may be a delay in getting your mix online'
 
@@ -209,11 +217,12 @@ class ActivityViewSet(viewsets.ModelViewSet):
 
         ret = ActivityPlay.objects.filter(mix__user=user).order_by("-id")
 
-        if len(ret) >0:
+        if len(ret) > 0:
             logger.debug("Activity returned: %s".format(ret[0].get_object_slug()))
             return ret
         else:
             return []
+
 
 class DownloadItemView(views.APIView):
     def get(self, request, *args, **kwargs):
