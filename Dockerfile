@@ -13,3 +13,7 @@ WORKDIR /code
 ADD requirements.txt /code/
 RUN pip install -r requirements.txt
 ADD . /code/
+
+RUN adduser --disabled-password --gecos '' djworker
+RUN chown djworker /files -R
+RUN chown djworker /srv/logs -R

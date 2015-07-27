@@ -139,7 +139,6 @@ LOGOUT_URL = reverse_lazy('home')
 
 FACEBOOK_APP_ID = '154504534677009'
 
-djcelery.setup_loader()
 
 AVATAR_STORAGE_DIR = MEDIA_ROOT + '/avatars/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'

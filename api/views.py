@@ -181,12 +181,15 @@ class PartialMixUploadView(views.APIView):
                 # Chain the waveform & archive tasks together
                 # Probably not the best place for them but will do for now
                 # First argument to archive_mix_task is not specified as it is piped from create_waveform_task
+
+                logger.debug("Processing input_file: {0}".format(input_file))
+                logger.debug("Connecting to broker: {0}".format(settings.BROKER_URL))
                 (create_waveform_task.s(input_file, uid) |
                  archive_mix_task.s(filetype='mp3', uid=uid)).delay()
                 logger.debug("Waveform task started")
 
             except Exception, ex:
-                logger.error("Unable to connect to rabbitmq: {0}".format(ex.message))
+                logger.exception(ex)
                 response = \
                     'Unable to connect to rabbitmq, there may be a delay in getting your mix online'
 
