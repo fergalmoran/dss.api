@@ -168,6 +168,7 @@ class UserProfile(BaseModel):
         return self.display_name or self.first_name + ' ' + self.last_name
 
     def get_sized_avatar_image(self, width, height):
+        return self.get_avatar_image()
         try:
             image = self.get_avatar_image()
             sized = thumbnail.get_thumbnail(image, "%sx%s" % (width, height), crop="center")
@@ -178,18 +179,7 @@ class UserProfile(BaseModel):
             return UserProfile.get_default_avatar_image()
 
     def get_avatar_image(self):
-        avatar_type = self.avatar_type
-        if avatar_type == 'gravatar':
-            gravatar_exists = has_gravatar(self.email)
-            if gravatar_exists:
-                return get_gravatar_url(self.email)
-        else:
-            if os.path.exists(self.avatar_image.file.name):
-                return self.avatar_image
-            else:
-                return self.get_default_avatar_image()
-
-        return UserProfile.get_default_avatar_image()
+        return (settings.CDN_URL + 'avatars/{0}').format(self.id)
 
     def get_profile_url(self):
         return '/user/%s' % (self.slug)

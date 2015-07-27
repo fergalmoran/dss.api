@@ -1,7 +1,10 @@
 from allauth.socialaccount.models import SocialAccount
+from azure.storage import BlobService
 from django.core.files.base import ContentFile
 from django.core.management.base import NoArgsCommand
 from requests import request, ConnectionError
+from dss import storagesettings
+
 from spa.models.userprofile import UserProfile
 
 
@@ -12,10 +15,16 @@ def save_image(profile, url):
     except ConnectionError:
         pass
     else:
-        profile.avatar_image.save(u'',
-                                  ContentFile(response.content),
-                                  save=False)
-        profile.save()
+        service = BlobService(
+            account_name=storagesettings.AZURE_ACCOUNT_NAME,
+            account_key=storagesettings.AZURE_ACCOUNT_KEY)
+
+        service.put_block_blob_from_bytes(
+            'avatars',
+            profile.id,
+            response.content,
+            x_ms_blob_content_type=response.headers['content-type']
+        )
 
 
 class Command(NoArgsCommand):
