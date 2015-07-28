@@ -17,9 +17,8 @@ from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP
     HTTP_200_OK, HTTP_204_NO_CONTENT
 
 from api import serializers
-from core.utils.cdn import upload_to_azure
 from dss import settings
-from core.tasks import create_waveform_task, archive_mix_task
+from spa.tasks import create_waveform_task, archive_mix_task
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
 from spa.models.mix import Mix

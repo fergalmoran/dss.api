@@ -3,7 +3,6 @@ import os
 import mimetypes
 from datetime import timedelta
 from django.core.urlresolvers import reverse_lazy
-import djcelery
 from django.conf import global_settings
 
 from utils import here
@@ -106,7 +105,6 @@ INSTALLED_APPS = (
     #'django_facebook',
     'django_extensions',
     'django_gravatar',
-    'djcelery',
     'corsheaders',
     'sorl.thumbnail',
     'spa',
