@@ -37,7 +37,8 @@ def archive_mix_task(in_file, filetype, uid):
     try:
         upload_to_azure(in_file, filetype, uid)
     except Exception, ex:
-        print "Unable to upload: %s".format(ex.message)
+        print "Unable to upload: {0}".format(ex.message)
+
 
 @task
 def update_geo_info_task(ip_address, profile_id):
