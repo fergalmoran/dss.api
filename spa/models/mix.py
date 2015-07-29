@@ -1,8 +1,7 @@
-import os
 import rfc822
-import urlparse
-from django.utils.encoding import smart_str
 
+import os
+from django.utils.encoding import smart_str
 from sorl.thumbnail import get_thumbnail
 from django.contrib.sites.models import Site
 from django.db import models
@@ -19,8 +18,7 @@ from dss import settings, localsettings
 from spa.models.userprofile import UserProfile
 from spa.models.basemodel import BaseModel
 from core.utils.file import generate_save_file_name
-from PIL import Image
-import glob
+from core.utils import cdn
 
 
 class Engine(Engine):
@@ -104,7 +102,7 @@ class Mix(BaseModel):
 
         self.clean_image('mix_image', Mix)
         # Check for the unlikely event that the waveform has been generated
-        if os.path.isfile(self.get_waveform_path()):
+        if cdn.file_exists('{0}{1}.png'.format(localsettings.WAVEFORM_URL, self.uid)):
             self.waveform_generated = True
             try:
                 self.duration = mp3_length(self.get_absolute_path())

@@ -18,7 +18,7 @@ from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP
 
 from api import serializers
 from dss import settings
-from spa.tasks import create_waveform_task, archive_mix_task
+from spa.tasks import create_waveform_task, upload_to_cdn_task
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
 from spa.models.mix import Mix
@@ -179,12 +179,18 @@ class PartialMixUploadView(views.APIView):
 
                 # Chain the waveform & archive tasks together
                 # Probably not the best place for them but will do for now
-                # First argument to archive_mix_task is not specified as it is piped from create_waveform_task
+                # First argument to upload_to_cdn_task is not specified as it is piped from create_waveform_task
 
                 logger.debug("Processing input_file: {0}".format(input_file))
                 logger.debug("Connecting to broker: {0}".format(settings.BROKER_URL))
+
+                from celery import group
                 (create_waveform_task.s(input_file, uid) |
-                 archive_mix_task.s(filetype='mp3', uid=uid)).delay()
+                    group(
+                        upload_to_cdn_task.s(filetype='mp3', uid=uid, container_name='mixes'),
+                        upload_to_cdn_task.s(filetype='png', uid=uid, container_name='waveforms')
+                    )
+                 ).delay()
                 logger.debug("Waveform task started")
 
             except Exception, ex:

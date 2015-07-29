@@ -8,13 +8,13 @@ from libcloud.storage.types import Provider
 from libcloud.storage.providers import get_driver
 
 
-def upload_to_azure(in_file, filetype, uid):
+def upload_to_azure(in_file, filetype, uid, container_name=settings.AZURE_CONTAINER):
     if os.path.isfile(in_file):
         print "Uploading file for: %s" % in_file
         file_name = "%s.%s" % (uid, filetype)
         cls = get_driver(Provider.AZURE_BLOBS)
         driver = cls(settings.AZURE_ACCOUNT_NAME, settings.AZURE_ACCOUNT_KEY)
-        container = driver.get_container(container_name=settings.AZURE_CONTAINER)
+        container = driver.get_container(container_name)
 
         with open(in_file, 'rb') as iterator:
             obj = driver.upload_object_via_stream(
@@ -47,3 +47,13 @@ def set_azure_details(blob_name, download_name):
         print "No blob found for: %s" % download_name
     except Exception, ex:
         print "Error processing blob %s: %s" % (download_name, ex.message)
+
+def file_exists(url):
+    import httplib
+    from urlparse import urlparse
+    p = urlparse(url)
+    c = httplib.HTTPConnection(p.netloc)
+    c.request("HEAD", p.path)
+
+    r = c.getresponse()
+    return r.status == 200
