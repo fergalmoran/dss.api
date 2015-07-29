@@ -12,6 +12,7 @@ RUN mkdir /files/tmp
 WORKDIR /code
 ADD requirements.txt /code/
 RUN pip install -r requirements.txt
+RUN apt-get update && apt-get install -y sox lame libboost-program-options-dev libsox-fmt-mp3
 ADD . /code/
 
 RUN adduser --disabled-password --gecos '' djworker
