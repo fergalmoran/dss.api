@@ -17,6 +17,7 @@ django-dbbackup
 django-user-agents
 south
 redis
+django-celery
 
 sorl-thumbnail
 

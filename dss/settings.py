@@ -107,6 +107,7 @@ INSTALLED_APPS = (
     'django_gravatar',
     'corsheaders',
     'sorl.thumbnail',
+    'djcelery',
     'spa',
     'gunicorn',
     'spa.signals',
