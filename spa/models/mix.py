@@ -166,10 +166,13 @@ class Mix(BaseModel):
 
     def get_image_url(self, size='200x200', default=''):
         try:
-            return "{0}{1}".format(settings.MIXIMAGE_URL, os.path.basename(self.mix_image.name))
+            filename = os.path.basename(self.mix_image.name)
+            if cdn.file_exists('{0}{1}'.format(localsettings.MIXIMAGE_URL, filename)):
+                return "{0}{1}".format(settings.MIXIMAGE_URL, filename)
         except Exception, ex:
             self.logger.exception(ex)
-            return super(Mix, self).get_image_url(self.mix_image, settings.DEFAULT_TRACK_IMAGE)
+
+        return super(Mix, self).get_image_url(self.mix_image, settings.DEFAULT_TRACK_IMAGE)
 
     def get_stream_url(self):
         if self.archive_path in [None, '']:
