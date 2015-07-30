@@ -166,15 +166,10 @@ class Mix(BaseModel):
 
     def get_image_url(self, size='200x200', default=''):
         try:
-            if self.mix_image.name and self.mix_image.storage.exists(self.mix_image.name):
-                ret = get_thumbnail(self.mix_image, size, crop='center')
-                return "%s/%s" % (settings.MEDIA_URL, ret.name)
-            else:
-                return self.user.get_sized_avatar_image(170, 170)
+            return "{0}{1}".format(settings.MIXIMAGE_URL, os.path.basename(self.mix_image.name))
         except Exception, ex:
-            pass
-
-        return super(Mix, self).get_image_url(self.mix_image, settings.DEFAULT_TRACK_IMAGE)
+            self.logger.exception(ex)
+            return super(Mix, self).get_image_url(self.mix_image, settings.DEFAULT_TRACK_IMAGE)
 
     def get_stream_url(self):
         if self.archive_path in [None, '']:

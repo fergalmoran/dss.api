@@ -48,6 +48,7 @@ def set_azure_details(blob_name, download_name):
     except Exception, ex:
         print "Error processing blob %s: %s" % (download_name, ex.message)
 
+
 def file_exists(url):
     import httplib
     from urlparse import urlparse
@@ -57,3 +58,18 @@ def file_exists(url):
 
     r = c.getresponse()
     return r.status == 200
+
+
+def enumerate_objects(container):
+    blob_service = BlobService(AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY)
+    blobs = blob_service.list_blobs(container)
+    items = []
+    for blob in blobs:
+        items.append(blob.name)
+
+    return items
+
+
+def delete_object(container, name):
+    blob_service = BlobService(AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY)
+    blob_service.delete_blob(container, name)

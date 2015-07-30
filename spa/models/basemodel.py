@@ -10,7 +10,7 @@ from dss import localsettings, settings
 
 
 class BaseModel(models.Model):
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger('dss')
 
     object_created = models.DateTimeField(auto_now_add=True, default=datetime.now())
     object_updated = models.DateTimeField(auto_now=True, default=datetime.now(), db_index=True)
