@@ -33,7 +33,7 @@ class BaseModel(models.Model):
     def get_image_url(self, image, default):
         try:
             if os.path.isfile(image.path):
-                ret = "{0}/{1}/{2}".format(settings.STATIC_URL, settings.MEDIA_URL, image)
+                ret = "{0}/{1}".format(settings.MEDIA_URL, image)
                 return url.urlclean(ret)
         except Exception, ex:
             pass
