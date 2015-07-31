@@ -1,4 +1,3 @@
-import shutil
 from celery.task import task
 import os
 import logging
