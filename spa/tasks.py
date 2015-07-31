@@ -3,7 +3,7 @@ from celery.task import task
 import os
 import logging
 
-from core.utils.cdn import upload_to_azure
+from core.utils import cdn
 from spa.signals import waveform_generated_signal
 
 try:
@@ -15,6 +15,7 @@ from core.utils.waveform import generate_waveform
 from dss import settings
 
 logger = logging.getLogger('dss')
+
 
 @task(time_limit=3600)
 def create_waveform_task(in_file, uid):
@@ -34,10 +35,12 @@ def upload_to_cdn_task(in_file, filetype, uid, container_name):
     source_file = os.path.join(settings.CACHE_ROOT, '{0}/{1}.{2}'.format(container_name, uid, filetype))
     logger.info("Sending {0} to azure".format(uid))
     try:
-        upload_to_azure(source_file, filetype, uid, container_name)
+        file_name = "{0}.{1}".format(uid, filetype)
+        cdn.upload_file_to_azure(source_file, file_name, container_name)
         return source_file
     except Exception, ex:
         logger.error("Unable to upload: {0}".format(ex.message))
+
 
 @task
 def update_geo_info_task(ip_address, profile_id):

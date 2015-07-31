@@ -29,7 +29,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': DATABASE_NAME,
-        'ADMINUSER': 'postgres',
         'USER': DATABASE_USER,
         'PASSWORD': DATABASE_PASSWORD,
         'HOST': DATABASE_HOST,
@@ -207,7 +206,8 @@ DEFAULT_USER_TITLE = 'Just another DSS lover'
 
 SITE_NAME = 'Deep South Sounds'
 THUMBNAIL_PREFIX = '_tn/'
-THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+
+# THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': timedelta(seconds=900),

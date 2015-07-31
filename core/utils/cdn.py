@@ -1,32 +1,34 @@
 import os
+
 from azure import WindowsAzureMissingResourceError
 from azure.storage import BlobService
-from core.utils.url import url_path_join
-from dss import settings
-from dss.storagesettings import AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_CONTAINER
 from libcloud.storage.types import Provider
 from libcloud.storage.providers import get_driver
 
+from dss import settings
+from dss.storagesettings import AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_CONTAINER
 
-def upload_to_azure(in_file, filetype, uid, container_name=settings.AZURE_CONTAINER):
+
+def upload_file_to_azure(in_file, file_name, container_name=settings.AZURE_CONTAINER):
     if os.path.isfile(in_file):
         print "Uploading file for: %s" % in_file
-        file_name = "%s.%s" % (uid, filetype)
-        cls = get_driver(Provider.AZURE_BLOBS)
-        driver = cls(settings.AZURE_ACCOUNT_NAME, settings.AZURE_ACCOUNT_KEY)
-        container = driver.get_container(container_name)
-
         with open(in_file, 'rb') as iterator:
-            obj = driver.upload_object_via_stream(
-                iterator=iterator,
-                container=container,
-                object_name=file_name
-            )
-            print "Uploaded"
-            return obj
+            return upload_stream_to_azure(iterator, file_name, container_name=container_name)
     else:
         print "infile not found"
     return None
+
+
+def upload_stream_to_azure(iterator, file_name, container_name=settings.AZURE_CONTAINER):
+    cls = get_driver(Provider.AZURE_BLOBS)
+    driver = cls(settings.AZURE_ACCOUNT_NAME, settings.AZURE_ACCOUNT_KEY)
+    container = driver.get_container(container_name)
+    obj = driver.upload_object_via_stream(
+        iterator=iterator,
+        container=container,
+        object_name=file_name
+    )
+    return obj
 
 
 def set_azure_details(blob_name, download_name):

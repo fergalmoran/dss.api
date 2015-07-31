@@ -1,6 +1,6 @@
-from django.core.management.base import NoArgsCommand, BaseCommand
+from django.core.management.base import BaseCommand
 
-from core.utils.cdn import upload_to_azure
+from core.utils import cdn
 from spa.models import Mix
 
 
@@ -18,7 +18,7 @@ class Command(BaseCommand):
             mixes = Mix.objects.filter(archive_updated=False)
             for mix in mixes:
                 blob_name, download_name = mix.get_cdn_details()
-                upload_to_azure(blob_name, "mp3", download_name)
+                cdn.upload_file_to_azure(blob_name, "mp3", download_name)
                 mix.archive_updated = True
                 mix.save()
 

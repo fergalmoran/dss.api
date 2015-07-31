@@ -3,7 +3,7 @@ import os
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.files.base import ContentFile
-from django.core.files.storage import FileSystemStorage
+from django.core.files.storage import FileSystemStorage, default_storage
 from django.db.models import Count
 from django.http.response import HttpResponse
 from rest_framework import viewsets
@@ -17,6 +17,7 @@ from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP
     HTTP_200_OK, HTTP_204_NO_CONTENT
 
 from api import serializers
+from core.utils import cdn
 from dss import settings
 from spa.tasks import create_waveform_task, upload_to_cdn_task
 from spa.models.genre import Genre
@@ -120,10 +121,10 @@ class AttachedImageUploadView(views.APIView):
     parser_classes = (FileUploadParser,)
 
     def post(self, request):
-        if request.FILES['file'] is None or request.data.get('data') is None:
+        if request.data['file'] is None or request.data.get('data') is None:
             return Response(status=HTTP_400_BAD_REQUEST)
 
-        file_obj = request.FILES['file']
+        file_obj = request.data['file']
         file_hash = request.data.get('data')
         try:
             mix = Mix.objects.get(uid=file_hash)
@@ -133,6 +134,8 @@ class AttachedImageUploadView(views.APIView):
                 return Response(HTTP_202_ACCEPTED)
         except ObjectDoesNotExist:
             return Response(status=HTTP_404_NOT_FOUND)
+        except Exception, ex:
+            logger.exception(ex)
 
         return Response(status=HTTP_401_UNAUTHORIZED)
 
@@ -186,10 +189,10 @@ class PartialMixUploadView(views.APIView):
 
                 from celery import group
                 (create_waveform_task.s(input_file, uid) |
-                    group(
-                        upload_to_cdn_task.s(filetype='mp3', uid=uid, container_name='mixes'),
-                        upload_to_cdn_task.s(filetype='png', uid=uid, container_name='waveforms')
-                    )
+                 group(
+                     upload_to_cdn_task.s(filetype='mp3', uid=uid, container_name='mixes'),
+                     upload_to_cdn_task.s(filetype='png', uid=uid, container_name='waveforms')
+                 )
                  ).delay()
                 logger.debug("Waveform task started")
 
