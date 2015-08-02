@@ -18,7 +18,7 @@ def _waveform_generated_callback(sender, **kwargs):
     print "Updating model with waveform"
     try:
         uid = kwargs['uid']
-        path = kwargs['uid']
+        path = kwargs['path']
         if uid is not None:
             mix = Mix.objects.get(uid=uid)
             if mix is not None:
