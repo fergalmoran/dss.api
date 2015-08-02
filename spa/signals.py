@@ -18,11 +18,12 @@ def _waveform_generated_callback(sender, **kwargs):
     print "Updating model with waveform"
     try:
         uid = kwargs['uid']
+        path = kwargs['uid']
         if uid is not None:
             mix = Mix.objects.get(uid=uid)
             if mix is not None:
                 mix.waveform_generated = True
-                mix.duration = mp3_length(mix.get_absolute_path())
+                mix.duration = mp3_length(path)
                 mix.save(update_fields=["waveform_generated", "duration"])
 
     except ObjectDoesNotExist:

@@ -23,7 +23,7 @@ def create_waveform_task(in_file, uid):
     generate_waveform(in_file, out_file)
     if os.path.isfile(out_file):
         logger.info("Waveform generated successfully")
-        waveform_generated_signal.send(sender=None, uid=uid)
+        waveform_generated_signal.send(sender=None, uid=uid, path=in_file)
         return out_file
     else:
         logger.error("Outfile is missing")
