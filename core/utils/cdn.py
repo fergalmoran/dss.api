@@ -31,13 +31,13 @@ def upload_stream_to_azure(iterator, file_name, container_name=settings.AZURE_CO
     return obj
 
 
-def set_azure_details(blob_name, download_name):
+def set_azure_details(blob_name, download_name, container_name=AZURE_CONTAINER):
     try:
         blob_service = BlobService(AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY)
-        blob = blob_service.get_blob(AZURE_CONTAINER, blob_name)
+        blob = blob_service.get_blob(container_name, blob_name)
         if blob:
             blob_service.set_blob_properties(
-                AZURE_CONTAINER,
+                container_name,
                 blob_name,
                 x_ms_blob_content_type='application/octet-stream',
                 x_ms_blob_content_disposition='attachment;filename="{0}"'.format(download_name)

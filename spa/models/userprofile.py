@@ -139,6 +139,9 @@ class UserProfile(BaseModel):
         except Exception, e:
             self.logger.error("Unable to create profile slug: %s", e.message)
 
+    def get_session_id(self):
+        return str(self.id)
+
     def toggle_favourite(self, mix, value):
         try:
             if value:

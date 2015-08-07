@@ -6,9 +6,10 @@ from rest_framework.views import APIView
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from api import views, auth, helpers
-from api.auth import FacebookView
+from api.auth import SocialLoginHandler
 from rest_framework.views import status
 from rest_framework.response import Response
+from core.realtime import activity
 
 router = DefaultRouter()  # trailing_slash=True)
 
@@ -27,6 +28,11 @@ class DebugView(APIView):
     authentication_classes = (JSONWebTokenAuthentication, )
 
     def post(self, request, format=None):
+        try:
+            activity.post_activity('user:message', request.user.userprofile.get_session_id(), 'Hello Sailor')
+        except Exception, ex:
+            print ex.message
+
         return Response({
             'status': request.user.first_name,
             'message': 'Sailor'
@@ -43,7 +49,7 @@ urlpatterns = patterns(
     url(r'_search/$', views.SearchResultsView.as_view()),
     url(r'^', include(router.urls)),
 
-    url(r'^_login/', FacebookView.as_view()),
+    url(r'^_login/', SocialLoginHandler.as_view()),
     url(r'^token-refresh/', 'rest_framework_jwt.views.refresh_jwt_token'),
 
     # url(r'^_tr/', RefreshToken.as_view()),

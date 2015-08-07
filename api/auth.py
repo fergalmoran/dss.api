@@ -26,7 +26,7 @@ def auth_by_token(request, backend):
     return user if user else None
 
 
-class FacebookView(APIView):
+class SocialLoginHandler(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
@@ -57,7 +57,8 @@ class FacebookView(APIView):
                     )
 
                 response_data = {
-                    'token': jwt_encode_handler(payload)
+                    'token': jwt_encode_handler(payload),
+                    'session': user.userprofile.get_session_id()
                 }
 
                 return Response(response_data)

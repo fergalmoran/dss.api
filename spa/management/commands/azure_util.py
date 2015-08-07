@@ -5,16 +5,21 @@ from core.utils import cdn
 from spa.models import Mix
 
 
+def _update_azure_headers():
+    ms = Mix.objects.all()
+    for m in ms:
+        cdn.set_azure_details('{0}.mp3'.format(m.uid), 'Deep South Sounds - {0}'.format(m.title), 'mixes')
+
 def _check_missing_mixes():
     ms = Mix.objects.all()
     found = 0
     for m in ms:
         url = m.get_download_url()
         if not cdn.file_exists(url):
-            file = '/mnt/dev/deepsouthsounds.com/media/mixes/{0}.mp3'.format(m.uid)
+            file = '/mnt/dev/working/Dropbox/Development/deepsouthsounds.com/media/mixes/{0}.mp3'.format(m.uid)
             if os.path.isfile(file):
                 print '* {0}'.format(file)
-                cdn.upload_file_to_azure(file, '{0}.mp3'.format(m.uid), 'mixes')
+                #cdn.upload_file_to_azure(file, '{0}.mp3'.format(m.uid), 'mixes')
                 found += 1
             else:
                 found += 1
@@ -49,5 +54,7 @@ class Command(BaseCommand):
             print "Commands are \n\t_check_missing_mixes"
         elif args[0] == 'check_missing_mix':
             _check_missing_mixes()
+        elif args[0] == 'update_azure_headers':
+            _update_azure_headers()
         else:
             print "Commands are \n\tcheck_missing_mix"
