@@ -3,7 +3,7 @@ import os
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.core.files.base import ContentFile
-from django.core.files.storage import FileSystemStorage, default_storage
+from django.core.files.storage import FileSystemStorage
 from django.db.models import Count
 from django.http.response import HttpResponse
 from rest_framework import viewsets
@@ -17,9 +17,8 @@ from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP
     HTTP_200_OK, HTTP_204_NO_CONTENT
 
 from api import serializers
-from core.utils import cdn
 from dss import settings
-from spa.tasks import create_waveform_task, upload_to_cdn_task
+from spa import tasks
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
 from spa.models.mix import Mix
@@ -187,13 +186,13 @@ class PartialMixUploadView(views.APIView):
                 logger.debug("Processing input_file: {0}".format(input_file))
                 logger.debug("Connecting to broker: {0}".format(settings.BROKER_URL))
 
-                from celery import group
-                (create_waveform_task.s(input_file, uid) |
-                 group(
-                     upload_to_cdn_task.s(filetype='mp3', uid=uid, container_name='mixes'),
-                     upload_to_cdn_task.s(filetype='png', uid=uid, container_name='waveforms')
-                 )
-                 ).delay()
+                from celery import group, chain
+                (
+                    tasks.create_waveform_task.s(input_file, uid) |
+                    tasks.upload_to_cdn_task.subtask(('mp3', uid, 'mixes'), immutable=True) |
+                    tasks.upload_to_cdn_task.subtask(('png', uid, 'waveforms'), immutable=True) |
+                    tasks.notify_subscriber.subtask((request.user.userprofile.get_session_id(), uid), immutable=True)
+                ).delay()
                 logger.debug("Waveform task started")
 
             except Exception, ex:

@@ -1,6 +1,7 @@
 from celery.task import task
 import os
 import logging
+from core.realtime import activity
 
 from core.utils import cdn
 from spa.signals import waveform_generated_signal
@@ -30,7 +31,7 @@ def create_waveform_task(in_file, uid):
 
 
 @task(timse_limit=3600)
-def upload_to_cdn_task(in_file, filetype, uid, container_name):
+def upload_to_cdn_task(filetype, uid, container_name):
     source_file = os.path.join(settings.CACHE_ROOT, '{0}/{1}.{2}'.format(container_name, uid, filetype))
     logger.info("Sending {0} to azure".format(uid))
     try:
@@ -53,3 +54,9 @@ def update_geo_info_task(ip_address, profile_id):
     except Exception, e:
         logger.exception(e)
         pass
+
+
+@task
+def notify_subscriber(session_id, uid):
+    if session_id is not None:
+        activity.post_activity('user:message', session_id, {'type': 'waveform', 'target': uid})

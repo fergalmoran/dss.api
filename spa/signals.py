@@ -4,6 +4,7 @@ from django.db.models.signals import post_save, pre_save, m2m_changed
 from django.dispatch import Signal, receiver
 
 from django.contrib.auth.models import User
+from core.realtime import activity
 
 from core.utils.audio.mp3 import mp3_length
 from spa.models.activity import ActivityFollow
