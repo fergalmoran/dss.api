@@ -463,6 +463,8 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
             'from_user',
             'verb',
             'target',
+            'target_desc',
+            'type',
             'date',
             'accepted_date',
         )
