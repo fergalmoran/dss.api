@@ -253,7 +253,10 @@ class NotificationViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated():
             raise PermissionDenied("Not allowed")
 
-        return Notification.objects.filter(to_user=user).order_by('-date')[0:5]
+        return Notification.objects.filter(to_user=user).order_by('-date')
+
+    def perform_update(self, serializer):
+        return super(NotificationViewSet, self).perform_update(serializer)
 
 
 class GenreViewSet(viewsets.ModelViewSet):

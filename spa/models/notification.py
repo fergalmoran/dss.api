@@ -29,8 +29,7 @@ class Notification(BaseModel):
     def get_notification_url(self):
         return '/api/v1/notification/%s' % self.id
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def __save(self, force_insert=False, force_update=False, using=None, update_fields=None):
 
         if self._activity.should_send_email():
             self.send_notification_email()
@@ -81,3 +80,6 @@ class Notification(BaseModel):
 
         except mandrill.Error, e:  # Mandrill errors are thrown as exceptions
             print 'A mandrill error occurred: %s - %s' % (e.__class__, e)
+
+    def get_from_user(self):
+        return UserProfile.get_user(self.from_user)

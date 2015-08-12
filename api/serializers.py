@@ -449,9 +449,11 @@ class ActivitySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class NotificationSerializer(serializers.HyperlinkedModelSerializer):
-    from_user = UserProfileSerializer(many=False, required=False)
-    display_name = serializers.SerializerMethodField(method_name='get_display_name')
-    avatar_image = serializers.SerializerMethodField(method_name='get_avatar_image')
+    from_user = InlineUserProfileSerializer(source='get_from_user', read_only=True)
+    notification_url = serializers.ReadOnlyField()
+    verb = serializers.ReadOnlyField()
+    target = serializers.ReadOnlyField()
+    date = serializers.ReadOnlyField()
 
     class Meta:
         model = Notification
@@ -459,10 +461,10 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
             'id',
             'notification_url',
             'from_user',
-            'display_name',
-            'avatar_image',
             'verb',
             'target',
+            'date',
+            'accepted_date',
         )
 
     def get_display_name(self, obj):
