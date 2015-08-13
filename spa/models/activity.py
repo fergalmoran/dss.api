@@ -70,6 +70,7 @@ class Activity(BaseModel):
             notification.type = self.get_object_type()
             notification.target = self.get_object_slug()
             notification.target_desc = self.get_object_name()
+            notification.date = self.date
 
             if accept:
                 notification.accepted_date = datetime.now()
