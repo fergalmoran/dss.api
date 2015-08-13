@@ -103,3 +103,5 @@ try:
     add_introspection_rules([], ['^spa\.models.fields\.MultiSelectField'])
 except ImportError:
     pass
+
+

@@ -4,6 +4,7 @@ from django.db.models.signals import post_save, pre_save, m2m_changed
 from django.dispatch import Signal, receiver
 
 from django.contrib.auth.models import User
+from core.realtime import activity
 
 from core.utils.audio.mp3 import mp3_length
 from spa.models.activity import ActivityFollow
@@ -18,11 +19,12 @@ def _waveform_generated_callback(sender, **kwargs):
     print "Updating model with waveform"
     try:
         uid = kwargs['uid']
+        path = kwargs['path']
         if uid is not None:
             mix = Mix.objects.get(uid=uid)
             if mix is not None:
                 mix.waveform_generated = True
-                mix.duration = mp3_length(mix.get_absolute_path())
+                mix.duration = mp3_length(path)
                 mix.save(update_fields=["waveform_generated", "duration"])
 
     except ObjectDoesNotExist:

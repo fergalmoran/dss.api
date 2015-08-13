@@ -1,21 +1,42 @@
+import urllib2
+
 from allauth.socialaccount.models import SocialAccount
-from django.core.files.base import ContentFile
+from azure.storage import BlobService
+from django.core.files.base import File
+from django.core.files.temp import NamedTemporaryFile
 from django.core.management.base import NoArgsCommand
 from requests import request, ConnectionError
+
+from dss import storagesettings
 from spa.models.userprofile import UserProfile
 
 
 def save_image(profile, url):
+
+    img = NamedTemporaryFile(delete=True)
+    img.write(urllib2.urlopen(url).read())
+
+    img.flush()
+    profile.avatar_image.save(str(profile.id), File(img))
+
+
+def save_image_to_azure(profile, url):
     try:
         response = request('GET', url)
         response.raise_for_status()
     except ConnectionError:
         pass
     else:
-        profile.avatar_image.save(u'',
-                                  ContentFile(response.content),
-                                  save=False)
-        profile.save()
+        service = BlobService(
+            account_name=storagesettings.AZURE_ACCOUNT_NAME,
+            account_key=storagesettings.AZURE_ACCOUNT_KEY)
+
+        service.put_block_blob_from_bytes(
+            'avatars',
+            profile.id,
+            response.content,
+            x_ms_blob_content_type=response.headers['content-type']
+        )
 
 
 class Command(NoArgsCommand):
@@ -31,6 +52,7 @@ class Command(NoArgsCommand):
                             if provider_account:
                                 avatar_url = provider_account.get_avatar_url()
                                 save_image(user, avatar_url)
+                                user.save()
                         except Exception, ex:
                             print ex.message
                     else:

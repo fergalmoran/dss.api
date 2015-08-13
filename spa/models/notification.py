@@ -13,12 +13,10 @@ class Notification(BaseModel):
     from_user = models.ForeignKey('spa.UserProfile', related_name='notifications', null=True, blank=True)
     date = models.DateTimeField(auto_now_add=True)
 
-    notification_text = models.CharField(max_length=1024)
-    notification_html = models.CharField(max_length=1024)
-    notification_url = models.URLField(null=True)
-
     verb = models.CharField(max_length=200, null=True)
+    type = models.CharField(max_length=200, null=True)
     target = models.CharField(max_length=200, null=True)
+    target_desc = models.CharField(max_length=200, null=True)
 
     accepted_date = models.DateTimeField(null=True)
 
@@ -29,8 +27,7 @@ class Notification(BaseModel):
     def get_notification_url(self):
         return '/api/v1/notification/%s' % self.id
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
+    def __save(self, force_insert=False, force_update=False, using=None, update_fields=None):
 
         if self._activity.should_send_email():
             self.send_notification_email()
@@ -81,3 +78,6 @@ class Notification(BaseModel):
 
         except mandrill.Error, e:  # Mandrill errors are thrown as exceptions
             print 'A mandrill error occurred: %s - %s' % (e.__class__, e)
+
+    def get_from_user(self):
+        return UserProfile.get_user(self.from_user)

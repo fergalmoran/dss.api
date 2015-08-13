@@ -17,9 +17,8 @@ from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP
     HTTP_200_OK, HTTP_204_NO_CONTENT
 
 from api import serializers
-from core.utils.cdn import upload_to_azure
 from dss import settings
-from core.tasks import create_waveform_task, archive_mix_task
+from spa import tasks
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
 from spa.models.mix import Mix
@@ -27,7 +26,7 @@ from spa.models.comment import Comment
 from spa.models.notification import Notification
 from spa.models.userprofile import UserProfile
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('spa')
 
 
 class AnonymousWriteUserDelete(BasePermission):
@@ -121,10 +120,10 @@ class AttachedImageUploadView(views.APIView):
     parser_classes = (FileUploadParser,)
 
     def post(self, request):
-        if request.FILES['file'] is None or request.data.get('data') is None:
+        if request.data['file'] is None or request.data.get('data') is None:
             return Response(status=HTTP_400_BAD_REQUEST)
 
-        file_obj = request.FILES['file']
+        file_obj = request.data['file']
         file_hash = request.data.get('data')
         try:
             mix = Mix.objects.get(uid=file_hash)
@@ -134,6 +133,8 @@ class AttachedImageUploadView(views.APIView):
                 return Response(HTTP_202_ACCEPTED)
         except ObjectDoesNotExist:
             return Response(status=HTTP_404_NOT_FOUND)
+        except Exception, ex:
+            logger.exception(ex)
 
         return Response(status=HTTP_401_UNAUTHORIZED)
 
@@ -161,26 +162,43 @@ class PartialMixUploadView(views.APIView):
     # noinspection PyBroadException
     def post(self, request):
         try:
+            logger.info("Received post file")
             uid = request.META.get('HTTP_UPLOAD_HASH')
-            in_file = request.FILES['file'] if request.FILES else None
+            in_file = request.data['file'] if request.data else None
             file_name, extension = os.path.splitext(in_file.name)
 
+            logger.info("Constructing storage")
             file_storage = FileSystemStorage(location=os.path.join(settings.CACHE_ROOT, "mixes"))
             cache_file = file_storage.save("%s%s" % (uid, extension), ContentFile(in_file.read()))
             response = 'File creation in progress'
 
+            logger.info("Storage constructed")
+
             try:
+                logger.debug("Received input file")
+                logger.debug("Storage is {0}".format(file_storage.base_location))
                 input_file = os.path.join(file_storage.base_location, cache_file)
 
                 # Chain the waveform & archive tasks together
                 # Probably not the best place for them but will do for now
-                # First argument to archive_mix_task is not specified as it is piped from create_waveform_task
-                (create_waveform_task.s(input_file, uid) |
-                 archive_mix_task.s(filetype='mp3', uid=uid)).delay()
+                # First argument to upload_to_cdn_task is not specified as it is piped from create_waveform_task
 
-            except Exception:
+                logger.debug("Processing input_file: {0}".format(input_file))
+                logger.debug("Connecting to broker: {0}".format(settings.BROKER_URL))
+
+                from celery import group, chain
+                (
+                    tasks.create_waveform_task.s(input_file, uid) |
+                    tasks.upload_to_cdn_task.subtask(('mp3', uid, 'mixes'), immutable=True) |
+                    tasks.upload_to_cdn_task.subtask(('png', uid, 'waveforms'), immutable=True) |
+                    tasks.notify_subscriber.subtask((request.user.userprofile.get_session_id(), uid), immutable=True)
+                ).delay()
+                logger.debug("Waveform task started")
+
+            except Exception, ex:
+                logger.exception(ex)
                 response = \
-                    'Unable to connect to waveform generation task, there may be a delay in getting your mix online'
+                    'Unable to connect to rabbitmq, there may be a delay in getting your mix online'
 
             file_dict = {
                 'response': response,
@@ -209,11 +227,12 @@ class ActivityViewSet(viewsets.ModelViewSet):
 
         ret = ActivityPlay.objects.filter(mix__user=user).order_by("-id")
 
-        if len(ret) >0:
-            logger.debug("Activity returned: %s".format(ret[0].get_object_slug()))
+        if len(ret) > 0:
+            logger.debug("Activity returned: {0}".format(ret[0].get_object_slug()))
             return ret
         else:
             return []
+
 
 class DownloadItemView(views.APIView):
     def get(self, request, *args, **kwargs):
@@ -234,7 +253,10 @@ class NotificationViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated():
             raise PermissionDenied("Not allowed")
 
-        return Notification.objects.filter(to_user=user).order_by('-date')[0:5]
+        return Notification.objects.filter(to_user=user).order_by('-date')
+
+    def perform_update(self, serializer):
+        return super(NotificationViewSet, self).perform_update(serializer)
 
 
 class GenreViewSet(viewsets.ModelViewSet):

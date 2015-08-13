@@ -1,5 +1,6 @@
 from calendar import timegm
 import datetime
+import logging
 from rest_framework import permissions
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
@@ -15,11 +16,9 @@ from rest_framework import parsers
 from social.apps.django_app.utils import psa
 from dss import settings
 
-
+logger = logging.getLogger('spa')
 @psa()
 def auth_by_token(request, backend):
-    token = request.data.get('access_token')
-    user = request.user
     user = request.backend.do_auth(
         access_token=request.data.get('access_token')
     )
@@ -27,7 +26,7 @@ def auth_by_token(request, backend):
     return user if user else None
 
 
-class FacebookView(APIView):
+class SocialLoginHandler(APIView):
     permission_classes = (permissions.AllowAny,)
 
     def post(self, request, format=None):
@@ -38,9 +37,10 @@ class FacebookView(APIView):
             try:
                 user = auth_by_token(request, backend)
             except Exception, e:
+                logger.exception(e)
                 return Response({
                     'status': 'Bad request',
-                    'message': 'Could not authenticate with the provided token' if settings.DEBUG else e.message
+                    'message': e.message
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             if user:
@@ -57,7 +57,8 @@ class FacebookView(APIView):
                     )
 
                 response_data = {
-                    'token': jwt_encode_handler(payload)
+                    'token': jwt_encode_handler(payload),
+                    'session': user.userprofile.get_session_id()
                 }
 
                 return Response(response_data)

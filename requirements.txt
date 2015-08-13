@@ -1,4 +1,4 @@
-Django>=1.6,<1.7
+Django==1.6.11
 django-extensions
 django-sendfile
 Werkzeug
@@ -9,14 +9,15 @@ django-dirtyfields
 django-storages
 django-user-sessions
 django-cors-headers
-django-rest-swagger
+six==1.6.0
 django-filter
-django-grappelli
+django-grappelli==2.5.7
 django-model_utils
 django-dbbackup
 django-user-agents
 south
 redis
+django-celery
 
 sorl-thumbnail
 
@@ -26,15 +27,15 @@ git+git://github.com/tschellenbach/Django-facebook.git#django-facebook
 git+git://github.com/llazzaro/django-scheduler.git#django-scheduler
 git+git://github.com/omab/python-social-auth.git#egg=python-social-auth
 django-allauth
-django-tinymce
 apache-libcloud
 mandrill
 djrill
 
-djangorestframework
-djangorestframework-jwt
+celery
+
+djangorestframework==3.1.3
+djangorestframework-jwt==1.6.0
 drf-nested-routers
-django-celery
 pillow
 django-gravatar2
 

@@ -1,11 +1,9 @@
 import abc
-from django.contrib.auth.models import AnonymousUser, User
+from datetime import datetime
 
 from allauth.socialaccount.models import SocialToken
-from datetime import datetime
 from django.db import models
 from model_utils.managers import InheritanceManager
-
 from open_facebook import OpenFacebook
 
 from core.utils.url import wrap_full
@@ -62,27 +60,20 @@ class Activity(BaseModel):
             print ex.message
             pass
 
-    def create_notification(self):
+    def create_notification(self, accept=False):
         try:
             notification = Notification()
             notification.from_user = self.user
             notification.to_user = self.get_target_user()
-            notification.notification_text = "%s %s %s" % (
-                self.user.get_nice_name() if self.user is not None else "Anonymouse",
-                self.get_verb_past(),
-                self.get_object_name_for_notification())
 
-            notification.notification_html = "<a href='%s'>%s</a> %s <a href='%s'>%s</a>" % (
-                wrap_full(self.user.get_profile_url() if self.user is not None else ""),
-                self.user.get_nice_name() if self.user is not None else "Anonymouse",
-                self.get_verb_past(),
-                wrap_full(self.get_object_url()),
-                self.get_object_name_for_notification()
-            )
-
-            notification.notification_url = self.get_object_url()
             notification.verb = self.get_verb_past()
-            notification.target = self.get_object_name()
+            notification.type = self.get_object_type()
+            notification.target = self.get_object_slug()
+            notification.target_desc = self.get_object_name()
+
+            if accept:
+                notification.accepted_date = datetime.now()
+
             notification.save()
         except Exception, ex:
             print "Error creating activity notification: %s" % ex.message

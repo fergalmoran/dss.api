@@ -1,8 +1,8 @@
 # e Django settings for dss project.
 import os
 import mimetypes
+from datetime import timedelta
 from django.core.urlresolvers import reverse_lazy
-import djcelery
 from django.conf import global_settings
 
 from utils import here
@@ -29,7 +29,6 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': DATABASE_NAME,
-        'ADMINUSER': 'postgres',
         'USER': DATABASE_USER,
         'PASSWORD': DATABASE_PASSWORD,
         'HOST': DATABASE_HOST,
@@ -38,7 +37,6 @@ DATABASES = {
 import sys
 
 if 'test' in sys.argv or 'test_coverage' in sys.argv:
-    print "Testing"
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
 
 ROOT_URLCONF = 'dss.urls'
@@ -70,19 +68,13 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.core.context_processors.media',
     'django.core.context_processors.static',
     'django.contrib.auth.context_processors.auth',
-
-
-    # TODO: remove..
-    # `allauth` specific context processors
-    "allauth.account.context_processors.account",
-    "allauth.socialaccount.context_processors.socialaccount",
 )
 
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'user_sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -104,7 +96,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'user_sessions',
+    'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -112,17 +104,16 @@ INSTALLED_APPS = (
     #'django_facebook',
     'django_extensions',
     'django_gravatar',
-    'djcelery',
     'corsheaders',
     'sorl.thumbnail',
+    'djcelery',
     'spa',
-    'tinymce',
     'gunicorn',
     'spa.signals',
     'core',
     #'schedule',
     'django_user_agents',
-
+    'storages',
     'social.apps.django_app.default',
 
     # TODO: remove
@@ -138,7 +129,6 @@ INSTALLED_APPS = (
     'djrill',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_framework_swagger',
 )
 
 # where to redirect users to after logging in
@@ -147,7 +137,6 @@ LOGOUT_URL = reverse_lazy('home')
 
 FACEBOOK_APP_ID = '154504534677009'
 
-djcelery.setup_loader()
 
 AVATAR_STORAGE_DIR = MEDIA_ROOT + '/avatars/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
@@ -160,7 +149,7 @@ TASTYPIE_ALLOW_MISSING_SLASH = True
 SENDFILE_ROOT = os.path.join(MEDIA_ROOT, 'mixes')
 SENDFILE_URL = '/media/mixes'
 
-SESSION_ENGINE = 'user_sessions.backends.db'
+#SESSION_ENGINE = 'user_sessions.backends.db'
 
 mimetypes.add_type("text/xml", ".plist", False)
 
@@ -216,4 +205,12 @@ DEFAULT_USER_NAME = 'Anonymouse'
 DEFAULT_USER_TITLE = 'Just another DSS lover'
 
 SITE_NAME = 'Deep South Sounds'
-THUMBNAIL_PREFIX = 'cache/_tn/'
+THUMBNAIL_PREFIX = '_tn/'
+
+# THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=900),
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
+}

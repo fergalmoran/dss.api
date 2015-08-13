@@ -1,10 +1,11 @@
 from optparse import make_option
 import os
-from django.core.management.base import NoArgsCommand, BaseCommand
-from spa.management.commands import helpers
 
+from django.core.management.base import BaseCommand
+
+from spa.management.commands import helpers
 from spa.models.mix import Mix
-from core.tasks import create_waveform_task
+from spa.tasks import create_waveform_task
 
 
 class Command(BaseCommand):
@@ -40,7 +41,7 @@ class Command(BaseCommand):
                 return processed_file
 
         except Exception, ex:
-            print "Error generating waveform: %s" % ex.message
+            print "Error generating waveform: {0}".format(ex.message)
 
         return ""
 

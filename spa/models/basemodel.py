@@ -10,7 +10,7 @@ from dss import localsettings, settings
 
 
 class BaseModel(models.Model):
-    logger = logging.getLogger(__name__)
+    logger = logging.getLogger('dss')
 
     object_created = models.DateTimeField(auto_now_add=True, default=datetime.now())
     object_updated = models.DateTimeField(auto_now=True, default=datetime.now(), db_index=True)
@@ -33,11 +33,8 @@ class BaseModel(models.Model):
     def get_image_url(self, image, default):
         try:
             if os.path.isfile(image.path):
-                images_root = localsettings.IMAGE_URL if hasattr(localsettings,
-                                                                 'IMAGE_URL') else "%s" % settings.MEDIA_URL
-                ret = "%s/%s/%s" % (settings.STATIC_URL, images_root, image)
+                ret = "{0}/{1}".format(settings.MEDIA_URL, image)
                 return url.urlclean(ret)
-
         except Exception, ex:
             pass
 

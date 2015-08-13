@@ -9,13 +9,13 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^api/docs/', include('rest_framework_swagger.urls')),
-    url(r'^api/v2/', include('api.urls')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     (r'^grappelli/', include('grappelli.urls')),
     (r'^social/', include('spa.social.urls')),
+    (r'^arges/', include('spa.social.urls')),
+    url(r'', include('user_sessions.urls', 'user_sessions')),
+    url(r'^', include('api.urls')),
 )
-handler500 = 'spa.views.debug_500'
 
 if settings.DEBUG:
     from django.views.static import serve
