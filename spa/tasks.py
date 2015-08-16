@@ -59,4 +59,4 @@ def update_geo_info_task(ip_address, profile_id):
 @task
 def notify_subscriber(session_id, uid):
     if session_id is not None:
-        activity.post_activity('user:message', session_id, {'type': 'waveform', 'target': uid})
+        activity.post_activity('user:process', session_id, {'type': 'waveform', 'target': uid})

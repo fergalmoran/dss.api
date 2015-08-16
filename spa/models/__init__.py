@@ -15,3 +15,4 @@ from tracklist import Tracklist
 from purchaselink import PurchaseLink
 from release import Release
 from playlist import Playlist
+from message import Message

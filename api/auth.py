@@ -2,7 +2,6 @@ from calendar import timegm
 import datetime
 import logging
 from rest_framework import permissions
-from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.response import Response
 from rest_framework import renderers
 from rest_framework.authtoken.models import Token
@@ -14,9 +13,10 @@ from rest_framework_jwt.utils import jwt_payload_handler, jwt_encode_handler
 from rest_framework import parsers
 
 from social.apps.django_app.utils import psa
-from dss import settings
 
 logger = logging.getLogger('spa')
+
+
 @psa()
 def auth_by_token(request, backend):
     user = request.backend.do_auth(

@@ -2,8 +2,8 @@ from django.conf import settings
 import mandrill
 from django.db import models
 from django.template import loader, Context
+from core.realtime.activity import post_activity
 
-from core.realtime.notification import post_notification
 from dss import localsettings
 from spa.models import BaseModel, UserProfile
 
@@ -27,21 +27,21 @@ class Notification(BaseModel):
     def get_notification_url(self):
         return '/api/v1/notification/%s' % self.id
 
-    def __save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
 
+        """
         if self._activity.should_send_email():
             self.send_notification_email()
+        """
 
-        sessions = self.to_user.user.session_set.all()
-        avatar_image = UserProfile.get_default_avatar_image()
-        if self.from_user is not None:
-            avatar_image = self.from_user.get_avatar_image()
-
-        for session in sessions:
-            post_notification(
-                session.session_key,
-                avatar_image,
-                self.notification_html)
+        post_activity(
+            'user:message',
+            self.to_user.get_session_id(),
+            {
+                'from_user': self.from_user.slug,
+                'message': self.target_desc
+            })
 
         return super(Notification, self).save(force_insert, force_update, using, update_fields)
 

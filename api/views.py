@@ -1,7 +1,7 @@
 import logging
 import os
 
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, SuspiciousOperation
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
 from django.db.models import Count
@@ -19,6 +19,7 @@ from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP
 from api import serializers
 from dss import settings
 from spa import tasks
+from spa.models import Message
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
 from spa.models.mix import Mix
@@ -277,3 +278,33 @@ class GenreViewSet(viewsets.ModelViewSet):
                 .only('description') \
                 .order_by('-used')
             return rows
+
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = serializers.MessageSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        if 'to_user' in self.request.query_params and 'type' in self.request.query_params:
+            t = UserProfile.objects.get(slug=self.request.query_params['to_user'])
+            try:
+                if self.request.query_params['type'] == 'chat':
+                    return Message.objects.get_chat(user1=t, user2=self.request.user.userprofile)
+            except UserProfile.DoesNotExist:
+                pass
+
+        raise SuspiciousOperation("Must specify a to user")
+
+    def __perform_write(self, serializer):
+        t = None
+        if 'to_user' in self.request.data:
+            t = UserProfile.objects.get(slug=self.request.data['to_user'])
+
+        serializer.save(from_user=self.request.user.userprofile, to_user=t)
+
+    def perform_create(self, serializer):
+        self.__perform_write(serializer)
+
+    def perform_update(self, serializer):
+        self.__perform_write(serializer)

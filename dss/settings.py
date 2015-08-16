@@ -149,7 +149,7 @@ TASTYPIE_ALLOW_MISSING_SLASH = True
 SENDFILE_ROOT = os.path.join(MEDIA_ROOT, 'mixes')
 SENDFILE_URL = '/media/mixes'
 
-#SESSION_ENGINE = 'user_sessions.backends.db'
+#SESSION_ENGINE = 'django.contrib.sessions.models.Session'
 
 mimetypes.add_type("text/xml", ".plist", False)
 
