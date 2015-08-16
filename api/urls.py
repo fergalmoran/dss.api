@@ -21,11 +21,17 @@ router.register(r'hitlist', views.HitlistViewSet)
 router.register(r'comments', views.CommentViewSet)
 router.register(r'activity', views.ActivityViewSet, base_name='activity')
 router.register(r'genre', views.GenreViewSet, base_name='genre')
+router.register(r'messages', views.MessageViewSet, base_name='messages')
 
 
 class DebugView(APIView):
     permission_classes = (IsAuthenticated, )
     authentication_classes = (JSONWebTokenAuthentication, )
+
+    def get(self, request):
+        print self.request.session
+        return Response({'status': 'ok', 'session': self.request.session.session_key},
+                        status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         try:

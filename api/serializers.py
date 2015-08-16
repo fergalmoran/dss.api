@@ -5,7 +5,7 @@ from core.utils.html import strip_tags
 
 from dss import settings
 from spa import models
-from spa.models import Activity
+from spa.models import Activity, Message
 from spa.models.activity import ActivityDownload, ActivityPlay
 from spa.models.genre import Genre
 from spa.models.notification import Notification
@@ -474,3 +474,19 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_avatar_image(self, obj):
         return settings.DEFAULT_USER_IMAGE if obj.from_user is None else obj.from_user.get_sized_avatar_image(170, 170)
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    from_user = InlineUserProfileSerializer(read_only=True)
+    to_user = InlineUserProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Message
+        fields = (
+            'id',
+            'from_user',
+            'to_user',
+            'sent_at',
+            'read_at',
+            'body',
+        )
