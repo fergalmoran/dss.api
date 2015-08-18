@@ -111,7 +111,6 @@ INSTALLED_APPS = (
     'gunicorn',
     'spa.signals',
     'core',
-    #'schedule',
     'django_user_agents',
     'storages',
     'social.apps.django_app.default',
