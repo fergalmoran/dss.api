@@ -111,7 +111,6 @@ INSTALLED_APPS = (
     'gunicorn',
     'spa.signals',
     'core',
-    #'schedule',
     'django_user_agents',
     'storages',
     'social.apps.django_app.default',
@@ -124,7 +123,6 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
     'south',
-
     'dbbackup',
     'djrill',
     'rest_framework',

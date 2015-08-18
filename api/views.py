@@ -22,6 +22,7 @@ from spa import tasks
 from spa.models import Message
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
+from spa.models.show import Show
 from spa.models.mix import Mix
 from spa.models.comment import Comment
 from spa.models.notification import Notification
@@ -79,6 +80,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             ret = UserProfile.objects.filter(following__slug__in=[self.request.query_params['following']])
         elif 'followers' in self.request.query_params:
             ret = UserProfile.objects.filter(followers__slug__in=[self.request.query_params['followers']])
+        elif 'messaged_with' in self.request.query_params:
+            ret = UserProfile.objects.filter(messages__slug__in=[self.request.query_params['followers']])
         else:
             ret = super(UserProfileViewSet, self).get_queryset()
 
@@ -308,3 +311,8 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         self.__perform_write(serializer)
+
+
+class ShowViewSet(viewsets.ModelViewSet):
+    queryset = Show.objects.all()
+    serializer_class = serializers.ShowSerializer

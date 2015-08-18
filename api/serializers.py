@@ -1,6 +1,5 @@
 from django.db.models import Count
 from rest_framework import serializers
-from api.fields import DisplayNameField
 from core.utils.html import strip_tags
 
 from dss import settings
@@ -9,6 +8,7 @@ from spa.models import Activity, Message
 from spa.models.activity import ActivityDownload, ActivityPlay
 from spa.models.genre import Genre
 from spa.models.notification import Notification
+from spa.models.show import Show
 from spa.models.userprofile import UserProfile
 from spa.models.mix import Mix, MixUpdateException
 from spa.models.comment import Comment
@@ -490,3 +490,7 @@ class MessageSerializer(serializers.ModelSerializer):
             'read_at',
             'body',
         )
+
+class ShowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Show
