@@ -226,7 +226,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated():
             raise PermissionDenied("Not allowed")
 
-        ret = ActivityPlay.objects.filter(mix__user=user).order_by("-id")
+        ret = ActivityPlay.objects.filter(mix__user=user.userprofile).order_by("-id")
 
         if len(ret) > 0:
             logger.debug("Activity returned: {0}".format(ret[0].get_object_slug()))
@@ -254,7 +254,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated():
             raise PermissionDenied("Not allowed")
 
-        return Notification.objects.filter(to_user=user).order_by('-date')
+        return Notification.objects.filter(to_user=user.userprofile).order_by('-date')
 
     def perform_update(self, serializer):
         return super(NotificationViewSet, self).perform_update(serializer)
