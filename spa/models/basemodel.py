@@ -12,8 +12,8 @@ from dss import localsettings, settings
 class BaseModel(models.Model):
     logger = logging.getLogger('dss')
 
-    object_created = models.DateTimeField(auto_now_add=True, default=datetime.now())
-    object_updated = models.DateTimeField(auto_now=True, default=datetime.now(), db_index=True)
+    object_created = models.DateTimeField(auto_now_add=True)
+    object_updated = models.DateTimeField(auto_now=True, db_index=True)
 
     class Meta:
         abstract = True

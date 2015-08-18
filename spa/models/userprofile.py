@@ -62,7 +62,7 @@ class UserProfile(BaseModel):
     activity_sharing_twitter = BitField(flags=NOTIFICATION_CHOICES, default=0)
     email_notifications = BitField(flags=NOTIFICATION_CHOICES, default=0)
 
-    following = models.ManyToManyField('self', null=True, blank=True, symmetrical=False, related_name='followers')
+    following = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='followers')
 
     # location properties
     city = models.CharField(max_length=100, blank=True, null=True)
