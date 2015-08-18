@@ -21,7 +21,7 @@ class Release(BaseModel):
     release_description = models.TextField()
     release_image = models.ImageField(blank=True, upload_to=release_image_name)
     release_label = models.ForeignKey(Label)
-    release_date = models.DateField(default=datetime.now())
+    release_date = models.DateField(auto_now=True)
 
     embed_code = models.TextField(blank=True)
 

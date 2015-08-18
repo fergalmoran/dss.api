@@ -90,8 +90,8 @@ class Mix(BaseModel):
     genres = models.ManyToManyField(Genre)
 
     # activity based stuff
-    favourites = models.ManyToManyField(UserProfile, related_name='favourites', blank=True, null=True)
-    likes = models.ManyToManyField(UserProfile, related_name='likes', blank=True, null=True)
+    favourites = models.ManyToManyField(UserProfile, related_name='favourites', blank=True)
+    likes = models.ManyToManyField(UserProfile, related_name='likes', blank=True)
 
     def __unicode__(self):
         return self.title
