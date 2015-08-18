@@ -104,6 +104,15 @@ INSTALLED_APPS = (
     #'django_facebook',
     'django_extensions',
     'django_gravatar',
+
+        # TODO: remove
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.twitter',
+
     'corsheaders',
     'sorl.thumbnail',
     'djcelery',
@@ -115,14 +124,7 @@ INSTALLED_APPS = (
     'storages',
     'social.apps.django_app.default',
 
-    # TODO: remove
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.google',
-    'allauth.socialaccount.providers.twitter',
-    'south',
+
 
     'dbbackup',
     'djrill',

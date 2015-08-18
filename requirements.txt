@@ -1,4 +1,4 @@
-Django==1.6.11
+Django==1.8.4
 django-extensions
 django-sendfile
 Werkzeug
@@ -15,7 +15,6 @@ django-grappelli==2.5.7
 django-model_utils
 django-dbbackup
 django-user-agents
-south
 redis
 django-celery
 
