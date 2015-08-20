@@ -36,11 +36,11 @@ class SocialLoginHandler(APIView):
         if auth_token and backend:
             try:
                 user = auth_by_token(request, backend)
-            except Exception, e:
+            except Exception as e:
                 logger.exception(e)
                 return Response({
                     'status': 'Bad request',
-                    'message': e.message
+                    'message': e
                 }, status=status.HTTP_400_BAD_REQUEST)
 
             if user:

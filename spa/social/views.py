@@ -1,4 +1,4 @@
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import logging
 
 from django.conf.urls import url
@@ -47,15 +47,15 @@ def facebook_mix(request, slug):
             "image_url": image,
             "mix_url": 'http://%s%s' % (Site.objects.get_current().domain, mix_url)
         }
-        payload = dict(default.items() + extras.items())
+        payload = dict(list(default.items()) + list(extras.items()))
         response = render_to_response(
             'social/facebook/mix.html',
             payload,
             context_instance=RequestContext(request)
         )
         return response
-    except Exception, ex:
-        logger.error(ex.message)
+    except Exception as ex:
+        logger.error(ex)
 
 
 def playlist(request, args):
@@ -74,13 +74,13 @@ def playlist(request, args):
         "image_url": image,
         "playlist_url": playlist_url
     }
-    payload = dict(default.items() + extras.items())
+    payload = dict(list(default.items()) + list(extras.items()))
     response = render_to_response(
         'inc/facebook/playlist.html',
         payload,
         context_instance=RequestContext(request)
     )
-    print response.content
+    print(response.content)
     return response
 
 
@@ -99,7 +99,7 @@ def user(request, args):
         "profile_url": wrap_full(profile_url),
         "image_url": image,
     }
-    payload = dict(default.items() + extras.items())
+    payload = dict(list(default.items()) + list(extras.items()))
     response = render_to_response(
         'inc/facebook/user.html',
         payload,
@@ -127,7 +127,7 @@ def social_redirect(request):
     except Http404:
         logger.debug("404 on resolver: $%s" % request.path)
         return index(request)
-    except Exception, ex:
+    except Exception as ex:
         logger.debug("Unhandled exception in social_redirect: $%s" % ex)
         return index(request)
 
@@ -145,14 +145,14 @@ def post_like(request, mix):
             }
             response = requests.post(url, data=values)
             if response.status_code == 200:
-                print "Returned %s" % response.json
+                print("Returned %s" % response.json)
                 return response.json['id']
             else:
-                print "Returned status code of %s" % response.status_code
-    except urllib2.HTTPError, httpEx:
-        print httpEx.message
-    except Exception, ex:
-        print ex.message
+                print("Returned status code of %s" % response.status_code)
+    except urllib.error.HTTPError as httpEx:
+        print(httpEx)
+    except Exception as ex:
+        print(ex)
     return ""
 
 
@@ -167,5 +167,5 @@ def delete_like(request, uid):
             }
             response = requests.delete(url, data=values)
             return response
-    except Exception, ex:
-        print "Error talking with facebook: %s" % ex.message
+    except Exception as ex:
+        print("Error talking with facebook: %s" % ex)

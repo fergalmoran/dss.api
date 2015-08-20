@@ -22,8 +22,8 @@ class TestScheduleOverlaps(TestCase):
             self.fail("Shows cannot overlap each other")
         except ShowOverlapException:
             pass
-        except Exception, ex:
-            self.fail(ex.message)
+        except Exception as ex:
+            self.fail(ex)
 
     def test_two_events_flush(self):
         try:
@@ -32,8 +32,8 @@ class TestScheduleOverlaps(TestCase):
             Show(description="Another show begins in middle of this show", start=start, end=end).save()
         except ShowOverlapException:
             self.fail("These events do not overlap, they are flush")
-        except Exception, ex:
-            self.fail(ex.message)
+        except Exception as ex:
+            self.fail(ex)
 
     def test_event_straddle_start_end(self):
         try:
@@ -43,8 +43,8 @@ class TestScheduleOverlaps(TestCase):
             self.fail("Should not be able to save a show straddling another show")
         except ShowOverlapException:
             pass
-        except Exception, ex:
-            self.fail(ex.message)
+        except Exception as ex:
+            self.fail(ex)
 
     def test_event_straddle_end_start(self):
         try:
@@ -56,5 +56,5 @@ class TestScheduleOverlaps(TestCase):
             self.fail("Should not be able to save a show straddling another show")
         except ShowOverlapException:
             pass
-        except Exception, ex:
-            self.fail(ex.message)
+        except Exception as ex:
+            self.fail(ex)

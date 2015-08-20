@@ -1,4 +1,4 @@
-import dom_helper
+from . import dom_helper
 
 FBEMAIL = '#email'
 FBPASS = '#pass'

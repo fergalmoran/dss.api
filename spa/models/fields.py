@@ -7,7 +7,7 @@ from django.utils.text import capfirst
 from django.core import exceptions
 
 if sys.version_info[0] == 2:
-    string_type = unicode
+    string_type = str
 else:
     string_type = str
 

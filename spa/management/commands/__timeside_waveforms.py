@@ -11,5 +11,5 @@ class Command(NoArgsCommand):
             (decoder | grapher).run()
             grapher.render('d:\spectrogram.png')
 
-        except Exception, ex:
-            print "Debug exception: %s" % ex.message
+        except Exception as ex:
+            print("Debug exception: %s" % ex)

@@ -27,8 +27,8 @@ class ShowResource(BaseResource):
             raise ImmediateHttpResponse(
                 HttpBadRequest("This event overlaps with an existing event")
             )
-        except Exception, ex:
+        except Exception as ex:
             raise ImmediateHttpResponse(
-                HttpBadRequest(ex.message)
+                HttpBadRequest(ex)
             )
 

@@ -16,7 +16,7 @@ waveform_generated_signal = Signal()
 
 
 def _waveform_generated_callback(sender, **kwargs):
-    print "Updating model with waveform"
+    print("Updating model with waveform")
     try:
         uid = kwargs['uid']
         path = kwargs['path']
@@ -28,7 +28,7 @@ def _waveform_generated_callback(sender, **kwargs):
                 mix.save(update_fields=["waveform_generated", "duration"])
 
     except ObjectDoesNotExist:
-        print "Mix has still not been uploaded"
+        print("Mix has still not been uploaded")
         pass
 
 
@@ -38,7 +38,7 @@ mix_sent_to_cdn_signal = Signal()
 
 
 def _mix_sent_to_cdn_callback(sender, **kwargs):
-    print "Updating model with archive bit"
+    print("Updating model with archive bit")
     try:
         uid = kwargs['uid']
         if uid is not None:
@@ -47,7 +47,7 @@ def _mix_sent_to_cdn_callback(sender, **kwargs):
                 mix.archive_updated = True
                 mix.save(update_fields=["waveform_generated", "duration"])
     except ObjectDoesNotExist:
-        print "Mix has still not been uploaded"
+        print("Mix has still not been uploaded")
         pass
 
 
@@ -125,7 +125,7 @@ def session_pre_save(sender, **kwargs):
 
 @receiver(m2m_changed, sender=UserProfile.following.through, dispatch_uid='user_followers_changed')
 def user_followers_changed(sender, **kwargs):
-    print "Followers changed"
+    print("Followers changed")
 
     try:
         if kwargs['action'] == 'post_add':
@@ -135,5 +135,5 @@ def user_followers_changed(sender, **kwargs):
                     target_user = UserProfile.objects.get(pk=i)
                     if target_user:
                         ActivityFollow(user=source_user, to_user=target_user).save()
-    except Exception, ex:
-        print "Error sending new follower: %s" % ex.message
+    except Exception as ex:
+        print("Error sending new follower: %s" % ex)

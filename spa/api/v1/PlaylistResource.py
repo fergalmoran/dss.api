@@ -78,5 +78,5 @@ class PlaylistResource(BaseResource):
             result.obj.save()
 
             return result
-        except Exception, ex:
-            print ex
+        except Exception as ex:
+            print(ex)

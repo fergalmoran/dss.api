@@ -5,5 +5,5 @@ class SWFUploadMiddleware(object):
     def process_request(self, request):
         if (request.method == 'POST') and\
            (request.path == reverse('jfu_upload')) and\
-           request.POST.has_key(settings.SESSION_COOKIE_NAME):
+           settings.SESSION_COOKIE_NAME in request.POST:
             request.COOKIES[settings.SESSION_COOKIE_NAME] = request.POST[settings.SESSION_COOKIE_NAME]

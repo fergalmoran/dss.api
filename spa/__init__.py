@@ -1,1 +1,1 @@
-import signals
+from spa import signals

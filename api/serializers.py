@@ -208,7 +208,7 @@ class MixSerializer(serializers.ModelSerializer):
                 validated_data.pop('genres', None)
 
             return super(MixSerializer, self).update(instance, validated_data)
-        except MixUpdateException, ex:
+        except MixUpdateException as ex:
             raise ex
 
     def is_valid(self, raise_exception=False):
@@ -314,8 +314,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_roles(self, obj):
         try:
             return obj.get_roles()
-        except Exception, ex:
-            print "Error getting roles: " + ex.message
+        except Exception as ex:
+            print("Error getting roles: " + ex)
             return []
 
     def get_isme(self, obj):

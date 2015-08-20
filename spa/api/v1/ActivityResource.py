@@ -38,11 +38,11 @@ class ActivityResource(BaseResource):
             bundle.data["user_image"] = user_image
             return bundle
 
-        except AttributeError, ae:
-            self.logger.debug("AttributeError: Error dehydrating activity, %s" % ae.message)
-        except TypeError, te:
-            self.logger.debug("TypeError: Error dehydrating activity, %s" % te.message)
-        except Exception, ee:
-            self.logger.debug("Exception: Error dehydrating activity, %s" % ee.message)
+        except AttributeError as ae:
+            self.logger.debug("AttributeError: Error dehydrating activity, %s" % ae)
+        except TypeError as te:
+            self.logger.debug("TypeError: Error dehydrating activity, %s" % te)
+        except Exception as ee:
+            self.logger.debug("Exception: Error dehydrating activity, %s" % ee)
         return None
 

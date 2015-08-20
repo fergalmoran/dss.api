@@ -35,7 +35,7 @@ class BaseModel(models.Model):
             if os.path.isfile(image.path):
                 ret = "{0}/{1}".format(settings.MEDIA_URL, image)
                 return url.urlclean(ret)
-        except Exception, ex:
+        except Exception as ex:
             pass
 
         return default
@@ -60,5 +60,5 @@ class BaseModel(models.Model):
                 old_instance = sender.objects.get(pk=self.pk)
                 if old_instance is not None:
                     self.__dict__[image_field] = old_instance.__dict__[image_field]
-            except Exception, ex:
+            except Exception as ex:
                 pass

@@ -62,7 +62,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                     )
             except Mix.DoesNotExist:
                 pass
-            except Exception, ex:
+            except Exception as ex:
                 pass
 
 
@@ -137,7 +137,7 @@ class AttachedImageUploadView(views.APIView):
                 return Response(HTTP_202_ACCEPTED)
         except ObjectDoesNotExist:
             return Response(status=HTTP_404_NOT_FOUND)
-        except Exception, ex:
+        except Exception as ex:
             logger.exception(ex)
 
         return Response(status=HTTP_401_UNAUTHORIZED)
@@ -199,7 +199,7 @@ class PartialMixUploadView(views.APIView):
                 ).delay()
                 logger.debug("Waveform task started")
 
-            except Exception, ex:
+            except Exception as ex:
                 logger.exception(ex)
                 response = \
                     'Unable to connect to rabbitmq, there may be a delay in getting your mix online'
@@ -210,8 +210,8 @@ class PartialMixUploadView(views.APIView):
                 'uid': uid
             }
             return Response(file_dict, HTTP_202_ACCEPTED)
-        except Exception, ex:
-            logger.exception(ex.message)
+        except Exception as ex:
+            logger.exception(ex)
             raise
 
 

@@ -1,4 +1,4 @@
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 from allauth.socialaccount.models import SocialAccount
 from azure.storage import BlobService
@@ -14,7 +14,7 @@ from spa.models.userprofile import UserProfile
 def save_image(profile, url):
 
     img = NamedTemporaryFile(delete=True)
-    img.write(urllib2.urlopen(url).read())
+    img.write(urllib.request.urlopen(url).read())
 
     img.flush()
     profile.avatar_image.save(str(profile.id), File(img))
@@ -44,7 +44,7 @@ class Command(NoArgsCommand):
         try:
             for user in UserProfile.objects.all():
                 try:
-                    print "Getting image for {0}".format(user.slug)
+                    print("Getting image for {0}".format(user.slug))
                     social_account = SocialAccount.objects.get(user=user.user)
                     if social_account:
                         try:
@@ -53,14 +53,14 @@ class Command(NoArgsCommand):
                                 avatar_url = provider_account.get_avatar_url()
                                 save_image(user, avatar_url)
                                 user.save()
-                        except Exception, ex:
-                            print ex.message
+                        except Exception as ex:
+                            print(ex.message)
                     else:
-                        print "No account for {0}".format(user.slug)
+                        print("No account for {0}".format(user.slug))
 
                 except SocialAccount.DoesNotExist:
                     pass
-                except Exception, ex:
-                    print "Debug exception: %s" % ex.message
-        except Exception, ex:
-            print "Debug exception: %s" % ex.message
+                except Exception as ex:
+                    print("Debug exception: %s" % ex.message)
+        except Exception as ex:
+            print("Debug exception: %s" % ex.message)
