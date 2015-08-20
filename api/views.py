@@ -25,6 +25,7 @@ from spa.models.activity import ActivityPlay
 from spa.models.mix import Mix
 from spa.models.comment import Comment
 from spa.models.notification import Notification
+from spa.models.show import Show
 from spa.models.userprofile import UserProfile
 
 logger = logging.getLogger('spa')
@@ -308,3 +309,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         self.__perform_write(serializer)
+
+class ShowViewSet(viewsets.ModelViewSet):
+    queryset = Show.objects.all()
+    serializer_class = serializers.ShowSerializer

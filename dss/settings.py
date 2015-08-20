@@ -1,4 +1,4 @@
-# e Django settings for dss project.
+# Django settings for dss project.
 import os
 import mimetypes
 from datetime import timedelta

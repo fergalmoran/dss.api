@@ -16,3 +16,4 @@ from .purchaselink import PurchaseLink
 from .release import Release
 from .playlist import Playlist
 from .message import Message
+from .show import Show
