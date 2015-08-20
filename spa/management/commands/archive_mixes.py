@@ -7,7 +7,7 @@ from spa.models.mix import Mix
 from datetime import datetime, timedelta
 from django.db.models import Count
 import os
-import urlparse
+import urllib.parse
 from os.path import isfile, join, basename
 
 
@@ -25,7 +25,7 @@ class Command(NoArgsCommand):
                 .order_by('num_plays')
             for mix in mixes:
                 if os.path.isfile(mix.get_absolute_path()):
-                    print "Uploading file for: %s" % mix.slug
+                    print("Uploading file for: %s" % mix.slug)
                     file_name = "%s.%s" % (mix.uid, mix.filetype)
                     archive_path = url_path_join(settings.AZURE_ITEM_BASE_URL, settings.AZURE_CONTAINER, file_name)
 
@@ -35,7 +35,7 @@ class Command(NoArgsCommand):
                             container=container,
                             object_name=file_name
                         )
-                        print "Uploaded"
+                        print("Uploaded")
                         mix.archive_path = archive_path
                         mix.save()
 
@@ -43,7 +43,7 @@ class Command(NoArgsCommand):
                         new_file = os.path.join(expired_path, basename(iterator.name))
                         os.rename(iterator.name, new_file)
 
-                    print "done- file is %s" % mix.archive_path
+                    print("done- file is %s" % mix.archive_path)
 
-        except Exception, ex:
-            print "Debug exception: %s" % ex.message
+        except Exception as ex:
+            print("Debug exception: %s" % ex.message)

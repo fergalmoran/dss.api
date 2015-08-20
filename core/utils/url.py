@@ -1,4 +1,4 @@
-import urlparse
+import urllib.parse
 import re
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
@@ -8,19 +8,19 @@ __author__ = 'fergalm'
 
 def url_path_join(*parts):
     """Join and normalize url path parts with a slash."""
-    schemes, netlocs, paths, queries, fragments = zip(*(urlparse.urlsplit(part) for part in parts))
+    schemes, netlocs, paths, queries, fragments = list(zip(*(urllib.parse.urlsplit(part) for part in parts)))
     # Use the first value for everything but path. Join the path on '/'
     scheme = next((x for x in schemes if x), '')
     netloc = next((x for x in netlocs if x), '')
     path = '/'.join(x.strip('/') for x in paths if x)
     query = next((x for x in queries if x), '')
     fragment = next((x for x in fragments if x), '')
-    return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
+    return urllib.parse.urlunsplit((scheme, netloc, path, query, fragment))
 
 
 def urlclean(url):
     # remove double slashes
-    ret = urlparse.urljoin(url, urlparse.urlparse(url).path.replace('//', '/'))
+    ret = urllib.parse.urljoin(url, urllib.parse.urlparse(url).path.replace('//', '/'))
     return ret
 
 
@@ -94,7 +94,7 @@ def _slug_strip(value, separator='-'):
 
 
 def is_absolute(url):
-    return bool(urlparse.urlparse(url).scheme)
+    return bool(urllib.parse.urlparse(url).scheme)
 
 
 def wrap_full(url):

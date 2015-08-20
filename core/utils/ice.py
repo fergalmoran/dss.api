@@ -5,17 +5,17 @@
 
 import socket
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import getopt
 import sys
 
 
 def usage ():
-    print """usage:
+    print("""usage:
     -h host to get metadata from
     -m mount to get metadata from
     [-p port to get metadata from (default 8000)]
-    [-u url to post metadata to as json]"""
+    [-u url to post metadata to as json]""")
 
 try:
     optlist, cmdline = getopt.getopt(sys.argv[1:],'h:p:m:u:')
@@ -60,7 +60,7 @@ def get_data(host, port, mount):
     data = s.recv(1024).decode('utf-8', 'ignore').encode('utf-8')
     s.close()
     pdata = dict([d.split(':',1) for d in  data.split('\r\n') if d.count("icy")])
-    if pdata.has_key("icy-br"):
+    if "icy-br" in pdata:
         return  json.dumps(pdata)
 
 
@@ -69,12 +69,12 @@ def get_data(host, port, mount):
 jdata = get_data(host, port, mount)
 #skip empty crap
 if jdata:
-    print jdata
+    print(jdata)
 
 try:
     # this post is optional
-    req = urllib2.Request(posturl, data=jdata, headers={'Content-Type': 'application/json',
+    req = urllib.request.Request(posturl, data=jdata, headers={'Content-Type': 'application/json',
                                                         'Referer': 'http://%s' % (host)})
-    r = urllib2.urlopen(req)
+    r = urllib.request.urlopen(req)
 except NameError:
     pass

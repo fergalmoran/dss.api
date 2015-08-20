@@ -11,11 +11,11 @@ from dss.storagesettings import AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_CON
 
 def upload_file_to_azure(in_file, file_name, container_name=settings.AZURE_CONTAINER):
     if os.path.isfile(in_file):
-        print "Uploading file for: %s" % in_file
+        print("Uploading file for: %s" % in_file)
         with open(in_file, 'rb') as iterator:
             return upload_stream_to_azure(iterator, file_name, container_name=container_name)
     else:
-        print "infile not found"
+        print("infile not found")
     return None
 
 
@@ -42,20 +42,20 @@ def set_azure_details(blob_name, download_name, container_name=AZURE_CONTAINER):
                 x_ms_blob_content_type='application/octet-stream',
                 x_ms_blob_content_disposition='attachment;filename="{0}"'.format(download_name)
             )
-            print "Processed: %s" % download_name
+            print("Processed: %s" % download_name)
         else:
-            print "No blob found for: %s" % download_name
+            print("No blob found for: %s" % download_name)
     except WindowsAzureMissingResourceError:
-        print "No blob found for: %s" % download_name
-    except Exception, ex:
-        print "Error processing blob %s: %s" % (download_name, ex.message)
+        print("No blob found for: %s" % download_name)
+    except Exception as ex:
+        print("Error processing blob %s: %s" % (download_name, ex))
 
 
 def file_exists(url):
-    import httplib
-    from urlparse import urlparse
+    import http.client
+    from urllib.parse import urlparse
     p = urlparse(url)
-    c = httplib.HTTPConnection(p.netloc)
+    c = http.client.HTTPConnection(p.netloc)
     c.request("HEAD", p.path)
 
     r = c.getresponse()

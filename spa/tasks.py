@@ -38,8 +38,8 @@ def upload_to_cdn_task(filetype, uid, container_name):
         file_name = "{0}.{1}".format(uid, filetype)
         cdn.upload_file_to_azure(source_file, file_name, container_name)
         return source_file
-    except Exception, ex:
-        logger.error("Unable to upload: {0}".format(ex.message))
+    except Exception as ex:
+        logger.error("Unable to upload: {0}".format(ex))
 
 
 @task
@@ -50,8 +50,8 @@ def update_geo_info_task(ip_address, profile_id):
             g = GeoIP()
             city = g.city(ip)
             country = g.country(ip)
-            print "Updated user location"
-    except Exception, e:
+            print("Updated user location")
+    except Exception as e:
         logger.exception(e)
         pass
 

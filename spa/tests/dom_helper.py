@@ -12,16 +12,16 @@ class DomHelper(object):
         self.driver.refresh()
 
     def print_el(self, element):
-        print 'tag: ' + element.tag_name + ' id: ' + element.get_attribute('id') + ' class: ' + element.get_attribute('class') + ' text: ' + element.text
+        print('tag: ' + element.tag_name + ' id: ' + element.get_attribute('id') + ' class: ' + element.get_attribute('class') + ' text: ' + element.text)
 
     def get_el(self, selector):
-        if isinstance(selector, (str, unicode)):
+        if isinstance(selector, str):
             return self.driver.find_element_by_css_selector(selector)
         else:
             return selector
 
     def get_els(self, selector):
-        if isinstance(selector, (str, unicode)):
+        if isinstance(selector, str):
             return self.driver.find_elements_by_css_selector(selector)
         else:
             return selector
@@ -93,7 +93,7 @@ class DomHelper(object):
         options = self.get_els(selector)
         for option in options:
             if option.is_selected() != (value == option.get_attribute('value')):
-                print option.get_attribute('value')
+                print(option.get_attribute('value'))
                 return False
         return True
 

@@ -14,4 +14,4 @@ def post_chat(session, image, user, message):
         'date': datetime.datetime.now().isoformat()
     })
     response = r.publish('chat', payload)
-    print "Message sent: {0}".format(response)
+    print("Message sent: {0}".format(response))

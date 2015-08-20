@@ -22,13 +22,13 @@ class Command(BaseCommand):
     def _get_file(mix):
         try:
             if mix.archive_updated:
-                print "Mix is archived: boo hoo"
+                print("Mix is archived: boo hoo")
                 file_name = "/tmp/%s.mp3" % mix.uid
                 url = mix.get_stream_url()
-                print "Downloading: %s To: %s" % (url, file_name)
+                print("Downloading: %s To: %s" % (url, file_name))
                 helpers.download_file(url, file_name)
                 if not os.path.isfile(file_name):
-                    print "File failed to download"
+                    print("File failed to download")
                 else:
                     return file_name
             else:
@@ -36,20 +36,20 @@ class Command(BaseCommand):
                 if not os.path.isfile(processed_file):
                     processed_file = mix.get_cache_path()
                     if not os.path.isfile(processed_file):
-                        print "File for [%s] not found tried\n\t%s\n\t%s" % (mix.title, processed_file, processed_file)
+                        print("File for [%s] not found tried\n\t%s\n\t%s" % (mix.title, processed_file, processed_file))
                         return ""
                 return processed_file
 
-        except Exception, ex:
-            print "Error generating waveform: {0}".format(ex.message)
+        except Exception as ex:
+            print("Error generating waveform: {0}".format(ex.message))
 
         return ""
 
     def handle(self, *args, **options):
-        print "Scanning for missing waveforms"
+        print("Scanning for missing waveforms")
         unprocessed = Mix.objects.filter(waveform_generated=False)
         for mix in unprocessed:
-            print "Found %s" % mix.slug
+            print("Found %s" % mix.slug)
             mix_file = self._get_file(mix)
 
             if mix_file is not "":

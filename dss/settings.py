@@ -1,4 +1,4 @@
-# e Django settings for dss project.
+# Django settings for dss project.
 import os
 import mimetypes
 from datetime import timedelta
@@ -7,11 +7,11 @@ from django.conf import global_settings
 
 from utils import here
 
-from localsettings import *
-from storagesettings import *
-from paymentsettings import *
-from logsettings import *
-from psa import *
+from dss.localsettings import *
+from dss.storagesettings import *
+from dss.paymentsettings import *
+from dss.logsettings import *
+from dss.psa import *
 
 DEVELOPMENT = DEBUG
 
@@ -177,7 +177,7 @@ REALTIME_HEADERS = {
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 if 'test' in sys.argv:
     try:
-        from test_settings import *
+        from .test_settings import *
     except ImportError:
         pass
 
@@ -211,7 +211,7 @@ THUMBNAIL_PREFIX = '_tn/'
 # THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': timedelta(seconds=10),
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=900),
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
 }

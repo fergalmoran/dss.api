@@ -7,7 +7,7 @@ from spa.models import Mix
 class Command(NoArgsCommand):
     def handle_noargs(self, **options):
         try:
-            print 'Enumerating items'
+            print('Enumerating items')
             items = cdn.enumerate_objects('mixes')
             for item in items:
                 # Check if we have a corresponding mix
@@ -17,6 +17,6 @@ class Command(NoArgsCommand):
                 except Mix.DoesNotExist:
                     # no mix found - delete the blob
                     cdn.delete_object('mixes', item)
-                    print "Deleting blob: {0}".format(uid)
-        except Exception, ex:
-            print "Debug exception: %s" % ex.message
+                    print(("Deleting blob: {0}".format(uid)))
+        except Exception as ex:
+            print(('Debug exception: %s' % ex.message))

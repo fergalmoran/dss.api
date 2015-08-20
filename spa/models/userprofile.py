@@ -1,6 +1,6 @@
 import logging
 import os
-import urlparse
+import urllib.parse
 
 from bitfield.models import BitField
 from django.contrib.auth.models import User
@@ -79,7 +79,7 @@ class UserProfile(BaseModel):
         """
         if self.slug is None or self.slug == '':
             self.slug = unique_slugify(self, self.user.get_username())
-            print "Slugified: %s" % self.slug
+            print("Slugified: %s" % self.slug)
 
         return super(UserProfile, self).save(force_insert, force_update, using, update_fields)
 
@@ -136,8 +136,8 @@ class UserProfile(BaseModel):
         try:
             unique_slugify(self, self.get_username() or self.user.get_full_name(), slug_separator='_')
             self.save()
-        except Exception, e:
-            self.logger.error("Unable to create profile slug: %s", e.message)
+        except Exception as e:
+            self.logger.error("Unable to create profile slug: %s", e)
 
     def get_session_id(self):
         return str(self.id)
@@ -150,14 +150,14 @@ class UserProfile(BaseModel):
                     self.favourites.model.save()
             else:
                 self.favourites.model.delete(mix=mix)
-        except Exception, ex:
-            self.logger.error("Exception updating favourite: %s" % ex.message)
+        except Exception as ex:
+            self.logger.error("Exception updating favourite: %s" % ex)
 
     def is_follower(self, user):
         try:
             return user.get_profile() in self.followers.all()
-        except Exception, ex:
-            logger.error(ex.message)
+        except Exception as ex:
+            logger.error(ex)
 
         return False
 
@@ -174,10 +174,10 @@ class UserProfile(BaseModel):
         try:
             image = self.get_avatar_image()
             sized = thumbnail.get_thumbnail(image, "%sx%s" % (width, height), crop="center")
-            return urlparse.urljoin(settings.MEDIA_URL, sized.name)
+            return urllib.parse.urljoin(settings.MEDIA_URL, sized.name)
         except SuspiciousOperation:
             return UserProfile.get_default_avatar_image()
-        except Exception, ex:
+        except Exception as ex:
             return UserProfile.get_default_avatar_image()
 
     def get_avatar_image(self):
@@ -200,7 +200,7 @@ class UserProfile(BaseModel):
     def get_profile_description(self):
         try:
             return self.description
-        except Exception, ex:
+        except Exception as ex:
             pass
 
         return settings.DEFAULT_USER_TITLE
@@ -238,9 +238,9 @@ class UserProfile(BaseModel):
                 v.save()
                 self.following.add(user)
                 self.save()
-        except Exception, ex:
-            self.logger.error("Exception updating like: %s" % ex.message)
-            raise UserUpdateException(ex.message)
+        except Exception as ex:
+            self.logger.error("Exception updating like: %s" % ex)
+            raise UserUpdateException(ex)
 
     def remove_following(self, user):
         try:
@@ -249,6 +249,6 @@ class UserProfile(BaseModel):
             if user.user.is_authenticated():
                 self.following.remove(user)
                 self.save()
-        except Exception, ex:
-            self.logger.error("Exception updating like: %s" % ex.message)
-            raise UserUpdateException(ex.message)
+        except Exception as ex:
+            self.logger.error("Exception updating like: %s" % ex)
+            raise UserUpdateException(ex)

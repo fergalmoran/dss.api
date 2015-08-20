@@ -9,6 +9,7 @@ from spa.models import Activity, Message
 from spa.models.activity import ActivityDownload, ActivityPlay
 from spa.models.genre import Genre
 from spa.models.notification import Notification
+from spa.models.show import Show
 from spa.models.userprofile import UserProfile
 from spa.models.mix import Mix, MixUpdateException
 from spa.models.comment import Comment
@@ -208,7 +209,7 @@ class MixSerializer(serializers.ModelSerializer):
                 validated_data.pop('genres', None)
 
             return super(MixSerializer, self).update(instance, validated_data)
-        except MixUpdateException, ex:
+        except MixUpdateException as ex:
             raise ex
 
     def is_valid(self, raise_exception=False):
@@ -314,8 +315,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
     def get_roles(self, obj):
         try:
             return obj.get_roles()
-        except Exception, ex:
-            print "Error getting roles: " + ex.message
+        except Exception as ex:
+            print("Error getting roles: " + ex)
             return []
 
     def get_isme(self, obj):
@@ -490,3 +491,9 @@ class MessageSerializer(serializers.ModelSerializer):
             'read_at',
             'body',
         )
+
+
+class ShowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Show
+

@@ -1,5 +1,3 @@
-import rfc822
-
 import os
 from django.utils.encoding import smart_str
 from sorl.thumbnail import get_thumbnail
@@ -123,8 +121,8 @@ class Mix(BaseModel):
                 year=self.upload_date.year,
                 comment=self.description,
                 genres=self.get_nice_genres())
-        except Exception, ex:
-            self.logger.exception("Mix: error creating tags: %s" % ex.message)
+        except Exception as ex:
+            self.logger.exception("Mix: error creating tags: %s" % ex)
             pass
 
         return '%s/mixes/%s%s.%s' % (settings.MEDIA_ROOT, prefix, self.uid, self.filetype)
@@ -171,7 +169,7 @@ class Mix(BaseModel):
                 return url.urlclean("%s/%s" % (settings.MEDIA_URL, ret.name))
             else:
                 return self.user.get_sized_avatar_image(170, 170)
-        except Exception, ex:
+        except Exception as ex:
             pass
 
         return super(Mix, self).get_image_url(self.mix_image, settings.DEFAULT_TRACK_IMAGE)
@@ -188,10 +186,6 @@ class Mix(BaseModel):
         download_name = smart_str('{0} - {1}.{2}'.format(settings.SITE_NAME, self.title, self.filetype))
         return blob_name, download_name
 
-    def get_date_as_rfc822(self):
-        return rfc822.formatdate(
-            rfc822.mktime_tz(rfc822.parsedate_tz(self.upload_date.strftime("%a, %d %b %Y %H:%M:%S"))))
-
     @classmethod
     def get_for_username(cls, user, queryset=None):
         if queryset is None:
@@ -206,8 +200,8 @@ class Mix(BaseModel):
         try:
             if user.is_authenticated():
                 ActivityDownload(user=user.get_profile(), mix=self).save()
-        except Exception, e:
-            self.logger.exception("Error adding mix download: %s" % e.message)
+        except Exception as e:
+            self.logger.exception("Error adding mix download: %s" % e)
 
     def add_genre(self, new_genre):
         # first look for genre by slug
@@ -229,8 +223,8 @@ class Mix(BaseModel):
             else:
                 ActivityPlay(user=None, mix=self).save()
 
-        except Exception, e:
-            self.logger.exception("Unable to add mix play: %s" % e.message)
+        except Exception as e:
+            self.logger.exception("Unable to add mix play: %s" % e)
 
     def update_favourite(self, user, value):
         try:
@@ -247,8 +241,8 @@ class Mix(BaseModel):
                     self.favourites.remove(user)
                 self.save()
 
-        except Exception, ex:
-            self.logger.error("Exception updating favourite: %s" % ex.message)
+        except Exception as ex:
+            self.logger.error("Exception updating favourite: %s" % ex)
 
     def update_liked(self, user, value):
         try:
@@ -264,9 +258,9 @@ class Mix(BaseModel):
                 else:
                     self.likes.remove(user)
                 self.save()
-        except Exception, ex:
-            self.logger.error("Exception updating like: %s" % ex.message)
-            raise MixUpdateException(ex.message)
+        except Exception as ex:
+            self.logger.error("Exception updating like: %s" % ex)
+            raise MixUpdateException(ex)
 
     def is_favourited(self, user):
         if user is None:

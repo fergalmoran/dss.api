@@ -22,6 +22,7 @@ router.register(r'comments', views.CommentViewSet)
 router.register(r'activity', views.ActivityViewSet, base_name='activity')
 router.register(r'genre', views.GenreViewSet, base_name='genre')
 router.register(r'messages', views.MessageViewSet, base_name='messages')
+router.register(r'shows', views.ShowViewSet, base_name='shows')
 
 
 class DebugView(APIView):
@@ -29,15 +30,15 @@ class DebugView(APIView):
     authentication_classes = (JSONWebTokenAuthentication, )
 
     def get(self, request):
-        print self.request.session
+        print(self.request.session)
         return Response({'status': 'ok', 'session': self.request.session.session_key},
                         status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
         try:
             activity.post_activity('user:message', request.user.userprofile.get_session_id(), 'Hello Sailor')
-        except Exception, ex:
-            print ex.message
+        except Exception as ex:
+            print(ex)
 
         return Response({
             'status': request.user.first_name,
