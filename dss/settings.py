@@ -211,7 +211,7 @@ THUMBNAIL_PREFIX = '_tn/'
 # THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': timedelta(seconds=900),
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=10),
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
 }
