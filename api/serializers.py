@@ -491,6 +491,7 @@ class MessageSerializer(serializers.ModelSerializer):
             'body',
         )
 
+
 class ShowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Show

@@ -1,4 +1,4 @@
-# e Django settings for dss project.
+# Django settings for dss project.
 import os
 import mimetypes
 from datetime import timedelta
@@ -123,7 +123,8 @@ INSTALLED_APPS = (
     'django_user_agents',
     'storages',
     'social.apps.django_app.default',
-    'schedule'
+
+
 
     'dbbackup',
     'djrill',
@@ -214,4 +215,3 @@ JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
 }
-
