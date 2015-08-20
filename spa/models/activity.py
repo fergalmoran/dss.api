@@ -55,9 +55,9 @@ class Activity(BaseModel):
                 object: wrap_full(self.get_object_url())
             }
             result = facebook.set('me/%s' % action_type, notification_html)
-            print result
-        except Exception, ex:
-            print ex.message
+            print(result)
+        except Exception as ex:
+            print(ex)
             pass
 
     def create_notification(self, accept=False):
@@ -76,8 +76,8 @@ class Activity(BaseModel):
                 notification.accepted_date = datetime.now()
 
             notification.save()
-        except Exception, ex:
-            print "Error creating activity notification: %s" % ex.message
+        except Exception as ex:
+            print("Error creating activity notification: %s" % ex)
 
     def get_activity_url(self):
         return '/api/v1/activity/%s' % self.id

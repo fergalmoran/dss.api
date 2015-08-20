@@ -15,17 +15,17 @@ class Command(NoArgsCommand):
             for mix in candidates:
                 try:
                     if mix.duration is None:
-                        print "Finding duration for: %s" % mix.title
+                        print("Finding duration for: %s" % mix.title)
                         length = mp3_length(mix.get_absolute_path())
-                        print "\tLength: %d" % length
+                        print("\tLength: %d" % length)
                         mix.duration = length
                     if mix.slug == 'Invalid':
-                        print "Slugifying mix: %s" % mix.title
+                        print("Slugifying mix: %s" % mix.title)
                         mix.slug = unique_slugify(mix, mix.title)
-                        print "\tNew title: %s" % mix.slug
+                        print("\tNew title: %s" % mix.slug)
                     mix.save()
-                except Mp3FileNotFoundException, me:
+                except Mp3FileNotFoundException as me:
                     mix.delete()
-                    print me.message
-        except Exception, ex:
+                    print(me.message)
+        except Exception as ex:
             raise CommandError(ex.message)

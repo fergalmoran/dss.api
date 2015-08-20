@@ -14,7 +14,7 @@ def save_profile(backend, user, response, is_new, *args, **kwargs):
             except ConnectionError:
                 pass
             else:
-                profile.avatar_image.save(u'',
+                profile.avatar_image.save('',
                                           ContentFile(response.content),
                                           save=False)
                 profile.save()
@@ -27,7 +27,7 @@ def save_profile(backend, user, response, is_new, *args, **kwargs):
         except ConnectionError:
             pass
         else:
-            profile.avatar_image.save(u'',
+            profile.avatar_image.save('',
                                       ContentFile(response.content),
                                       save=False
                                       )

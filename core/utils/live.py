@@ -1,5 +1,5 @@
 import logging
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from bs4 import BeautifulSoup
 
 def _parseItem(soup, param):
@@ -7,17 +7,17 @@ def _parseItem(soup, param):
         match = soup.find(text=param)
         if match is not None:
             return match.findNext('td').contents[0]
-    except Exception, ex:
-        logging.getLogger('core').exception("Error parsing ice stream details: " + ex.message)
+    except Exception as ex:
+        logging.getLogger('core').exception("Error parsing ice stream details: " + ex)
 
     return ""
 
 
 def get_server_details(server, port, mount):
     server = "http://%s:%s/status.xsl?mount=/%s" % (server, port, mount)
-    print "Getting info for %s" % server
+    print("Getting info for %s" % server)
     try:
-        response = urllib2.urlopen(server)
+        response = urllib.request.urlopen(server)
         html = response.read()
         if html:
             soup = BeautifulSoup(html)
@@ -34,10 +34,10 @@ def get_server_details(server, port, mount):
             }
             return info
         else:
-            print "Invalid content found"
+            print("Invalid content found")
             return None
 
-    except urllib2.URLError:
+    except urllib.error.URLError:
         return "Unknown stream %s" % server
 
 def get_now_playing(server, port, mount):

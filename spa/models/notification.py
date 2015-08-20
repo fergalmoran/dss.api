@@ -74,10 +74,10 @@ class Notification(BaseModel):
             }
 
             result = mandrill_client.messages.send(message=message, async=False)
-            print result
+            print(result)
 
-        except mandrill.Error, e:  # Mandrill errors are thrown as exceptions
-            print 'A mandrill error occurred: %s - %s' % (e.__class__, e)
+        except mandrill.Error as e:  # Mandrill errors are thrown as exceptions
+            print('A mandrill error occurred: %s - %s' % (e.__class__, e))
 
     def get_from_user(self):
         return UserProfile.get_user(self.from_user)

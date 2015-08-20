@@ -58,9 +58,9 @@ class CommentResource(BaseResource):
                     return HttpBadRequest("Unable to find mix for supplied mix_id (candidate fields are slug & id).")
 
             return HttpBadRequest("Missing mix_id field.")
-        except ImmediateHttpResponse, e:
-            self.logger.error("Error creating comment (%s)" % e.message)
+        except ImmediateHttpResponse as e:
+            self.logger.error("Error creating comment (%s)" % e)
             return HttpUnauthorized("Git tae fuck!")
-        except Exception, e:
-            self.logger.error("Error creating comment (%s)" % e.message)
+        except Exception as e:
+            self.logger.error("Error creating comment (%s)" % e)
             return HttpApplicationError("Unable to hydrate comment from supplied data.")

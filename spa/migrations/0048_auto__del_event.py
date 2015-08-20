@@ -9,117 +9,117 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
         # Deleting model 'Event'
-        db.delete_table(u'spa_event')
+        db.delete_table('spa_event')
 
         # Removing M2M table for field attendees on 'Event'
-        db.delete_table(db.shorten_name(u'spa_event_attendees'))
+        db.delete_table(db.shorten_name('spa_event_attendees'))
 
 
     def backwards(self, orm):
         # Adding model 'Event'
-        db.create_table(u'spa_event', (
+        db.create_table('spa_event', (
             ('event_description', self.gf('django.db.models.fields.TextField')()),
             ('event_recurrence', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['spa.Recurrence'])),
             ('event_time', self.gf('django.db.models.fields.TimeField')(default=datetime.datetime(2014, 4, 28, 0, 0))),
             ('event_date', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2014, 4, 28, 0, 0))),
             ('event_title', self.gf('django.db.models.fields.CharField')(max_length=250)),
             ('date_created', self.gf('django.db.models.fields.DateField')(default=datetime.datetime(2014, 4, 28, 0, 0))),
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('event_venue', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['spa.Venue'])),
         ))
         db.send_create_signal('spa', ['Event'])
 
         # Adding M2M table for field attendees on 'Event'
-        m2m_table_name = db.shorten_name(u'spa_event_attendees')
+        m2m_table_name = db.shorten_name('spa_event_attendees')
         db.create_table(m2m_table_name, (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('event', models.ForeignKey(orm['spa.event'], null=False)),
-            ('user', models.ForeignKey(orm[u'auth.user'], null=False))
+            ('user', models.ForeignKey(orm['auth.user'], null=False))
         ))
         db.create_unique(m2m_table_name, ['event_id', 'user_id'])
 
 
     models = {
-        u'auth.group': {
+        'auth.group': {
             'Meta': {'object_name': 'Group'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
+            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
         },
-        u'auth.permission': {
+        'auth.permission': {
             'Meta': {'ordering': "(u'content_type__app_label', u'content_type__model', u'codename')", 'unique_together': "((u'content_type', u'codename'),)", 'object_name': 'Permission'},
             'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
         },
-        u'auth.user': {
+        'auth.user': {
             'Meta': {'object_name': 'User'},
             'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
             'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Group']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': "orm['auth.Group']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
             'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Permission']"}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': "orm['auth.Permission']"}),
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
-        u'contenttypes.contenttype': {
+        'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
             'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'spa._lookup': {
             'Meta': {'object_name': '_Lookup'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
         },
         'spa.activity': {
             'Meta': {'object_name': 'Activity'},
             'date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['spa.UserProfile']", 'null': 'True', 'blank': 'True'})
         },
         'spa.activitycomment': {
             'Meta': {'object_name': 'ActivityComment', '_ormbases': ['spa.Activity']},
-            u'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
+            'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
             'mix': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'activity_comments'", 'to': "orm['spa.Mix']"})
         },
         'spa.activitydownload': {
             'Meta': {'object_name': 'ActivityDownload', '_ormbases': ['spa.Activity']},
-            u'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
+            'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
             'mix': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'activity_downloads'", 'to': "orm['spa.Mix']"})
         },
         'spa.activityfavourite': {
             'Meta': {'object_name': 'ActivityFavourite', '_ormbases': ['spa.Activity']},
-            u'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
+            'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
             'mix': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'activity_favourites'", 'to': "orm['spa.Mix']"})
         },
         'spa.activityfollow': {
             'Meta': {'object_name': 'ActivityFollow', '_ormbases': ['spa.Activity']},
-            u'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
+            'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
             'to_user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'activity_follow'", 'to': "orm['spa.UserProfile']"})
         },
         'spa.activitylike': {
             'Meta': {'object_name': 'ActivityLike', '_ormbases': ['spa.Activity']},
-            u'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
+            'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
             'mix': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'activity_likes'", 'to': "orm['spa.Mix']"})
         },
         'spa.activityplay': {
             'Meta': {'object_name': 'ActivityPlay', '_ormbases': ['spa.Activity']},
-            u'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
+            'activity_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa.Activity']", 'unique': 'True', 'primary_key': 'True'}),
             'mix': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'activity_plays'", 'to': "orm['spa.Mix']"})
         },
         'spa.chatmessage': {
             'Meta': {'object_name': 'ChatMessage'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'message': ('django.db.models.fields.TextField', [], {}),
             'timestamp': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'chat_messages'", 'null': 'True', 'to': "orm['spa.UserProfile']"})
@@ -128,20 +128,20 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Comment'},
             'comment': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             'date_created': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'mix': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'comments'", 'null': 'True', 'to': "orm['spa.Mix']"}),
             'time_index': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']", 'null': 'True', 'blank': 'True'})
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']", 'null': 'True', 'blank': 'True'})
         },
         'spa.genre': {
             'Meta': {'object_name': 'Genre'},
             'description': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'slug': ('django.db.models.fields.CharField', [], {'max_length': '100', 'null': 'True'})
         },
         'spa.label': {
             'Meta': {'object_name': 'Label'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         'spa.mix': {
@@ -152,7 +152,7 @@ class Migration(SchemaMigration):
             'favourites': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'favourites'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['spa.UserProfile']"}),
             'filetype': ('django.db.models.fields.CharField', [], {'default': "'mp3'", 'max_length': '10'}),
             'genres': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['spa.Genre']", 'symmetrical': 'False'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'is_featured': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'likes': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'likes'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['spa.UserProfile']"}),
@@ -170,7 +170,7 @@ class Migration(SchemaMigration):
             'accepted_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'from_user': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'notifications'", 'null': 'True', 'to': "orm['spa.UserProfile']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'notification_html': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             'notification_text': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             'notification_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'null': 'True'}),
@@ -180,19 +180,19 @@ class Migration(SchemaMigration):
         },
         'spa.purchaselink': {
             'Meta': {'object_name': 'PurchaseLink'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'provider': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'track': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'purchase_link'", 'to': "orm['spa.Tracklist']"}),
             'url': ('django.db.models.fields.URLField', [], {'max_length': '200'})
         },
         'spa.recurrence': {
             'Meta': {'object_name': 'Recurrence', '_ormbases': ['spa._Lookup']},
-            u'_lookup_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa._Lookup']", 'unique': 'True', 'primary_key': 'True'})
+            '_lookup_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': "orm['spa._Lookup']", 'unique': 'True', 'primary_key': 'True'})
         },
         'spa.release': {
             'Meta': {'object_name': 'Release'},
             'embed_code': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'release_artist': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'release_date': ('django.db.models.fields.DateField', [], {'default': 'datetime.datetime(2014, 4, 29, 0, 0)'}),
@@ -205,14 +205,14 @@ class Migration(SchemaMigration):
         'spa.releaseaudio': {
             'Meta': {'object_name': 'ReleaseAudio'},
             'description': ('django.db.models.fields.TextField', [], {}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'release': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'release_audio'", 'null': 'True', 'to': "orm['spa.Release']"})
         },
         'spa.tracklist': {
             'Meta': {'object_name': 'Tracklist'},
             'artist': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'description': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'index': ('django.db.models.fields.SmallIntegerField', [], {}),
             'label': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'mix': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'tracklist'", 'to': "orm['spa.Mix']"}),
@@ -231,15 +231,15 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.CharField', [], {'max_length': '2048', 'blank': 'True'}),
             'display_name': ('django.db.models.fields.CharField', [], {'max_length': '35', 'blank': 'True'}),
             'following': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'followers'", 'null': 'True', 'symmetrical': 'False', 'to': "orm['spa.UserProfile']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'last_known_session': ('django.db.models.fields.CharField', [], {'max_length': '250', 'null': 'True', 'blank': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'default': 'None', 'max_length': '50', 'null': 'True', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'userprofile'", 'unique': 'True', 'to': u"orm['auth.User']"})
+            'user': ('django.db.models.fields.related.OneToOneField', [], {'related_name': "'userprofile'", 'unique': 'True', 'to': "orm['auth.User']"})
         },
         'spa.venue': {
             'Meta': {'object_name': 'Venue'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['auth.User']"}),
             'venue_address': ('django.db.models.fields.CharField', [], {'max_length': '1024'}),
             'venue_image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
             'venue_name': ('django.db.models.fields.CharField', [], {'max_length': '250'})

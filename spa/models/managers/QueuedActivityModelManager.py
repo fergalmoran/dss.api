@@ -13,4 +13,4 @@ class QueuedActivityModelManager(models.Manager):
 
 def send_activity_to_queue(sender, **kwargs):
     instance = kwargs.pop('instance', False)
-    print instance
+    print(instance)

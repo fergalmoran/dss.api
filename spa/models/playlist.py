@@ -37,7 +37,7 @@ class Playlist(BaseModel):
             try:
                 ret = get_thumbnail(image, size, crop='center')
                 return "%s/%s" % (settings.MEDIA_URL, ret.name)
-            except Exception, ex:
+            except Exception as ex:
                 pass
 
         return super(Playlist, self).get_image_url(self.mix_image, settings.STATIC_URL + 'images/default-track-200.png')

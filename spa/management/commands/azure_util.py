@@ -2,7 +2,7 @@ import os
 from django.core.management.base import BaseCommand
 
 from core.utils import cdn
-from spa.models import Mix
+from spa.models.mix import Mix
 
 
 def _update_azure_headers():
@@ -18,14 +18,14 @@ def _check_missing_mixes():
         if not cdn.file_exists(url):
             file = '/mnt/dev/working/Dropbox/Development/deepsouthsounds.com/media/mixes/{0}.mp3'.format(m.uid)
             if os.path.isfile(file):
-                print '* {0}'.format(file)
+                print(('* {0}'.format(file)))
                 #cdn.upload_file_to_azure(file, '{0}.mp3'.format(m.uid), 'mixes')
                 found += 1
             else:
                 found += 1
-                print '({0}){1} - {2}'.format(found, m.slug, m.uid)
+                print(('({0}){1} - {2}'.format(found, m.slug, m.uid)))
 
-    print '{0} of {1} missing'.format(found, Mix.objects.count())
+    print(('{0} of {1} missing'.format(found, Mix.objects.count())))
 
 
 class Command(BaseCommand):
@@ -46,15 +46,15 @@ class Command(BaseCommand):
                 mix.archive_updated = True
                 mix.save()
 
-        except Exception, ex:
-            print "Fatal error, bailing. {0}".format(ex.message)
+        except Exception as ex:
+            print("Fatal error, bailing. {0}".format(ex.message))
 
     def handle(self, *args, **options):
         if len(args) == 0:
-            print "Commands are \n\t_check_missing_mixes"
+            print("Commands are \n\t_check_missing_mixes")
         elif args[0] == 'check_missing_mix':
             _check_missing_mixes()
         elif args[0] == 'update_azure_headers':
             _update_azure_headers()
         else:
-            print "Commands are \n\tcheck_missing_mix"
+            print("Commands are \n\tcheck_missing_mix")

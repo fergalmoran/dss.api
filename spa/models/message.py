@@ -45,5 +45,5 @@ class Message(BaseModel):
                 notification.accepted_date = datetime.now()
 
             notification.save()
-        except Exception, ex:
-            print "Error creating message notification: %s" % ex.message
+        except Exception as ex:
+            print("Error creating message notification: %s" % ex)

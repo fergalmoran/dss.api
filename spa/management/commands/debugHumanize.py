@@ -9,6 +9,6 @@ class Command(NoArgsCommand):
             activity = Activity.objects.get(pk=13437)
             if activity is not None:
                 date = humanize.naturaltime(activity.date.replace(tzinfo=None))
-                print date
-        except Exception, ex:
-            print "Debug exception: %s" % ex.message
+                print(date)
+        except Exception as ex:
+            print("Debug exception: %s" % ex.message)

@@ -13,6 +13,6 @@ class Command(NoArgsCommand):
                 comment.time_index = time_index
 
                 comment.save()
-                print "Timeindex: %d Mix: %s Comment: %s" % (time_index, comment.mix.slug, comment.comment)
-        except Exception, ex:
-            print "Debug exception: %s" % ex.message
+                print("Timeindex: %d Mix: %s Comment: %s" % (time_index, comment.mix.slug, comment.comment))
+        except Exception as ex:
+            print("Debug exception: %s" % ex.message)
