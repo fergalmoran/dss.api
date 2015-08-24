@@ -10,25 +10,16 @@ from dss.storagesettings import AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_CON
 
 
 def upload_file_to_azure(in_file, file_name, container_name=settings.AZURE_CONTAINER):
-    if os.path.isfile(in_file):
-        print("Uploading file for: %s" % in_file)
-        with open(in_file, 'rb') as iterator:
-            return upload_stream_to_azure(iterator, file_name, container_name=container_name)
-    else:
-        print("infile not found")
-    return None
-
-
-def upload_stream_to_azure(iterator, file_name, container_name=settings.AZURE_CONTAINER):
-    cls = get_driver(Provider.AZURE_BLOBS)
-    driver = cls(settings.AZURE_ACCOUNT_NAME, settings.AZURE_ACCOUNT_KEY)
-    container = driver.get_container(container_name)
-    obj = driver.upload_object_via_stream(
-        iterator=iterator,
-        container=container,
-        object_name=file_name
-    )
-    return obj
+    try:
+        blob_service = BlobService(AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY)
+        blob_service.put_block_blob_from_path(
+            container_name=container_name,
+            blob_name=file_name,
+            file_path=in_file,
+            x_ms_blob_content_type='application/octet-stream'
+        )
+    except Exception as ex:
+        print("Failed to upload blob: {0}".format(ex))
 
 
 def set_azure_details(blob_name, download_name, container_name=AZURE_CONTAINER):

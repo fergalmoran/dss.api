@@ -30,12 +30,13 @@ def create_waveform_task(in_file, uid):
         logger.error("Outfile is missing")
 
 
-@task(timse_limit=3600)
+@task(time_limit=3600)
 def upload_to_cdn_task(filetype, uid, container_name):
     source_file = os.path.join(settings.CACHE_ROOT, '{0}/{1}.{2}'.format(container_name, uid, filetype))
     logger.info("Sending {0} to azure".format(uid))
     try:
         file_name = "{0}.{1}".format(uid, filetype)
+        print(source_file)
         cdn.upload_file_to_azure(source_file, file_name, container_name)
         return source_file
     except Exception as ex:

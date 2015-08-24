@@ -199,16 +199,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Show',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
-                ('object_created', models.DateTimeField(auto_now_add=True)),
-                ('object_updated', models.DateTimeField(db_index=True, auto_now=True)),
-                ('test_field', models.CharField(max_length=400)),
-                ('mix', models.ForeignKey(related_name='show', to='spa.Mix')),
-            ],
-        ),
-        migrations.CreateModel(
             name='Tracklist',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),

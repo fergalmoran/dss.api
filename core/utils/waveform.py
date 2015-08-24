@@ -20,9 +20,10 @@ def generate_waveform(input_file, output_file):
             from PIL import Image
             import glob
 
+            print(output_file)
             im = Image.open(output_file)
             w, h = im.size
-            im.crop((0, 0, w, h / 2)).save(output_file)
+            im.crop((0, 0, int(w), int(h / 2))).save(output_file)
 
             return output_file
         else:
@@ -30,5 +31,5 @@ def generate_waveform(input_file, output_file):
             return ""
 
     except Exception as ex:
-        print("Error generating waveform %s" % (ex))
+        print("Error generating waveform {0}".format(ex))
 

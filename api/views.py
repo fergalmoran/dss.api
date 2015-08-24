@@ -1,10 +1,11 @@
 import logging
 import os
+from django.contrib.auth.models import User
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, SuspiciousOperation
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http.response import HttpResponse
 from rest_framework import viewsets
 from rest_framework import views
@@ -147,15 +148,30 @@ class AttachedImageUploadView(views.APIView):
 class SearchResultsView(views.APIView):
     def get(self, request, format=None):
         q = request.GET.get('q', '')
+        q_type = request.GET.get('type', '')
         if len(q) > 0:
-            m = [{
-                     'title': mix.title,
-                     'image': mix.get_image_url(),
-                     'slug': mix.slug,
-                     'url': mix.get_absolute_url(),
-                     'description': mix.description
-                 } for mix in Mix.objects.filter(title__icontains=q)[0:10]]
-            return Response(m)
+            if q_type == 'user':
+                r_s = [
+                    {
+                        'title': user.display_name,
+                        'image': user.get_sized_avatar_image(64, 64),
+                        'slug': user.slug,
+                        'url': user.get_absolute_url(),
+                        'description': user.description
+                    } for user in UserProfile.objects.filter(
+                        Q(user__first_name__icontains=q) |
+                        Q(user__last_name__icontains=q) |
+                        Q(display_name__icontains=q))[0:10]
+                ]
+            else:
+                r_s = [{
+                         'title': mix.title,
+                         'image': mix.get_image_url(),
+                         'slug': mix.slug,
+                         'url': mix.get_absolute_url(),
+                         'description': mix.description
+                     } for mix in Mix.objects.filter(title__icontains=q)[0:10]]
+            return Response(r_s)
 
         return HttpResponse(status=HTTP_204_NO_CONTENT)
 

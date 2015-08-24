@@ -16,6 +16,7 @@ django-model_utils
 django-dbbackup
 django-user-agents
 redis
+git+git://github.com/llazzaro/django-scheduler.git#django-scheduler
 django-celery
 django-scheduler
 azure
