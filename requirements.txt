@@ -19,6 +19,7 @@ redis
 git+git://github.com/llazzaro/django-scheduler.git#django-scheduler
 django-celery
 django-scheduler
+django-recurrence
 azure
 
 sorl-thumbnail
