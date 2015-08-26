@@ -14,7 +14,7 @@ from spa.models.userprofile import UserProfile
 def save_image(profile, url):
 
     img = NamedTemporaryFile(delete=True)
-    img.write(urllib.request.urlopen(url).read())
+    img.write(urllib.urlopen(url).read())
 
     img.flush()
     profile.avatar_image.save(str(profile.id), File(img))
@@ -54,13 +54,13 @@ class Command(NoArgsCommand):
                                 save_image(user, avatar_url)
                                 user.save()
                         except Exception as ex:
-                            print(ex.message)
+                            print(ex)
                     else:
                         print("No account for {0}".format(user.slug))
 
                 except SocialAccount.DoesNotExist:
                     pass
                 except Exception as ex:
-                    print("Debug exception: %s" % ex.message)
+                    print("Debug exception: %s" % ex)
         except Exception as ex:
-            print("Debug exception: %s" % ex.message)
+            print("Debug exception: %s" % ex)
