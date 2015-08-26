@@ -14,7 +14,7 @@ from spa.models.userprofile import UserProfile
 def save_image(profile, url):
 
     img = NamedTemporaryFile(delete=True)
-    img.write(urllib.urlopen(url).read())
+    img.write(urllib.request.urlopen(url).read())
 
     img.flush()
     profile.avatar_image.save(str(profile.id), File(img))
