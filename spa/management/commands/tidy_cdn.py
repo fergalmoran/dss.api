@@ -14,6 +14,8 @@ class Command(NoArgsCommand):
                 uid, type = os.path.splitext(item)
                 try:
                     Mix.objects.get(uid=uid)
+                except Mix.MultipleObjectsReturned:
+                    print('uid: {0} is duplicated'.format(uid))
                 except Mix.DoesNotExist:
                     # no mix found - delete the blob
                     cdn.delete_object('mixes', item)

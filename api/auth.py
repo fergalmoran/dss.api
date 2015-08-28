@@ -14,7 +14,7 @@ from rest_framework import parsers
 
 from social.apps.django_app.utils import psa
 
-logger = logging.getLogger('spa')
+logger = logging.getLogger('dss')
 
 
 @psa()

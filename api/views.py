@@ -30,7 +30,7 @@ from spa.models.notification import Notification
 from spa.models.show import Show
 from spa.models.userprofile import UserProfile
 
-logger = logging.getLogger('spa')
+logger = logging.getLogger('dss')
 
 
 class AnonymousWriteUserDelete(BasePermission):

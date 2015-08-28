@@ -36,7 +36,7 @@ LOGGING = {
             'propagate': True,
             'level': 'DEBUG',
         },
-        'spa': {
+        'dss': {
             'handlers': ['file', 'console'],
             'level': 'DEBUG',
         },
