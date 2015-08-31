@@ -1,6 +1,5 @@
 from django.db.models import Count
 from rest_framework import serializers
-from api.fields import DisplayNameField
 from core.utils.html import strip_tags
 
 from dss import settings
@@ -496,4 +495,3 @@ class MessageSerializer(serializers.ModelSerializer):
 class ShowSerializer(serializers.ModelSerializer):
     class Meta:
         model = Show
-

@@ -49,7 +49,6 @@ class DebugView(APIView):
 urlpatterns = patterns(
     '',
     url(r'^', include(router.urls)),
-    # url(r'^', include(mix_router.urls)),
     url(r'_download/', views.DownloadItemView.as_view()),
     url(r'_upload/$', views.PartialMixUploadView.as_view()),
     url(r'_image/$', views.AttachedImageUploadView.as_view()),
@@ -59,7 +58,6 @@ urlpatterns = patterns(
     url(r'^_login/', SocialLoginHandler.as_view()),
     url(r'^token-refresh/', 'rest_framework_jwt.views.refresh_jwt_token'),
 
-    # url(r'^_tr/', RefreshToken.as_view()),
     url(r'^__u/checkslug', helpers.UserSlugCheckHelper.as_view()),
     url(r'^__u/', auth.ObtainUser.as_view()),
 

@@ -24,19 +24,20 @@ def create_waveform_task(in_file, uid):
     generate_waveform(in_file, out_file)
     if os.path.isfile(out_file):
         logger.info("Waveform generated successfully")
-        waveform_generated_signal.send(sender=None, uid=uid, path=in_file)
         return out_file
     else:
         logger.error("Outfile is missing")
 
 
-@task(timse_limit=3600)
+@task(time_limit=3600)
 def upload_to_cdn_task(filetype, uid, container_name):
     source_file = os.path.join(settings.CACHE_ROOT, '{0}/{1}.{2}'.format(container_name, uid, filetype))
-    logger.info("Sending {0} to azure".format(uid))
     try:
         file_name = "{0}.{1}".format(uid, filetype)
+        logger.info("Sending {0} to azure".format(source_file))
+        print(source_file)
         cdn.upload_file_to_azure(source_file, file_name, container_name)
+        logger.info("Sent {0} to azure".format(source_file))
         return source_file
     except Exception as ex:
         logger.error("Unable to upload: {0}".format(ex))

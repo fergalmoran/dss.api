@@ -91,6 +91,9 @@ class Mix(BaseModel):
     favourites = models.ManyToManyField(UserProfile, related_name='favourites', blank=True)
     likes = models.ManyToManyField(UserProfile, related_name='likes', blank=True)
 
+    def __str__(self):
+        return self.__unicode__()
+
     def __unicode__(self):
         return self.title
 
@@ -149,6 +152,11 @@ class Mix(BaseModel):
         return os.path.join(settings.MEDIA_ROOT, "waveforms/", "%s.%s" % (self.uid, "png"))
 
     def get_waveform_url(self, waveform_type=""):
+        # TODO: Design better flow for this sort of thing
+        if not self.waveform_generated and cdn.file_exists('{0}{1}.png'.format(localsettings.WAVEFORM_URL, self.uid)):
+            self.waveform_generated = True
+            self.save()
+
         if self.waveform_generated:
             waveform_root = localsettings.WAVEFORM_URL \
                 if hasattr(localsettings,
@@ -157,7 +165,7 @@ class Mix(BaseModel):
             ret = "%s/%s%s.%s" % (waveform_root, self.uid, waveform_type, "png")
             return url.urlclean(ret)
         else:
-            return "Invalid Waveform"
+            return settings.DEFAULT_WAVEFORM_GENERATING
 
     def get_waveform_progress_url(self):
         return self.get_waveform_url(waveform_type="_progress")

@@ -2,6 +2,9 @@ import json
 import datetime
 import redis
 from dss import settings
+import logging
+
+logger = logging.getLogger('dss')
 
 
 def post_chat(session, image, user, message):
@@ -14,4 +17,4 @@ def post_chat(session, image, user, message):
         'date': datetime.datetime.now().isoformat()
     })
     response = r.publish('chat', payload)
-    print("Message sent: {0}".format(response))
+    logger.debug("Message sent: {0}".format(payload))

@@ -1,7 +1,6 @@
 from .basemodel import BaseModel
 from .userprofile import UserProfile
 from .chatmessage import ChatMessage
-from .recurrence import Recurrence
 from .comment import Comment
 from .venue import Venue
 from .label import Label

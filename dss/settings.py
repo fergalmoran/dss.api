@@ -204,6 +204,7 @@ DEFAULT_TRACK_IMAGE = 'assets/images/dyn/default-track-200.png'
 DEFAULT_USER_IMAGE = 'assets/images/dyn/default-avatar-32.png'
 DEFAULT_USER_NAME = 'Anonymouse'
 DEFAULT_USER_TITLE = 'Just another DSS lover'
+DEFAULT_WAVEFORM_GENERATING = '/assets/images/waveform-interstitial.gif'
 
 SITE_NAME = 'Deep South Sounds'
 THUMBNAIL_PREFIX = '_tn/'

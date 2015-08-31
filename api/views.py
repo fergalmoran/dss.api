@@ -1,10 +1,11 @@
 import logging
 import os
+from django.contrib.auth.models import User
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, SuspiciousOperation
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.http.response import HttpResponse
 from rest_framework import viewsets
 from rest_framework import views
@@ -22,13 +23,14 @@ from spa import tasks
 from spa.models import Message
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
+from spa.models.show import Show
 from spa.models.mix import Mix
 from spa.models.comment import Comment
 from spa.models.notification import Notification
 from spa.models.show import Show
 from spa.models.userprofile import UserProfile
 
-logger = logging.getLogger('spa')
+logger = logging.getLogger('dss')
 
 
 class AnonymousWriteUserDelete(BasePermission):
@@ -80,6 +82,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             ret = UserProfile.objects.filter(following__slug__in=[self.request.query_params['following']])
         elif 'followers' in self.request.query_params:
             ret = UserProfile.objects.filter(followers__slug__in=[self.request.query_params['followers']])
+        elif 'messaged_with' in self.request.query_params:
+            ret = UserProfile.objects.filter(messages__slug__in=[self.request.query_params['followers']])
         else:
             ret = super(UserProfileViewSet, self).get_queryset()
 
@@ -144,15 +148,30 @@ class AttachedImageUploadView(views.APIView):
 class SearchResultsView(views.APIView):
     def get(self, request, format=None):
         q = request.GET.get('q', '')
+        q_type = request.GET.get('type', '')
         if len(q) > 0:
-            m = [{
-                     'title': mix.title,
-                     'image': mix.get_image_url(),
-                     'slug': mix.slug,
-                     'url': mix.get_absolute_url(),
-                     'description': mix.description
-                 } for mix in Mix.objects.filter(title__icontains=q)[0:10]]
-            return Response(m)
+            if q_type == 'user':
+                r_s = [
+                    {
+                        'title': user.display_name,
+                        'image': user.get_sized_avatar_image(64, 64),
+                        'slug': user.slug,
+                        'url': user.get_absolute_url(),
+                        'description': user.description
+                    } for user in UserProfile.objects.filter(
+                        Q(user__first_name__icontains=q) |
+                        Q(user__last_name__icontains=q) |
+                        Q(display_name__icontains=q))[0:10]
+                ]
+            else:
+                r_s = [{
+                         'title': mix.title,
+                         'image': mix.get_image_url(),
+                         'slug': mix.slug,
+                         'url': mix.get_absolute_url(),
+                         'description': mix.description
+                     } for mix in Mix.objects.filter(title__icontains=q)[0:10]]
+            return Response(r_s)
 
         return HttpResponse(status=HTTP_204_NO_CONTENT)
 
@@ -227,7 +246,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated():
             raise PermissionDenied("Not allowed")
 
-        ret = ActivityPlay.objects.filter(mix__user=user).order_by("-id")
+        ret = ActivityPlay.objects.filter(mix__user=user.userprofile).order_by("-id")
 
         if len(ret) > 0:
             logger.debug("Activity returned: {0}".format(ret[0].get_object_slug()))
@@ -255,7 +274,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated():
             raise PermissionDenied("Not allowed")
 
-        return Notification.objects.filter(to_user=user).order_by('-date')
+        return Notification.objects.filter(to_user=user.userprofile).order_by('-date')
 
     def perform_update(self, serializer):
         return super(NotificationViewSet, self).perform_update(serializer)
@@ -309,6 +328,7 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         self.__perform_write(serializer)
+
 
 class ShowViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.all()

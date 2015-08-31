@@ -1,7 +1,7 @@
 import logging
 import os
-import urllib.parse
 
+import urllib.parse
 from bitfield.models import BitField
 from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
@@ -9,7 +9,6 @@ from django.db import models
 from django.db.models import Count
 from django_gravatar.helpers import has_gravatar, get_gravatar_url
 from sorl import thumbnail
-from sorl.thumbnail import get_thumbnail
 
 from core.utils.file import generate_save_file_name
 from core.utils.url import unique_slugify
@@ -69,6 +68,9 @@ class UserProfile(BaseModel):
     country = models.CharField(max_length=100, blank=True, null=True)
 
     last_known_session = models.CharField(max_length=250, blank=True, null=True)
+
+    def __str__(self):
+        return self.__unicode__()
 
     def __unicode__(self):
         return "%s - %s" % (self.user.get_full_name(), self.slug)

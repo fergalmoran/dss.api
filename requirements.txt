@@ -4,7 +4,7 @@ django-sendfile
 Werkzeug
 psycopg2
 gunicorn
-dropbox
+dropbox==2.2.0
 django-dirtyfields
 django-storages
 django-user-sessions
@@ -16,14 +16,16 @@ django-model_utils
 django-dbbackup
 django-user-agents
 redis
+git+git://github.com/llazzaro/django-scheduler.git#django-scheduler
 django-celery
+django-scheduler
+django-recurrence
+azure
 
 sorl-thumbnail
 
 git+git://github.com/disqus/django-bitfield.git#django-bitfield
-git+git://github.com/Azure/azure-sdk-for-python.git#azure
 git+git://github.com/tschellenbach/Django-facebook.git#django-facebook
-git+git://github.com/llazzaro/django-scheduler.git#django-scheduler
 git+git://github.com/omab/python-social-auth.git#egg=python-social-auth
 django-allauth
 apache-libcloud
