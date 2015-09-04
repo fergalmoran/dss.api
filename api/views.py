@@ -153,7 +153,7 @@ class SearchResultsView(views.APIView):
             if q_type == 'user':
                 r_s = [
                     {
-                        'title': user.display_name,
+                        'title': user.get_nice_name(),
                         'image': user.get_sized_avatar_image(64, 64),
                         'slug': user.slug,
                         'url': user.get_absolute_url(),
@@ -161,7 +161,7 @@ class SearchResultsView(views.APIView):
                     } for user in UserProfile.objects.filter(
                         Q(user__first_name__icontains=q) |
                         Q(user__last_name__icontains=q) |
-                        Q(display_name__icontains=q))[0:10]
+                        Q(display_name__icontains=q)).exclude(slug__isnull=True).exclude(slug__exact='')[0:10]
                 ]
             else:
                 r_s = [{
@@ -178,13 +178,17 @@ class SearchResultsView(views.APIView):
 
 class PartialMixUploadView(views.APIView):
     parser_classes = (FileUploadParser,)
-    permission_classes = (IsAuthenticated,)
+    # TODO have to make this anonymous (for now) because dropzone doesn't play nice with JWT
+    #permission_classes = (IsAuthenticated,)
 
     # noinspection PyBroadException
     def post(self, request):
         try:
             logger.info("Received post file")
             uid = request.META.get('HTTP_UPLOAD_HASH')
+            session_id = request.META.get('HTTP_SESSION_ID')
+            logger.info("Session Id: {0}".format(session_id))
+
             in_file = request.data['file'] if request.data else None
             file_name, extension = os.path.splitext(in_file.name)
 
@@ -212,7 +216,7 @@ class PartialMixUploadView(views.APIView):
                     tasks.create_waveform_task.s(input_file, uid) |
                     tasks.upload_to_cdn_task.subtask(('mp3', uid, 'mixes'), immutable=True) |
                     tasks.upload_to_cdn_task.subtask(('png', uid, 'waveforms'), immutable=True) |
-                    tasks.notify_subscriber.subtask((request.user.userprofile.get_session_id(), uid), immutable=True)
+                    tasks.notify_subscriber.subtask((session_id, uid), immutable=True)
                 ).delay()
                 logger.debug("Waveform task started")
 
@@ -274,7 +278,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
         if not user.is_authenticated():
             raise PermissionDenied("Not allowed")
 
-        return Notification.objects.filter(to_user=user.userprofile).order_by('-date')
+        return Notification.objects.filter(to_user=user.userprofile).order_by('-id')
 
     def perform_update(self, serializer):
         return super(NotificationViewSet, self).perform_update(serializer)

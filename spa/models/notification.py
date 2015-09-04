@@ -39,7 +39,7 @@ class Notification(BaseModel):
             'user:message',
             self.to_user.get_session_id(),
             {
-                'from_user': self.from_user.slug,
+                'from_user': self.from_user.slug if self.from_user is not None else settings.DEFAULT_USER_NAME,
                 'message': self.target_desc
             })
 
