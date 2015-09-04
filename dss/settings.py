@@ -70,7 +70,6 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.contrib.auth.context_processors.auth',
 )
 
-
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -101,11 +100,11 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admindocs',
-    #'django_facebook',
+    # 'django_facebook',
     'django_extensions',
     'django_gravatar',
 
-        # TODO: remove
+    # TODO: remove
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
@@ -124,8 +123,6 @@ INSTALLED_APPS = (
     'storages',
     'social.apps.django_app.default',
 
-
-
     'dbbackup',
     'djrill',
     'rest_framework',
@@ -138,7 +135,6 @@ LOGOUT_URL = reverse_lazy('home')
 
 FACEBOOK_APP_ID = '154504534677009'
 
-
 AVATAR_STORAGE_DIR = MEDIA_ROOT + '/avatars/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
 
@@ -150,7 +146,7 @@ TASTYPIE_ALLOW_MISSING_SLASH = True
 SENDFILE_ROOT = os.path.join(MEDIA_ROOT, 'mixes')
 SENDFILE_URL = '/media/mixes'
 
-#SESSION_ENGINE = 'django.contrib.sessions.models.Session'
+# SESSION_ENGINE = 'django.contrib.sessions.models.Session'
 
 mimetypes.add_type("text/xml", ".plist", False)
 
@@ -212,8 +208,8 @@ THUMBNAIL_PREFIX = '_tn/'
 # THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
 JWT_AUTH = {
-    #'JWT_EXPIRATION_DELTA': timedelta(seconds=900),
-    'JWT_EXPIRATION_DELTA': timedelta(seconds=5),
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=900),
+    # 'JWT_EXPIRATION_DELTA': timedelta(seconds=5),
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
 }
