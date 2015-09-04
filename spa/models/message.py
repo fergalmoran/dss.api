@@ -29,7 +29,8 @@ class Message(BaseModel):
 
     body = models.TextField()
 
-    def create_notification(self, accept=False):
+    # TODO: Need to keep this away from normal notifications
+    def __create_notification(self, accept=False):
         try:
             notification = Notification()
             notification.from_user = self.from_user
