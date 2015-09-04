@@ -84,7 +84,7 @@ MIDDLEWARE_CLASSES = (
     # 'htmlmin.middleware.MarkRequestMiddleware',
     'django_user_agents.middleware.UserAgentMiddleware',
     # 'spa.middleware.uploadify.SWFUploadMiddleware',
-    # 'spa.middleware.sqlprinter.SqlPrintingMiddleware' if DEBUG else None,
+    # 'spa.middleware.sqlprinter.SqlPrintingMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -212,7 +212,8 @@ THUMBNAIL_PREFIX = '_tn/'
 # THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': timedelta(seconds=900),
+    #'JWT_EXPIRATION_DELTA': timedelta(seconds=900),
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=5),
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
 }
