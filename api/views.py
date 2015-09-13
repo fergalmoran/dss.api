@@ -1,6 +1,5 @@
 import logging
 import os
-from django.contrib.auth.models import User
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, SuspiciousOperation
 from django.core.files.base import ContentFile
@@ -15,7 +14,7 @@ from rest_framework.parsers import FileUploadParser
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, \
-    HTTP_200_OK, HTTP_204_NO_CONTENT
+    HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR
 
 from api import serializers
 from dss import settings
@@ -23,7 +22,6 @@ from spa import tasks
 from spa.models import Message
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
-from spa.models.show import Show
 from spa.models.mix import Mix
 from spa.models.comment import Comment
 from spa.models.notification import Notification
@@ -153,7 +151,8 @@ class SearchResultsView(views.APIView):
             if q_type == 'user':
                 r_s = [
                     {
-                        'title': user.get_nice_name(),
+                        'id': user.id,
+                        'display_name': user.get_nice_name(),
                         'image': user.get_sized_avatar_image(64, 64),
                         'slug': user.slug,
                         'url': user.get_absolute_url(),
@@ -162,15 +161,16 @@ class SearchResultsView(views.APIView):
                         Q(user__first_name__icontains=q) |
                         Q(user__last_name__icontains=q) |
                         Q(display_name__icontains=q)).exclude(slug__isnull=True).exclude(slug__exact='')[0:10]
-                ]
+                    ]
             else:
-                r_s = [{
-                         'title': mix.title,
-                         'image': mix.get_image_url(),
-                         'slug': mix.slug,
-                         'url': mix.get_absolute_url(),
-                         'description': mix.description
-                     } for mix in Mix.objects.filter(title__icontains=q)[0:10]]
+                r_s = [
+                    {
+                        'title': mix.title,
+                        'image': mix.get_image_url(),
+                        'slug': mix.slug,
+                        'url': mix.get_absolute_url(),
+                        'description': mix.description
+                    } for mix in Mix.objects.filter(title__icontains=q)[0:10]]
             return Response(r_s)
 
         return HttpResponse(status=HTTP_204_NO_CONTENT)
@@ -179,7 +179,7 @@ class SearchResultsView(views.APIView):
 class PartialMixUploadView(views.APIView):
     parser_classes = (FileUploadParser,)
     # TODO have to make this anonymous (for now) because dropzone doesn't play nice with JWT
-    #permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
 
     # noinspection PyBroadException
     def post(self, request):
@@ -337,3 +337,12 @@ class MessageViewSet(viewsets.ModelViewSet):
 class ShowViewSet(viewsets.ModelViewSet):
     queryset = Show.objects.all()
     serializer_class = serializers.ShowSerializer
+
+    def perform_create(self, serializer):
+        try:
+            performer = UserProfile.objects.get(pk=self.request.data['performer'])
+            serializer.save(user=self.request.user.userprofile, performer=performer)
+        except UserProfile.DoesNotExist:
+            return Response(status=HTTP_400_BAD_REQUEST, data='Performer not found')
+        except Exception as ex:
+            return Response(status=HTTP_500_INTERNAL_SERVER_ERROR, data=ex)
