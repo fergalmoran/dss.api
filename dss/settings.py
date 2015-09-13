@@ -21,6 +21,8 @@ ADMINS = (
     ('Fergal Moran', 'fergal.moran@gmail.com'),
 )
 
+PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+
 MANAGERS = ADMINS
 AUTH_PROFILE_MODULE = 'spa.UserProfile'
 
