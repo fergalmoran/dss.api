@@ -22,7 +22,6 @@ ADMINS = (
 )
 
 MANAGERS = ADMINS
-AUTH_PROFILE_MODULE = 'spa.UserProfile'
 
 ALLOWED_HOSTS = ['*']
 DATABASES = {

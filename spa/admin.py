@@ -11,7 +11,7 @@ from spa.models.venue import Venue
 
 class DefaultAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
-        obj.user = request.user.get_profile()
+        obj.user = request.user
         obj.save()
 
 
