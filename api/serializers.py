@@ -157,7 +157,6 @@ class MixSerializer(serializers.ModelSerializer):
         ]
 
     slug = serializers.ReadOnlyField(required=False)
-    # user = serializers.SlugRelatedField(slug_field='slug', read_only=True)
     user = InlineUserProfileSerializer(read_only=True)
     waveform_url = serializers.ReadOnlyField(source='get_waveform_url')
     waveform_progress_url = serializers.ReadOnlyField(source='get_waveform_progress_url')
@@ -493,5 +492,20 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ShowSerializer(serializers.ModelSerializer):
+    performer = InlineUserProfileSerializer(read_only=True)
+    user = InlineUserProfileSerializer(read_only=True)
+
     class Meta:
         model = Show
+        """
+        fields = (
+            'id',
+            'start_date',
+            'end_date',
+            'user',
+            'performer',
+            'recurrence',
+            'description'
+        )
+        """
+
