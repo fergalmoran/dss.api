@@ -1,5 +1,8 @@
+from gzip import GzipFile
+import subprocess
 from django.core.management.base import LabelCommand, CommandError
 from subprocess import Popen, PIPE, STDOUT
+import pexpect
 from dss import settings
 import tarfile
 import dropbox
@@ -8,20 +11,21 @@ import os, time
 
 def _backup_database():
     print("Creating database backup")
-    args = []
-    args += ["--username=%s" % settings.DATABASE_USER]
-    args += ["--password"]
-    args += ["--host=%s" % settings.DATABASE_HOST]
-    args += [settings.DATABASE_NAME]
-    remote_file = "{0}.tar.gz".format(time.strftime("%Y%m%d-%H%M%S"))
+    file_name = "{0}.sql".format(time.strftime("%Y%m%d-%H%M%S"))
+    backup_file = os.path.join(settings.DSS_TEMP_PATH, file_name)
 
-    pipe = Popen('pg_dump %s > %s' % (' '.join(args), remote_file), shell=True, stdin=PIPE)
+    print('Backing up {} database to {}'.format(settings.DATABASE_NAME, file_name))
+    command = '/usr/bin/pg_dump --username {} --host {} --password {}'.format(
+        settings.DATABASE_USER, settings.DATABASE_HOST, settings.DATABASE_NAME)
 
-    if settings.DATABASE_PASSWORD:
-        output = pipe.communicate(input=bytes(settings.DATABASE_PASSWORD + '\n', 'UTF-8'))
-        print(output)
+    child = pexpect.spawnu(command)
+    fout = open(backup_file, "w")
+    child.logfile = fout
+    child.expect("[Pp]assword:")
+    child.sendline(settings.DATABASE_PASSWORD)
+    child.expect(pexpect.EOF)
 
-    _create_backup_bundle(remote_file, 'databases', settings.PROJECT_ROOT)
+    _create_backup_bundle("{0}.tar.gz".format(file_name), 'database', backup_file)
 
 
 def _backup_settings():
@@ -39,7 +43,7 @@ def _create_backup_bundle(remote_file, type, location):
     backup_file = "{0}/{1}".format(settings.DSS_TEMP_PATH, remote_file)
 
     tar = tarfile.open(backup_file, "w:gz")
-    tar.add(location, arcname=remote_file, filter=_progress_filter)
+    tar.add(location)
     tar.close()
 
     _upload_to_dropbox(type, backup_file, remote_file)
