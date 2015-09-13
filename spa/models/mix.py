@@ -207,7 +207,7 @@ class Mix(BaseModel):
     def add_download(self, user):
         try:
             if user.is_authenticated():
-                ActivityDownload(user=user.get_profile(), mix=self).save()
+                ActivityDownload(user=user, mix=self).save()
         except Exception as e:
             self.logger.exception("Error adding mix download: %s" % e)
 
@@ -227,7 +227,7 @@ class Mix(BaseModel):
     def add_play(self, user):
         try:
             if user.is_authenticated():
-                ActivityPlay(user=user.get_profile(), mix=self).save()
+                ActivityPlay(user=user.userprofile, mix=self).save()
             else:
                 ActivityPlay(user=None, mix=self).save()
 
@@ -240,7 +240,7 @@ class Mix(BaseModel):
                 return
             if user.user.is_authenticated():
                 if value:
-                    if self.favourites.filter(user=user).count() == 0:
+                    if self.favourites.filter(user=user.user).count() == 0:
                         fav = ActivityFavourite(user=user)  # , mix=self)
                         fav.save()
                         self.favourites.add(user)
@@ -258,7 +258,7 @@ class Mix(BaseModel):
                 return
             if user.user.is_authenticated():
                 if value:
-                    if self.likes.filter(user=user).count() == 0:
+                    if self.likes.filter(user=user.user).count() == 0:
                         v = ActivityLike(user=user, mix=self)
                         v.save()
                         self.likes.add(user)

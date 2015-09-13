@@ -24,7 +24,6 @@ ADMINS = (
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 MANAGERS = ADMINS
-AUTH_PROFILE_MODULE = 'spa.UserProfile'
 
 ALLOWED_HOSTS = ['*']
 DATABASES = {

@@ -115,10 +115,9 @@ def session_pre_save(sender, **kwargs):
         uid = s.get_decoded().get('_auth_user_id')
         if uid is not None:
             try:
-                user = User.objects.get(pk=uid)
-                p = user.get_profile()
-                p.last_known_session = s.session_key
-                p.save()
+                user = UserProfile.objects.get(pk=uid)
+                user.last_known_session = s.session_key
+                user.save()
             except ObjectDoesNotExist:
                 pass
 

@@ -157,7 +157,7 @@ class UserProfile(BaseModel):
 
     def is_follower(self, user):
         try:
-            return user.get_profile() in self.followers.all()
+            return user in self.followers.all()
         except Exception as ex:
             logger.error(ex)
 
