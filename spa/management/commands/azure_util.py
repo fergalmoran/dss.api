@@ -10,7 +10,10 @@ def _update_azure_headers():
     ms = Mix.objects.all()
     for m in ms:
         print("Update headers for {0}".format(m.title))
-        cdn.set_azure_details('{0}.mp3'.format(m.uid), 'Deep South Sounds - {0}'.format(m.title), 'mixes')
+        cdn.set_azure_details(
+            blob_name='{0}.mp3'.format(m.uid),
+            download_name='Deep South Sounds - {0}.mp3'.format(m.title),
+            container_name='mixes')
 
 
 def _check_missing_mixes():
