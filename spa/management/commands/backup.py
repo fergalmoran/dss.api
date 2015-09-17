@@ -51,13 +51,16 @@ def _create_backup_bundle(remote_file, type, location):
 
 def _upload_to_dropbox(type, backup_file, remote_file):
     print("Uploading {0} to dropbox".format(backup_file))
-    with open(backup_file, "rb") as f:
-        client = dropbox.client.DropboxClient(settings.DSS_DB_BACKUP_TOKEN)
-        response = client.put_file("{0}/{1}".format(type, remote_file), f, overwrite=True)
+    try:
+        with open(backup_file, "rb") as f:
+            client = dropbox.client.DropboxClient(settings.DSS_DB_BACKUP_TOKEN)
+            response = client.put_file("{0}/{1}".format(type, remote_file), f, overwrite=True)
 
-        os.remove(backup_file)
+            os.remove(backup_file)
 
-        print(response)
+            print(response)
+    except Exception as ex:
+        print(ex)
 
 
 def _backup_media():
