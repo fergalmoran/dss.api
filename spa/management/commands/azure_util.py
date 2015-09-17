@@ -22,7 +22,7 @@ def _check_missing_mixes():
             file = '/mnt/dev/working/Dropbox/Development/deepsouthsounds.com/media/mixes/{0}.mp3'.format(m.uid)
             if os.path.isfile(file):
                 print(('* {0}'.format(file)))
-                #cdn.upload_file_to_azure(file, '{0}.mp3'.format(m.uid), 'mixes')
+                # cdn.upload_file_to_azure(file, '{0}.mp3'.format(m.uid), 'mixes')
                 found += 1
             else:
                 found += 1
@@ -32,7 +32,6 @@ def _check_missing_mixes():
 
 
 class Command(LabelCommand):
-
     def handle_label(self, label, **options):
         pass
 
@@ -49,21 +48,9 @@ class Command(LabelCommand):
             print("Fatal error, bailing. {0}".format(ex.message))
 
     def handle(self, *labels, **options):
-        verbosity = int(options.get('verbosity'))
-
-        # Django 1.4 compatibility fix
-        stdout = options.get('stdout', None)
-        stdout = stdout if stdout else sys.stdout
-
-        stderr = options.get('stderr', None)
-        stderr = stderr if stderr else sys.stderr
-
-        if not labels:
-            print(self.print_help('thumbnail', ''), file=stderr)
-            sys.exit(1)
-
         if len(labels) != 1:
             raise CommandError('`%s` is not a valid argument' % labels)
+
         label = labels[0]
 
         if label not in ['check_missing_mixes', 'update_azure_headers']:
