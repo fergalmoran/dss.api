@@ -1,6 +1,7 @@
 from celery.task import task
 import os
 import logging
+import json
 import requests
 from core.realtime import activity
 
@@ -67,7 +68,10 @@ def notify_subscriber(session_id, uid):
 
 @task
 def play_pending_audio():
-    m = Mix.objects.order_by('uid').first()
+    m = Mix.objects.order_by('?').first()
     print("Playing: {}".format(m.title))
-    r = requests.post('http://localhost:8888/a/play', data={'audio_file:': m.get_stream_url()})
+
+    data = {'audio_file': m.get_stream_url()}
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    r = requests.post('http://localhost:8888/a/play', data=json.dumps(data), headers=headers)
     print(r.text)
