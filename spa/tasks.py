@@ -1,9 +1,11 @@
 from celery.task import task
 import os
 import logging
+import requests
 from core.realtime import activity
 
 from core.utils import cdn
+from spa.models import Mix
 from spa.signals import waveform_generated_signal
 
 try:
@@ -61,3 +63,11 @@ def update_geo_info_task(ip_address, profile_id):
 def notify_subscriber(session_id, uid):
     if session_id is not None:
         activity.post_activity('user:process', session_id, {'type': 'waveform', 'target': uid})
+
+
+@task
+def play_pending_audio():
+    m = Mix.objects.order_by('uid').first()
+    print("Playing: {}".format(m.title))
+    r = requests.post('http://localhost:8888/a/play', data={'audio_file:': m.get_stream_url()})
+    print(r.text)
