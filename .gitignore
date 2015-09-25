@@ -33,3 +33,4 @@ dsskeys
 reload
 reset
 __krud/
+celerybeat-schedule
