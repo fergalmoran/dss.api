@@ -2,6 +2,7 @@ from optparse import make_option
 import os
 
 from django.core.management.base import BaseCommand
+from spa import tasks
 
 from spa.management.commands import helpers
 from spa.models.mix import Mix
@@ -56,5 +57,9 @@ class Command(BaseCommand):
                 if options['nocelery']:
                     create_waveform_task(in_file=mix_file, uid=mix.uid)
                 else:
-                    create_waveform_task.delay(in_file=mix_file, uid=mix.uid)
+                    (
+                        tasks.create_waveform_task.s(mix_file, mix.uid) |
+                        tasks.upload_to_cdn_task.subtask(('mp3', mix.uid, 'mixes'), immutable=True) |
+                        tasks.upload_to_cdn_task.subtask(('png', mix.uid, 'waveforms'), immutable=True)
+                    ).delay()
 
