@@ -113,6 +113,8 @@ class MixViewSet(viewsets.ModelViewSet):
                 return rows
             else:
                 raise PermissionDenied("Not allowed")
+        if 'random' in self.request.query_params:
+            return Mix.objects.order_by('?').all()
         else:
             return Mix.objects.all()
 
