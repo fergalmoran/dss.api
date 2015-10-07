@@ -6,6 +6,7 @@ from dss import settings
 from spa.models import Mix, UserProfile
 from core.utils import session
 
+
 class Helper(APIView):
     pass
 
@@ -22,7 +23,7 @@ class ChatHelper(ActivityHelper):
         # do some persistence stuff with the chat
         from core.realtime import chat
 
-        #user = self.get_session(request)
+        # user = self.get_session(request)
         u = request.user
         if not u.is_anonymous():
             image = u.userprofile.get_sized_avatar_image(32, 32)
@@ -60,5 +61,13 @@ class UserSlugCheckHelper(Helper):
         except UserProfile.DoesNotExist:
             return Response(status=HTTP_200_OK)
 
+
 class RadioHelper(Helper):
     def get(self, request):
+        m = Mix.objects.order_by('?').first()
+        ret = {
+            'url': m.get_stream_url(),
+            'title': str(m)
+        }
+
+        return Response(data=ret, status=HTTP_200_OK)
