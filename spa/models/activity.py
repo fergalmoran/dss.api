@@ -49,13 +49,14 @@ class Activity(BaseModel):
             else:
                 action_type = "deepsouthsounds:play"
 
-            social_account = SocialToken.objects.filter(account__user=self.user.user, account__provider='facebook')[0]
-            facebook = OpenFacebook(social_account.token)
-            notification_html = {
-                object: wrap_full(self.get_object_url())
-            }
-            result = facebook.set('me/%s' % action_type, notification_html)
-            print(result)
+            if False:
+                social_account = SocialToken.objects.filter(account__user=self.user.user, account__provider='facebook')[0]
+                facebook = OpenFacebook(social_account.token)
+                notification_html = {
+                    object: wrap_full(self.get_object_url())
+                }
+                result = facebook.set('me/%s' % action_type, notification_html)
+                print(result)
         except Exception as ex:
             print(ex)
             pass
