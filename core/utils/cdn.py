@@ -1,9 +1,5 @@
-import os
-
 from azure import WindowsAzureMissingResourceError
 from azure.storage import BlobService
-from libcloud.storage.types import Provider
-from libcloud.storage.providers import get_driver
 
 from dss import settings
 from dss.storagesettings import AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_CONTAINER

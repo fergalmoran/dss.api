@@ -12,12 +12,15 @@ RUN mkdir /files/cache/waveforms
 RUN mkdir /files/tmp
 
 WORKDIR /code
+
 ADD requirements.txt /code/
-RUN pip install -r requirements.txt
+ADD . /code/
+
 RUN apt-get update && apt-get install -y sox lame vim \
     libboost-program-options-dev libsox-fmt-mp3 postgresql-client rsync openssh-client
 
-ADD . /code/
+RUN pip uninstall azure
+RUN pip install -r requirements.txt
 
 RUN adduser --disabled-password --gecos '' djworker
 RUN chown djworker /files -R
