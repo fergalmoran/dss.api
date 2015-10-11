@@ -1,5 +1,5 @@
-from azure import WindowsAzureMissingResourceError
-from azure.storage import BlobService
+from azure.common import AzureMissingResourceHttpError
+from azure.storage.blob import BlobService
 
 from dss import settings
 from dss.storagesettings import AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_CONTAINER
@@ -32,7 +32,7 @@ def set_azure_details(blob_name, download_name, container_name=AZURE_CONTAINER):
             print("Processed: %s" % download_name)
         else:
             print("No blob found for: %s" % download_name)
-    except WindowsAzureMissingResourceError:
+    except AzureMissingResourceHttpError:
         print("No blob found for: %s" % download_name)
     except Exception as ex:
         print("Error processing blob %s: %s" % (download_name, ex))
