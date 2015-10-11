@@ -73,6 +73,10 @@ class RadioHelper(Helper):
                 'title': str(m)
             }
         elif 'np' in self.request.query_params:
-            ret = ice_scrobbler.get_server_details("localhost", "8000", "dss")
+            ret = ice_scrobbler.get_server_details(
+                settings.RADIO_HOST,
+                settings.RADIO_PORT,
+                settings.RADIO_MOUNT
+            )
 
         return Response(data=ret, status=HTTP_200_OK)
