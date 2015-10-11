@@ -95,7 +95,7 @@ class Mix(BaseModel):
         return self.__unicode__()
 
     def __unicode__(self):
-        return self.title
+        return "{} - {}".format(self.user.get_nice_name(),  self.title)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.id:

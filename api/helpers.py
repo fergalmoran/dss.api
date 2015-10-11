@@ -2,9 +2,11 @@ import datetime
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_200_OK
 from rest_framework.views import APIView
+from core.radio import ice_scrobbler
 from dss import settings
 from spa.models import Mix, UserProfile
 from core.utils import session
+
 
 class Helper(APIView):
     pass
@@ -22,7 +24,7 @@ class ChatHelper(ActivityHelper):
         # do some persistence stuff with the chat
         from core.realtime import chat
 
-        #user = self.get_session(request)
+        # user = self.get_session(request)
         u = request.user
         if not u.is_anonymous():
             image = u.userprofile.get_sized_avatar_image(32, 32)
@@ -59,3 +61,18 @@ class UserSlugCheckHelper(Helper):
             return Response(status=HTTP_204_NO_CONTENT)
         except UserProfile.DoesNotExist:
             return Response(status=HTTP_200_OK)
+
+
+class RadioHelper(Helper):
+    def get(self, request):
+        if 'rmix' in self.request.query_params:
+            m = Mix.objects.order_by('?').first()
+            ret = {
+                'url': m.get_stream_url(),
+                'slug': m.get_full_url(),
+                'title': str(m)
+            }
+        elif 'np' in self.request.query_params:
+            ret = ice_scrobbler.get_server_details("localhost", "8000", "dss")
+
+        return Response(data=ret, status=HTTP_200_OK)
