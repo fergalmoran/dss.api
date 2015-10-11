@@ -2,6 +2,7 @@ import datetime
 from rest_framework.response import Response
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_201_CREATED, HTTP_204_NO_CONTENT, HTTP_200_OK
 from rest_framework.views import APIView
+from core.radio import ice_scrobbler
 from dss import settings
 from spa.models import Mix, UserProfile
 from core.utils import session
@@ -64,10 +65,14 @@ class UserSlugCheckHelper(Helper):
 
 class RadioHelper(Helper):
     def get(self, request):
-        m = Mix.objects.order_by('?').first()
-        ret = {
-            'url': m.get_stream_url(),
-            'title': str(m)
-        }
+        if 'rmix' in self.request.query_params:
+            m = Mix.objects.order_by('?').first()
+            ret = {
+                'url': m.get_stream_url(),
+                'slug': m.get_full_url(),
+                'title': str(m)
+            }
+        elif 'np' in self.request.query_params:
+            ret = ice_scrobbler.get_server_details("localhost", "8000", "dss")
 
         return Response(data=ret, status=HTTP_200_OK)
