@@ -46,3 +46,4 @@ django-enumfield
 
 ipython
 ipdb
+beautifulsoup4
