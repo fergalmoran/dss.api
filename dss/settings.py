@@ -124,7 +124,6 @@ INSTALLED_APPS = (
     'storages',
     'social.apps.django_app.default',
 
-    'dbbackup',
     'djrill',
     'rest_framework',
     'rest_framework.authtoken',

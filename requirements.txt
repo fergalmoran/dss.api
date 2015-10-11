@@ -13,7 +13,6 @@ six==1.6.0
 django-filter
 django-grappelli==2.5.7
 django-model_utils
-django-dbbackup
 django-user-agents
 redis
 git+git://github.com/llazzaro/django-scheduler.git#django-scheduler
