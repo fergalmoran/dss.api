@@ -1,13 +1,14 @@
 import requests
 from bs4 import BeautifulSoup
 from requests.packages.urllib3.connection import ConnectionError
+from dss import settings
 
 
-def get_server_details(server, port, mount):
-    server = "http://%s:%s/status.xsl?mount=/%s" % (server, port, mount)
-    print("Getting info for %s" % server)
+def get_server_details():
+    url = "http://%s:%s/status.xsl?mount=/%s" % (settings.ICE_HOST, settings.ICE_PORT, settings.ICE_MOUNT)
+    print("Getting info for %s" % url)
     try:
-        response = requests.get(server)
+        response = requests.get(url)
         html = response.text
         if html:
             try:
@@ -38,6 +39,11 @@ def get_server_details(server, port, mount):
         return {
             'status': 0
         }
+
+
+def shuffle():
+    url = "http://%s:%s/a/shuffle" % (settings.RADIO_HOST, settings.RADIO_PORT)
+    r = requests.post(url)
 
 
 if __name__ == '__main__':
