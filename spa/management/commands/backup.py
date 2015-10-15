@@ -23,7 +23,7 @@ def _backup_database():
     child.logfile = fout
     child.expect("[Pp]assword:")
     child.sendline(settings.DATABASE_PASSWORD)
-    child.expect(pexpect.EOF)
+    child.expect(pexpect.EOF, timeout=120)
 
     _create_backup_bundle("{0}.tar.gz".format(file_name), 'database', backup_file)
 
