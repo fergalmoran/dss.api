@@ -45,6 +45,10 @@ def shuffle():
     url = "http://%s:%s/a/shuffle" % (settings.RADIO_HOST, settings.RADIO_PORT)
     r = requests.post(url)
 
+def play(url):
+    url = "http://%s:%s/a/shuffle" % (settings.RADIO_HOST, settings.RADIO_PORT)
+    r = requests.post(url)
+
 
 if __name__ == '__main__':
     d = get_server_details("localhost", "8000", "dss")
