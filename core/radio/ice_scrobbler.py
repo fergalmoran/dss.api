@@ -42,13 +42,12 @@ def get_server_details():
 
 
 def shuffle():
-    url = "http://%s:%s/a/shuffle" % (settings.RADIO_HOST, settings.RADIO_PORT)
+    url = "http://{}:{}/a/shuffle".format(settings.RADIO_HOST, settings.RADIO_PORT)
     r = requests.post(url)
 
-def play(url):
-    url = "http://%s:%s/a/shuffle" % (settings.RADIO_HOST, settings.RADIO_PORT)
-    r = requests.post(url)
-
+def play(item):
+    url = "http://{}:{}/a/play".format(settings.RADIO_HOST, settings.RADIO_PORT)
+    r = requests.post(url, data=item)
 
 if __name__ == '__main__':
     d = get_server_details("localhost", "8000", "dss")
