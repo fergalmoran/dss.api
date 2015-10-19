@@ -80,14 +80,27 @@ class RadioHelper(Helper):
         return Response(data=ret, status=HTTP_200_OK)
 
     def post(self, request):
-        if 'action' in request.query_params:
-            action = request.query_params.get('action')
-            if action == 'shuffle':
-                ice_scrobbler.shuffle()
-                return Response(status=HTTP_200_OK)
-        if 'update' in request.query_params and 'url' in request.query_params:
-            activity.post_activity('site:radio_changed', message={
-                'description': request.query_params.get('update'),
-                'url': request.query_params.get('url')
-            })
+        try:
+            if 'action' in request.query_params:
+                action = request.query_params.get('action')
+                if action == 'shuffle':
+                    ice_scrobbler.shuffle()
+                    return Response(status=HTTP_200_OK)
+                if action == 'play':
+                    m = Mix.objects.get(slug=request.query_params.get('slug'))
+                    item = {
+                        'url': m.get_stream_url(),
+                        'slug': m.get_full_url(),
+                        'title': str(m)
+                    }
+                    ice_scrobbler.play(item)
+                    return Response(status=HTTP_200_OK)
+            if 'update' in request.query_params and 'url' in request.query_params:
+                activity.post_activity('site:radio_changed', message={
+                    'description': request.query_params.get('update'),
+                    'url': request.query_params.get('url')
+                })
+        except Exception as ex:
+            pass
+
         return Response(status=HTTP_400_BAD_REQUEST)

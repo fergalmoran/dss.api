@@ -82,7 +82,6 @@ MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
     # 'htmlmin.middleware.HtmlMinifyMiddleware',
     # 'htmlmin.middleware.MarkRequestMiddleware',
-    'django_user_agents.middleware.UserAgentMiddleware',
     # 'spa.middleware.uploadify.SWFUploadMiddleware',
     # 'spa.middleware.sqlprinter.SqlPrintingMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -120,7 +119,6 @@ INSTALLED_APPS = (
     'gunicorn',
     'spa.signals',
     'core',
-    'django_user_agents',
     'storages',
     'social.apps.django_app.default',
 
