@@ -11,7 +11,6 @@ media/*
 build/*
 _working/*
 static/CACHE/*
-dss/localsettings.py
 dss/localsettings.py.dev
 dss/storagesettings.py
 dss/celery_settings.py
