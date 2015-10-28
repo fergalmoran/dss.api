@@ -103,7 +103,7 @@ class Mix(BaseModel):
 
         self.clean_image('mix_image', Mix)
         # Check for the unlikely event that the waveform has been generated
-        if cdn.file_exists('{0}{1}.png'.format(localsettings.WAVEFORM_URL, self.uid)):
+        if cdn.file_exists('{0}{1}.png'.format(settings.WAVEFORM_URL, self.uid)):
             self.waveform_generated = True
             try:
                 self.duration = mp3_length(self.get_absolute_path())
@@ -153,12 +153,12 @@ class Mix(BaseModel):
 
     def get_waveform_url(self, waveform_type=""):
         # TODO: Design better flow for this sort of thing
-        if not self.waveform_generated and cdn.file_exists('{0}{1}.png'.format(localsettings.WAVEFORM_URL, self.uid)):
+        if not self.waveform_generated and cdn.file_exists('{0}{1}.png'.format(settings.WAVEFORM_URL, self.uid)):
             self.waveform_generated = True
             self.save()
 
         if self.waveform_generated:
-            waveform_root = localsettings.WAVEFORM_URL \
+            waveform_root = settings.WAVEFORM_URL \
                 if hasattr(localsettings,
                            'WAVEFORM_URL') else "%swaveforms" % settings.MEDIA_URL
 
