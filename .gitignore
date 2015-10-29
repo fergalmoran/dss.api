@@ -13,7 +13,6 @@ _working/*
 static/CACHE/*
 dss/localsettings.py.dev
 dss/localsettings.py.docker
-dss/storagesettings.py
 dss/celery_settings.py
 dss.conf
 dss/debugsettings.py

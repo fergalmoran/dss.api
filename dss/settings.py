@@ -220,7 +220,6 @@ WAVEFORM_URL = '{0}waveforms/'.format(CDN_URL)
 STREAM_URL = '{0}mixes/'.format(CDN_URL)
 AUDIO_URL = '{0}mixes/'.format(CDN_URL)
 
-MEDIA_URL = 'http://home.bitchmints.com/DSSMedia/'  # '{0}media/'.format(CDN_URL)
 
 NOTIFICATIONS_FROM_ADDRESS = "admin@deepsouthsounds.com"
 
