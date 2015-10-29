@@ -159,8 +159,7 @@ class Mix(BaseModel):
 
         if self.waveform_generated:
             waveform_root = settings.WAVEFORM_URL \
-                if hasattr(localsettings,
-                           'WAVEFORM_URL') else "%swaveforms" % settings.MEDIA_URL
+                if hasattr(settings, 'WAVEFORM_URL') else "%swaveforms" % settings.MEDIA_URL
 
             ret = "%s/%s%s.%s" % (waveform_root, self.uid, waveform_type, "png")
             return url.urlclean(ret)
