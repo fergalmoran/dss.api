@@ -19,7 +19,7 @@ CACHE_ROOT = os.environ.get('CACHE_ROOT', '/files/cache')
 
 MEDIA_URL = os.environ.get('MEDIA_URL', 'http://deepsouthsounds.com/media/')  # '{0}media/'.format(CDN_URL)
 
-REDIS_HOST = 'localhost'
+REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672//')
 CELERY_ACCEPT_CONTENT = ['pickle', 'msgpack', 'json']
 
