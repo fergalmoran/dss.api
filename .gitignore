@@ -11,9 +11,7 @@ media/*
 build/*
 _working/*
 static/CACHE/*
-dss/localsettings.py
-dss/storagesettings.py
-dss/celery_settings.py
+dss/devsettings.py
 dss.conf
 dss/debugsettings.py
 mysql
