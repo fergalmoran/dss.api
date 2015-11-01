@@ -1,7 +1,7 @@
+from azure.storage.blob import BlobService
 import urllib.request, urllib.error, urllib.parse
 
 from allauth.socialaccount.models import SocialAccount
-from azure.storage import BlobService
 from django.core.files.base import File
 from django.core.files.temp import NamedTemporaryFile
 from django.core.management.base import NoArgsCommand

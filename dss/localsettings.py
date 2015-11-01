@@ -1,5 +1,8 @@
 import os
+<<<<<<< HEAD
 from dss import devsettings
+=======
+>>>>>>> master
 
 DEBUG = True
 DSS_TEMP_PATH = os.environ.get('DSS_TEMP_PATH', '/tmp/')
@@ -24,7 +27,11 @@ REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672//')
 CELERY_ACCEPT_CONTENT = ['pickle', 'msgpack', 'json']
 
+<<<<<<< HEAD
 SECRET_KEY = os.environ.get('SECRET_KEY', devsettings.SECRET_KEY)
+=======
+SECRET_KEY = os.environ.get('SECRET_KEY', 'AAA')
+>>>>>>> master
 LIVE_ENABLED = os.environ.get('LIVE_ENABLED', False)
 
 ICE_HOST = os.environ.get('ICE_HOST', 'localhost')
