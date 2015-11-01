@@ -16,3 +16,4 @@ from .release import Release
 from .playlist import Playlist
 from .message import Message
 from .show import Show
+from .blog import Blog
