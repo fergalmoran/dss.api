@@ -5,7 +5,7 @@ import time
 import dropbox
 import pexpect
 from django.core.management.base import LabelCommand
-from dropbox.client import ChunkedUploader, DropboxClient
+from dropbox.client import ChunkedUploader
 from dropbox.rest import ErrorResponse
 
 from dss import settings
@@ -93,7 +93,7 @@ def _upload_to_dropbox(type, backup_file, remote_file):
     print("Uploading {0} to dropbox".format(backup_file))
     try:
         with open(backup_file, "rb") as f:
-            client = dropbox.Dropbox(settings.DSS_DB_BACKUP_TOKEN)
+            client = dropbox.client.DropboxClient(settings.DSS_DB_BACKUP_TOKEN)
             response = client.put_file("{0}/{1}".format(type, remote_file), f, overwrite=True)
 
             os.remove(backup_file)
