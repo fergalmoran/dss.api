@@ -217,7 +217,7 @@ class PartialMixUploadView(views.APIView):
                 (
                     tasks.create_waveform_task.s(input_file, uid) |
                     tasks.upload_to_cdn_task.subtask(('mp3', uid, 'mixes'), immutable=True) |
-                    tasks.upload_to_cdn_task.subtask(('png', uid, 'waveforms'), immutable=True) |
+                    tasks.upload_to_cdn_task.subtask    (('png', uid, 'waveforms'), immutable=True) |
                     tasks.notify_subscriber.subtask((session_id, uid), immutable=True)
                 ).delay()
                 logger.debug("Waveform task started")

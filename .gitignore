@@ -12,6 +12,7 @@ build/*
 _working/*
 static/CACHE/*
 dss/devsettings.py
+>>>>>>> release/2.13.01
 dss/celery_settings.py
 dss.conf
 dss/debugsettings.py
