@@ -13,6 +13,7 @@ from dss.storagesettings import *
 from dss.paymentsettings import *
 from dss.logsettings import *
 from dss.psa import *
+from dss.celerysettings import *
 
 DEVELOPMENT = DEBUG
 

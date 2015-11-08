@@ -4,7 +4,7 @@ django-sendfile
 Werkzeug
 psycopg2
 gunicorn
-dropbox==2.2.0
+dropbox
 django-dirtyfields
 django-storages
 django-user-sessions

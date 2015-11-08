@@ -14,9 +14,10 @@ DATABASE_USER = os.environ.get('DATABASE_USER', 'deepsouthsounds')
 DATABASE_HOST = os.environ.get('DATABASE_HOST', 'localhost')
 
 STATIC_URL = '/assets/'
-MEDIA_ROOT = os.environ.get('MEDIA_ROOT', '/home/fergalm/Dropbox/development/deepsouthsounds.com/cache/media')
+
+MEDIA_ROOT = os.environ.get('MEDIA_ROOT', '/mnt/dev/deepsouthsounds.com/media')
 STATIC_ROOT = os.environ.get('STATIC_ROOT', '/home/fergalm/Dropbox/development/deepsouthsounds.com/cache/static')
-CACHE_ROOT = os.environ.get('CACHE_ROOT', '/home/fergalm/Dropbox/development/deepsouthsounds.com/cache/cache')
+CACHE_ROOT = os.environ.get('CACHE_ROOT', '/mnt/dev/deepsouthsounds.com/cache')
 
 MEDIA_URL = os.environ.get('MEDIA_URL', 'http://localhost/DSSMedia/')  # '{0}media/'.format(CDN_URL)
 
