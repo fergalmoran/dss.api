@@ -1,3 +1,15 @@
-#!/bin/sh
-su -m djworker -c "python manage.py migrate"
-su -m djworker -c "python manage.py runserver_plus 0.0.0.0:8001"
+#!/bin/bash
+python manage.py migrate
+
+touch /srv/logs/gunicorn.log
+touch /srv/logs/access.log
+tail -n 0 -f /srv/logs/*.log &
+
+echo "Starting gunicorn"
+exec gunicorn dss.wsgi:application \
+         --bind 0.0.0.0:8001
+         --workers 4 \
+         --log-level=info \
+         --log-file=/srv/logs/gunicorn.log \
+         --access-logfile=/srv/logs/access.log \
+         "$@"
