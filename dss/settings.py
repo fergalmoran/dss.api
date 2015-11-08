@@ -4,6 +4,7 @@ import mimetypes
 from datetime import timedelta
 from django.core.urlresolvers import reverse_lazy
 from django.conf import global_settings
+from dss import storagesettings
 
 from utils import here
 
@@ -168,12 +169,7 @@ if DEBUG:
 REALTIME_HEADERS = {
     'content-type': 'application/json'
 }
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-if 'test' in sys.argv:
-    try:
-        from .test_settings import *
-    except ImportError:
-        pass
+
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
@@ -211,3 +207,31 @@ JWT_AUTH = {
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
 }
+
+""" static settings """
+CDN_URL = storagesettings.AZURE_ITEM_BASE_URL
+MIXIMAGE_URL = '{0}miximages/'.format(CDN_URL)
+WAVEFORM_URL = '{0}waveforms/'.format(CDN_URL)
+STREAM_URL = '{0}mixes/'.format(CDN_URL)
+AUDIO_URL = '{0}mixes/'.format(CDN_URL)
+
+
+NOTIFICATIONS_FROM_ADDRESS = "admin@deepsouthsounds.com"
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'cache-control',
+    'accept',
+    'origin',
+    'authorization',
+
+    'upload-hash',
+    'session-id',
+    'auth-backend',
+    'x-csrftoken'
+)
+
+""" End static settings """

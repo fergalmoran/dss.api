@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from requests.packages.urllib3.connection import ConnectionError
 from dss import settings
 
 
