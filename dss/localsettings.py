@@ -18,7 +18,7 @@ MEDIA_ROOT = os.environ.get('MEDIA_ROOT', '/home/fergalm/Dropbox/development/dee
 STATIC_ROOT = os.environ.get('STATIC_ROOT', '/home/fergalm/Dropbox/development/deepsouthsounds.com/cache/static')
 CACHE_ROOT = os.environ.get('CACHE_ROOT', '/home/fergalm/Dropbox/development/deepsouthsounds.com/cache/cache')
 
-MEDIA_URL = os.environ.get('MEDIA_URL', 'http://deepsouthsounds.com/media/')  # '{0}media/'.format(CDN_URL)
+MEDIA_URL = os.environ.get('MEDIA_URL', 'http://localhost/DSSMedia/')  # '{0}media/'.format(CDN_URL)
 
 REDIS_HOST = os.environ.get('REDIS_HOST', 'localhost')
 BROKER_URL = os.environ.get('BROKER_URL', 'amqp://guest:guest@localhost:5672//')

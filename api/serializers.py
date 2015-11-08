@@ -512,5 +512,8 @@ class ShowSerializer(serializers.ModelSerializer):
 
 
 class BlogSerializer(serializers.ModelSerializer):
+    slug = serializers.ReadOnlyField(required=False)
+    user = InlineUserProfileSerializer(read_only=True)
+
     class Meta:
         model = Blog

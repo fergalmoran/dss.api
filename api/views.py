@@ -353,4 +353,8 @@ class ShowViewSet(viewsets.ModelViewSet):
 
 class BlogViewSet(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
-    serializer_class = serializers.BlogSerializer()
+    serializer_class = serializers.BlogSerializer
+    lookup_field = 'slug'
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user.userprofile)
