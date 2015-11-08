@@ -17,6 +17,7 @@ from dss.celerysettings import *
 DEVELOPMENT = DEBUG
 
 TEMPLATE_DEBUG = DEBUG
+VERSION = '2.13.01'
 
 ADMINS = (
     ('Fergal Moran', 'fergal.moran@gmail.com'),
