@@ -13,10 +13,12 @@ from dss.storagesettings import *
 from dss.paymentsettings import *
 from dss.logsettings import *
 from dss.psa import *
+from dss.celerysettings import *
 
 DEVELOPMENT = DEBUG
 
 TEMPLATE_DEBUG = DEBUG
+VERSION = '2.13.01'
 
 ADMINS = (
     ('Fergal Moran', 'fergal.moran@gmail.com'),

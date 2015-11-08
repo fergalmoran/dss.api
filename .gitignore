@@ -11,8 +11,8 @@ media/*
 build/*
 _working/*
 static/CACHE/*
-dss/localsettings.py.dev
-dss/localsettings.py.docker
+dss/devsettings.py
+>>>>>>> release/2.13.01
 dss/celery_settings.py
 dss.conf
 dss/debugsettings.py
@@ -33,3 +33,4 @@ dsskeys
 reload
 reset
 __krud/
+celerybeat-schedule
