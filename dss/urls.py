@@ -11,9 +11,9 @@ urlpatterns = patterns(
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     (r'^grappelli/', include('grappelli.urls')),
+    (r'^_embed/', include('spa.embedding.urls')),
     (r'^__redir/blog/', include('spa.blog.urls')),
     (r'^__redir/social/', include('spa.social.urls')),
-    (r'^arges/', include('spa.social.urls')),
     url(r'', include('user_sessions.urls', 'user_sessions')),
     url(r'^', include('api.urls')),
 )

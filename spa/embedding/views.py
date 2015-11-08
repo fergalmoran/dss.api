@@ -25,7 +25,7 @@ def mix(request, **args):
         "mix_url": 'http://%s%s' % (Site.objects.get_current().domain, mix_url)
     }
     response = render_to_response(
-        'inc/embed/mix.html',
+        'embedding/mix.html',
         payload,
         context_instance=RequestContext(request)
     )
