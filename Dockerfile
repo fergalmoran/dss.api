@@ -20,3 +20,6 @@ RUN apt-get update && apt-get install -y sox lame vim ccze \
     libboost-program-options-dev libsox-fmt-mp3 postgresql-client rsync openssh-client
 
 RUN pip install -r requirements.txt
+
+RUN adduser --disabled-password --gecos '' djworker
+RUN chown djworker /files -R

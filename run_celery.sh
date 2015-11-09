@@ -1,2 +1,2 @@
 #!/bin/sh
-python manage.py celeryd
+su -m djworker -c "python manage.py celeryd"
