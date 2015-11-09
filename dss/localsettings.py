@@ -1,6 +1,8 @@
 import os
 
-DEBUG = True
+
+DEBUG = os.environ.get('IS_DEBUG', False)
+
 DSS_TEMP_PATH = os.environ.get('DSS_TEMP_PATH', '/tmp/')
 DSS_LAME_PATH = os.environ.get('DSS_LAME_PATH', '/usr/bin/sox')
 DSS_WAVE_PATH = os.environ.get('DSS_WAVE_PATH',
