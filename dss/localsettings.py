@@ -1,7 +1,7 @@
 import os
+import ast
 
-
-DEBUG = os.environ.get('IS_DEBUG', False)
+DEBUG = ast.literal_eval(os.environ.get('IS_DEBUG', 'True'))
 
 DSS_TEMP_PATH = os.environ.get('DSS_TEMP_PATH', '/tmp/')
 DSS_LAME_PATH = os.environ.get('DSS_LAME_PATH', '/usr/bin/sox')
