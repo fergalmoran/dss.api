@@ -1,6 +1,10 @@
 import os
+import ast
 
-DEBUG = True
+print("Importing local settings")
+
+DEBUG = ast.literal_eval(os.environ.get('IS_DEBUG', 'True'))
+
 DSS_TEMP_PATH = os.environ.get('DSS_TEMP_PATH', '/tmp/')
 DSS_LAME_PATH = os.environ.get('DSS_LAME_PATH', '/usr/bin/sox')
 DSS_WAVE_PATH = os.environ.get('DSS_WAVE_PATH',
