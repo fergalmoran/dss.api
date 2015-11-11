@@ -1,6 +1,8 @@
 import os
 import ast
 
+print("Importing local settings")
+
 DEBUG = ast.literal_eval(os.environ.get('IS_DEBUG', 'True'))
 
 DSS_TEMP_PATH = os.environ.get('DSS_TEMP_PATH', '/tmp/')

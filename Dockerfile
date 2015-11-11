@@ -16,9 +16,10 @@ WORKDIR /code
 ADD requirements.txt /code/
 ADD . /code/
 
-RUN apt-get update && apt-get install -y sox lame vim ccze \
+RUN apt-get update && apt-get install -y sox lame vim ccze node npm \
     libboost-program-options-dev libsox-fmt-mp3 postgresql-client rsync openssh-client
 
+RUN npm install -g yuglify
 RUN pip install -r requirements.txt
 
 RUN adduser --disabled-password --gecos '' djworker
