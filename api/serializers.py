@@ -6,6 +6,7 @@ from dss import settings
 from spa import models
 from spa.models import Activity, Message
 from spa.models.activity import ActivityDownload, ActivityPlay
+from spa.models.blog import Blog
 from spa.models.genre import Genre
 from spa.models.notification import Notification
 from spa.models.show import Show
@@ -509,3 +510,10 @@ class ShowSerializer(serializers.ModelSerializer):
         )
         """
 
+
+class BlogSerializer(serializers.ModelSerializer):
+    slug = serializers.ReadOnlyField(required=False)
+    user = InlineUserProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Blog

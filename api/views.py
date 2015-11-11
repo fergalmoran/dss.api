@@ -20,6 +20,7 @@ from api import serializers
 from dss import settings
 from spa import tasks
 from spa.models import Message
+from spa.models.blog import Blog
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
 from spa.models.mix import Mix
@@ -348,3 +349,12 @@ class ShowViewSet(viewsets.ModelViewSet):
             return Response(status=HTTP_400_BAD_REQUEST, data='Performer not found')
         except Exception as ex:
             return Response(status=HTTP_500_INTERNAL_SERVER_ERROR, data=ex)
+
+
+class BlogViewSet(viewsets.ModelViewSet):
+    queryset = Blog.objects.all()
+    serializer_class = serializers.BlogSerializer
+    lookup_field = 'slug'
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user.userprofile)
