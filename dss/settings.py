@@ -171,12 +171,7 @@ if DEBUG:
 REALTIME_HEADERS = {
     'content-type': 'application/json'
 }
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-if 'test' in sys.argv:
-    try:
-        from .test_settings import *
-    except ImportError:
-        pass
+
 
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.

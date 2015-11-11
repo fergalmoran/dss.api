@@ -1,0 +1,30 @@
+{% extends 'embedding/master.html' %}
+{% block css %}
+    <link rel="stylesheet" href="/assets/css/player.css">
+    <link rel="stylesheet" href="/assets/css/player.light.css">
+{% endblock %}
+{% block content %}
+    <div id="uniquePlayer-1" class="webPlayer {{ theme }} audioPlayer">
+        <div id="uniqueContainer-1" class="videoPlayer"></div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jplayer/2.9.2/jplayer/jquery.jplayer.js"></script>
+    <script src="/assets/js/jplayer.cleanskin.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.webPlayer').videoPlayer({
+                name: '{{ title }}',
+                media: {
+                    mp3: '{{ audio_url }}'
+                },
+                size: {
+                    width: '600px'
+                }
+            });
+        });
+    </script>
+{% endblock %}
