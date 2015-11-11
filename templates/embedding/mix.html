@@ -1,23 +1,22 @@
 {% extends 'embedding/master.html' %}
+{% load pipeline %}
 {% block css %}
-    <link rel="stylesheet" href="/assets/css/player.css">
-    <link rel="stylesheet" href="/assets/css/player.light.css">
+    {% stylesheet 'embedding' %}
 {% endblock %}
 {% block content %}
     <div id="uniquePlayer-1" class="webPlayer {{ theme }} audioPlayer">
         <div id="uniqueContainer-1" class="videoPlayer"></div>
     </div>
+    <aside>Content provided by <a href="http://deepsouthsounds.com" target="_blank">Deep South Sounds</a> </aside>
 {% endblock %}
 
 {% block scripts %}
-    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jplayer/2.9.2/jplayer/jquery.jplayer.js"></script>
-    <script src="/assets/js/jplayer.cleanskin.js"></script>
-
+    {% javascript 'embedding' %}
     <script>
         $(document).ready(function () {
             $('.webPlayer').videoPlayer({
                 name: '{{ title }}',
+                url: '{{ mix_url }}',
                 media: {
                     mp3: '{{ audio_url }}'
                 },

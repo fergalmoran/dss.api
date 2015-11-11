@@ -5,20 +5,19 @@ from datetime import timedelta
 from django.core.urlresolvers import reverse_lazy
 from django.conf import global_settings
 from dss import storagesettings
-
 from utils import here
-
 from dss.localsettings import *
 from dss.storagesettings import *
 from dss.paymentsettings import *
 from dss.logsettings import *
+from dss.pipelinesettings import *
 from dss.psa import *
 from dss.celerysettings import *
 
 DEVELOPMENT = DEBUG
 
 TEMPLATE_DEBUG = DEBUG
-VERSION = '2.13.02'
+VERSION = '2.13.04'
 
 ADMINS = (
     ('Fergal Moran', 'fergal.moran@gmail.com'),
@@ -59,11 +58,15 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'compressor.finders.CompressorFinder',
+    'pipeline.finders.PipelineFinder',
 )
 
 STATICFILES_DIRS = (
     here('static'),
 )
+
+# STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'django_pipeline_forgiving.storages.PipelineForgivingStorage'
 
 TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django_facebook.context_processors.facebook',
@@ -114,6 +117,8 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.twitter',
+
+    'pipeline',
 
     'corsheaders',
     'sorl.thumbnail',
@@ -172,7 +177,6 @@ REALTIME_HEADERS = {
     'content-type': 'application/json'
 }
 
-
 REST_FRAMEWORK = {
     # Use hyperlinked styles by default.
     # Only used if the `serializer_class` attribute is not set on a view.
@@ -216,7 +220,6 @@ MIXIMAGE_URL = '{0}miximages/'.format(CDN_URL)
 WAVEFORM_URL = '{0}waveforms/'.format(CDN_URL)
 STREAM_URL = '{0}mixes/'.format(CDN_URL)
 AUDIO_URL = '{0}mixes/'.format(CDN_URL)
-
 
 NOTIFICATIONS_FROM_ADDRESS = "admin@deepsouthsounds.com"
 
