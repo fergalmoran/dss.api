@@ -1,6 +1,5 @@
 import logging
 import os
-
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, SuspiciousOperation
 from django.core.files.base import ContentFile
 from django.core.files.storage import FileSystemStorage
@@ -15,7 +14,6 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, \
     HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_500_INTERNAL_SERVER_ERROR
-
 from api import serializers
 from dss import settings
 from spa import tasks
@@ -116,8 +114,11 @@ class MixViewSet(viewsets.ModelViewSet):
                 raise PermissionDenied("Not allowed")
         if 'random' in self.request.query_params:
             return Mix.objects.order_by('?').all()
-        else:
+        if 'slug' in self.kwargs:
+            """ could be private mix so don't filter """
             return Mix.objects.all()
+        else:
+            return Mix.objects.filter(is_private=False)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user.userprofile)
@@ -181,6 +182,7 @@ class SearchResultsView(views.APIView):
 
 class PartialMixUploadView(views.APIView):
     parser_classes = (FileUploadParser,)
+
     # TODO have to make this anonymous (for now) because dropzone doesn't play nice with JWT
     # permission_classes = (IsAuthenticated,)
 
@@ -218,7 +220,7 @@ class PartialMixUploadView(views.APIView):
                 (
                     tasks.create_waveform_task.s(input_file, uid) |
                     tasks.upload_to_cdn_task.subtask(('mp3', uid, 'mixes'), immutable=True) |
-                    tasks.upload_to_cdn_task.subtask    (('png', uid, 'waveforms'), immutable=True) |
+                    tasks.upload_to_cdn_task.subtask(('png', uid, 'waveforms'), immutable=True) |
                     tasks.notify_subscriber.subtask((session_id, uid), immutable=True)
                 ).delay()
                 logger.debug("Waveform task started")
