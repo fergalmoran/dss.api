@@ -16,6 +16,12 @@ from social.apps.django_app.utils import psa
 
 logger = logging.getLogger('dss')
 
+BACKENDS = {
+    'google': 'google-oauth2',
+    'facebook': 'facebook',
+    'twitter': 'twitter'
+}
+
 
 @psa()
 def auth_by_token(request, backend):
@@ -31,7 +37,7 @@ class SocialLoginHandler(APIView):
 
     def post(self, request, format=None):
         auth_token = request.data.get('access_token', None)
-        backend = request.data.get('backend', None)
+        backend = BACKENDS.get(request.data.get('backend', None), 'facebook')
 
         if auth_token and backend:
             try:
