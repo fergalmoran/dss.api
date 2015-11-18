@@ -46,3 +46,4 @@ ipython
 ipdb
 beautifulsoup4
 django-pipeline
+django-pipeline-forgiving
