@@ -88,7 +88,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 
 class MixViewSet(viewsets.ModelViewSet):
-    queryset = Mix.objects.all()
+    queryset = Mix.objects.all().annotate(play_count=Count('activity_plays'))
     serializer_class = serializers.MixSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'slug'
@@ -100,6 +100,11 @@ class MixViewSet(viewsets.ModelViewSet):
         'is_featured',
     )
 
+    ordering_fields = (
+        'id',
+        'play_count'
+    )
+    
     @detail_route()
     def stream_url(self, request, **kwargs):
         mix = self.get_object()
@@ -108,17 +113,16 @@ class MixViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if 'friends' in self.request.query_params:
             if self.request.user.is_authenticated():
-                rows = Mix.objects.filter(user__in=self.request.user.userprofile.following.all())
-                return rows
+                return self.queryset.filter(user__in=self.request.user.userprofile.following.all())
             else:
                 raise PermissionDenied("Not allowed")
         if 'random' in self.request.query_params:
-            return Mix.objects.order_by('?').all()
-        if 'slug' in self.kwargs:
+            return self.queryset.order_by('?').all()
+        if 'slug' or 'user__slug' in self.kwargs:
             """ could be private mix so don't filter """
-            return Mix.objects.all()
+            return self.queryset
         else:
-            return Mix.objects.filter(is_private=False)
+            return self.queryset.filter(is_private=False)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user.userprofile)
