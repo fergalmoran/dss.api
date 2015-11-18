@@ -4,7 +4,6 @@ import logging
 import json
 import requests
 from core.realtime import activity
-
 from core.utils import cdn
 from spa.models import Mix
 from spa.signals import waveform_generated_signal
@@ -63,7 +62,9 @@ def update_geo_info_task(ip_address, profile_id):
 @task
 def notify_subscriber(session_id, uid):
     if session_id is not None:
-        activity.post_activity('user:process', session_id, {'type': 'waveform', 'target': uid})
+        message = {'type': 'waveform', 'target': uid}
+        logger.info("Tasks: notifying user:process. Session: {} Message: {}".format(session_id, message))
+        activity.post_activity('user:process', message=message, session=session_id)
 
 
 @task
