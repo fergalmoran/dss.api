@@ -88,7 +88,10 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 
 class MixViewSet(viewsets.ModelViewSet):
-    queryset = Mix.objects.all().annotate(play_count=Count('activity_plays'))
+    queryset = Mix.objects.all().extra({
+        'play_count': 'SELECT COUNT(*) FROM spa_activityplay WHERE mix_id = spa_mix.id'
+    })
+
     serializer_class = serializers.MixSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
     lookup_field = 'slug'
