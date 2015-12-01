@@ -4,7 +4,7 @@ from core.utils.html import strip_tags
 
 from dss import settings
 from spa import models
-from spa.models import Activity, Message
+from spa.models import Activity, Message, Playlist
 from spa.models.activity import ActivityDownload, ActivityPlay
 from spa.models.blog import Blog
 from spa.models.genre import Genre
@@ -340,10 +340,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def get_top_tags(self, obj):
         return list(
-            Genre.objects.filter(mix__user__slug='fergalmoran').
-                annotate(total=Count('mix')).
-                order_by('-total').
-                values('total', 'description', 'slug')[0:3])
+                Genre.objects.filter(mix__user__slug='fergalmoran').
+                    annotate(total=Count('mix')).
+                    order_by('-total').
+                    values('total', 'description', 'slug')[0:3])
 
     def get_profile_image_small(self, obj):
         return obj.get_sized_avatar_image(64, 64)
@@ -519,3 +519,8 @@ class BlogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Blog
+
+
+class PlaylistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Playlist

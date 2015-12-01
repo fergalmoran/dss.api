@@ -17,7 +17,7 @@ from rest_framework.status import HTTP_202_ACCEPTED, HTTP_401_UNAUTHORIZED, HTTP
 from api import serializers
 from dss import settings
 from spa import tasks
-from spa.models import Message
+from spa.models import Message, Playlist
 from spa.models.blog import Blog
 from spa.models.genre import Genre
 from spa.models.activity import ActivityPlay
@@ -56,8 +56,8 @@ class CommentViewSet(viewsets.ModelViewSet):
                 mix = Mix.objects.get(pk=self.request.data['mix_id'])
                 if mix is not None:
                     serializer.save(
-                        mix=mix,
-                        user=self.request.user if self.request.user.is_authenticated() else None
+                            mix=mix,
+                            user=self.request.user if self.request.user.is_authenticated() else None
                     )
             except Mix.DoesNotExist:
                 pass
@@ -107,7 +107,7 @@ class MixViewSet(viewsets.ModelViewSet):
         'id',
         'play_count'
     )
-    
+
     @detail_route()
     def stream_url(self, request, **kwargs):
         mix = self.get_object()
@@ -169,9 +169,9 @@ class SearchResultsView(views.APIView):
                         'url': user.get_absolute_url(),
                         'description': user.description
                     } for user in UserProfile.objects.filter(
-                        Q(user__first_name__icontains=q) |
-                        Q(user__last_name__icontains=q) |
-                        Q(display_name__icontains=q)).exclude(slug__isnull=True).exclude(slug__exact='')[0:10]
+                            Q(user__first_name__icontains=q) |
+                            Q(user__last_name__icontains=q) |
+                            Q(display_name__icontains=q)).exclude(slug__isnull=True).exclude(slug__exact='')[0:10]
                     ]
             else:
                 r_s = [
@@ -367,3 +367,15 @@ class BlogViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user.userprofile)
+
+
+class PlaylistViewSet(viewsets.ModelViewSet):
+    queryset = Playlist.objects.all()
+    serializer_class = serializers.PlaylistSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return self.queryset.get(user=self.request.user.userprofile)
+
+        return Response(status=HTTP_401_UNAUTHORIZED)

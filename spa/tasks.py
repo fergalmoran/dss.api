@@ -20,6 +20,11 @@ logger = logging.getLogger('dss')
 
 
 @task(time_limit=3600)
+def send_db_signals(uid):
+    waveform_generated_signal.send(sender=None, uid=uid)
+
+
+@task(time_limit=3600)
 def create_waveform_task(in_file, uid):
     out_file = os.path.join(settings.CACHE_ROOT, 'waveforms/%s.png' % uid)
     logger.info("Creating waveform \n\tIn: %s\n\tOut: %s" % (in_file, out_file))

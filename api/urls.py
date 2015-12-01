@@ -24,6 +24,7 @@ router.register(r'genre', views.GenreViewSet, base_name='genre')
 router.register(r'messages', views.MessageViewSet, base_name='messages')
 router.register(r'shows', views.ShowViewSet, base_name='shows')
 router.register(r'blog', views.BlogViewSet, base_name='shows')
+router.register(r'playlist', views.PlaylistViewSet, base_name='playlists')
 
 
 class DebugView(APIView):
