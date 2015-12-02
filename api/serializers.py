@@ -72,7 +72,7 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
         return obj.is_follower(self.context['request'].user)
 
     def get_profile_image_small(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
+        return obj.get_sized_avatar_image(32, 32)
 
     def get_profile_image_medium(self, obj):
         return obj.get_sized_avatar_image(253, 157)
