@@ -176,7 +176,7 @@ class Mix(BaseModel):
                 ret = get_thumbnail(self.mix_image, size, crop='center')
                 return url.urlclean("%s/%s" % (settings.MEDIA_URL, ret.name))
             else:
-                return self.user.get_sized_avatar_image(170, 170)
+                return self.user.get_sized_avatar_image(253, 157)
         except Exception as ex:
             pass
 

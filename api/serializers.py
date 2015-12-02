@@ -50,7 +50,7 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
 
     first_name = serializers.ReadOnlyField(source='get_first_name')
     last_name = serializers.ReadOnlyField(source='get_last_name')
-    display_name = serializers.ReadOnlyField(source='get_nice_name')
+    display_name = serializers.ReadOnlyField(source='get_display_name')
 
     def get_avatar_image(self, obj):
         return obj.get_sized_avatar_image(64, 64)
@@ -75,11 +75,17 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
         return obj.get_sized_avatar_image(64, 64)
 
     def get_profile_image_medium(self, obj):
-        return obj.get_sized_avatar_image(170, 170)
+        return obj.get_sized_avatar_image(253, 157)
 
     def get_profile_image_header(self, obj):
         return obj.get_sized_avatar_image(1200, 150)
 
+    def get_display_name(self, obj):
+        n = obj.get_nice_name()
+        if not n or n == "":
+            n = "%s %s".format(obj.first_name, obj.last_name)
+
+        return n
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -254,6 +260,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profile_image_small = serializers.SerializerMethodField()
     profile_image_medium = serializers.SerializerMethodField()
     profile_image_header = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField(source='get_display_name')
 
     top_tags = serializers.SerializerMethodField()
 
@@ -304,6 +311,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 pass
         return super(UserProfileSerializer, self).update(instance, validated_data)
 
+    def get_display_name(self, obj):
+        n = obj.get_nice_name()
+        if not n or n == "":
+            n = "%s %s".format(obj.first_name, obj.last_name)
+
+        return n
+
     def get_title(self, obj):
         try:
             if obj.description:
@@ -346,10 +360,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
                     values('total', 'description', 'slug')[0:3])
 
     def get_profile_image_small(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
+        return obj.get_sized_avatar_image(32, 32)
 
     def get_profile_image_medium(self, obj):
-        return obj.get_sized_avatar_image(170, 170)
+        return obj.get_sized_avatar_image(253, 157)
 
     def get_profile_image_header(self, obj):
         return obj.get_sized_avatar_image(1200, 150)
@@ -425,7 +439,7 @@ class HitlistSerializer(serializers.ModelSerializer):
         return obj.get_nice_name()
 
     def get_avatar_image(self, obj):
-        return obj.get_sized_avatar_image(170, 170)
+        return obj.get_sized_avatar_image(253, 157)
 
 
 class ActivitySerializer(serializers.HyperlinkedModelSerializer):
@@ -475,7 +489,7 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
         return settings.DEFAULT_USER_NAME if obj.from_user is None else obj.from_user.get_nice_name()
 
     def get_avatar_image(self, obj):
-        return settings.DEFAULT_USER_IMAGE if obj.from_user is None else obj.from_user.get_sized_avatar_image(170, 170)
+        return settings.DEFAULT_USER_IMAGE if obj.from_user is None else obj.get_sized_avatar_image(253, 157)
 
 
 class MessageSerializer(serializers.ModelSerializer):
