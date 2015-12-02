@@ -53,10 +53,10 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
     display_name = serializers.ReadOnlyField(source='get_display_name')
 
     def get_avatar_image(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
+        return obj.get_sized_avatar_image(32, 32)
 
     def get_avatar_image_tiny(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
+        return obj.get_sized_avatar_image(32, 32)
 
     def to_representation(self, instance):
         if instance.user.is_anonymous():
@@ -223,7 +223,7 @@ class MixSerializer(serializers.ModelSerializer):
         return super(MixSerializer, self).is_valid(raise_exception)
 
     def get_avatar_image(self, obj):
-        return obj.user.get_sized_avatar_image(64, 64)
+        return obj.user.get_sized_avatar_image(32, 32)
 
     def get_can_edit(self, obj):
         user = self.context['request'].user
