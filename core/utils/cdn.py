@@ -26,7 +26,7 @@ def set_azure_details(blob_name, download_name, container_name=AZURE_CONTAINER):
             blob_service.set_blob_properties(
                 container_name,
                 blob_name,
-                x_ms_blob_content_type='application/octet-stream',
+                x_ms_blob_content_type='audio/mpeg',
                 x_ms_blob_content_disposition='attachment;filename="{0}"'.format(download_name)
             )
             print("Processed: %s" % download_name)
