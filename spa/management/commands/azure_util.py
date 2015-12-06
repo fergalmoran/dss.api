@@ -7,7 +7,7 @@ from spa.models.mix import Mix
 
 
 def _update_azure_headers():
-    ms = Mix.objects.all()
+    ms = Mix.objects.filter(slug='september-2015')
     for m in ms:
         print("Update headers for {0}".format(m.title))
         cdn.set_azure_details(

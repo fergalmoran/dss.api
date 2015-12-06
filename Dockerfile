@@ -16,7 +16,7 @@ WORKDIR /code
 ADD requirements.txt /code/
 ADD . /code/
 
-RUN apt-get update && apt-get install -y sox lame vim ccze node npm \
+RUN apt-get update --fix-missing && apt-get install -y sox lame vim ccze node npm \
     libboost-program-options-dev libsox-fmt-mp3 postgresql-client rsync openssh-client
 
 RUN npm install -g yuglify
