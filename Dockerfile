@@ -10,6 +10,8 @@ RUN mkdir /files/cache
 RUN mkdir /files/cache/mixes
 RUN mkdir /files/cache/waveforms
 RUN mkdir /files/tmp
+RUN touch /files/tmp/dss.log
+RUN chown djworker /files/tmp/dss.log
 
 WORKDIR /code
 
