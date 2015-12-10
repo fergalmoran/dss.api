@@ -57,3 +57,6 @@ DSS_DB_BACKUP_SECRET = os.environ.get('DSS_DB_BACKUP_SECRET', '')
 DSS_DB_BACKUP_TOKEN = os.environ.get('DSS_DB_BACKUP_TOKEN', '')
 
 AZURE_ACCOUNT_KEY = os.environ.get('AZURE_ACCOUNT_KEY', '')
+
+if DEBUG:
+    from dss.devsettings import *

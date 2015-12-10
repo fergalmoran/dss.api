@@ -34,6 +34,9 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
     profile_image_small = serializers.SerializerMethodField()
     profile_image_medium = serializers.SerializerMethodField()
     profile_image_header = serializers.SerializerMethodField()
+    first_name = serializers.ReadOnlyField(source='get_first_name')
+    last_name = serializers.ReadOnlyField(source='get_last_name')
+    display_name = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -48,9 +51,6 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
             'profile_image_header',
         )
 
-    first_name = serializers.ReadOnlyField(source='get_first_name')
-    last_name = serializers.ReadOnlyField(source='get_last_name')
-    display_name = serializers.ReadOnlyField(source='get_display_name')
 
     def get_avatar_image(self, obj):
         return obj.get_sized_avatar_image(32, 32)
