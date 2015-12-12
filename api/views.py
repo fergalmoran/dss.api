@@ -179,6 +179,7 @@ class SearchResultsView(views.APIView):
                         'title': mix.title,
                         'image': mix.get_image_url(),
                         'slug': mix.slug,
+                        'user': mix.user.slug,
                         'url': mix.get_absolute_url(),
                         'description': mix.description
                     } for mix in Mix.objects.filter(title__icontains=q)[0:10]]
