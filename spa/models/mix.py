@@ -96,7 +96,7 @@ class Mix(BaseModel):
         return self.__unicode__()
 
     def __unicode__(self):
-        return "{} - {}".format(self.user.get_nice_name(),  self.title)
+        return "{} - {}".format(self.user.get_nice_name(), self.title)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.id:
@@ -117,14 +117,14 @@ class Mix(BaseModel):
     def create_mp3_tags(self, prefix=""):
         try:
             tag_mp3(
-                self.get_absolute_path(),
-                artist=self.user.get_nice_name(),
-                title=self.title,
-                url=self.get_full_url(),
-                album="Deep South Sounds Mixes",
-                year=self.upload_date.year,
-                comment=self.description,
-                genres=self.get_nice_genres())
+                    self.get_absolute_path(),
+                    artist=self.user.get_nice_name(),
+                    title=self.title,
+                    url=self.get_full_url(),
+                    album="Deep South Sounds Mixes",
+                    year=self.upload_date.year,
+                    comment=self.description,
+                    genres=self.get_nice_genres())
         except Exception as ex:
             self.logger.exception("Mix: error creating tags: %s" % ex)
             pass

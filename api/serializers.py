@@ -202,18 +202,24 @@ class MixSerializer(serializers.ModelSerializer):
                 except UserProfile.DoesNotExist:
                     pass
 
+            genres = self.initial_data['genres']
+            instance.genres.clear()
+            for genre in genres:
+                try:
+                    g = Genre.objects.get(slug=genre.get('slug'))
+                    instance.genres.add(g)
+                except Genre.DoesNotExist:
+                    """ Possibly allow adding genres here """
+                    pass
+
+            validated_data.pop('genres', None)
+
             # get any likes that aren't in passed bundle
             if 'downloads' in validated_data:
                 plays = validated_data['downloads'] or []
                 for play in plays:
                     instance.add_play(play)
                 validated_data.pop('downloads', None)
-
-            if 'genres' in validated_data:
-                genres = validated_data['genres'] or []
-                for genre in genres:
-                    instance.add_genre(genre)
-                validated_data.pop('genres', None)
 
             return super(MixSerializer, self).update(instance, validated_data)
         except MixUpdateException as ex:
