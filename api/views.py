@@ -101,6 +101,7 @@ class MixViewSet(viewsets.ModelViewSet):
         'slug',
         'user__slug',
         'is_featured',
+        'genres__slug',
     )
 
     ordering_fields = (
@@ -121,7 +122,7 @@ class MixViewSet(viewsets.ModelViewSet):
                 raise PermissionDenied("Not allowed")
         if 'random' in self.request.query_params:
             return self.queryset.order_by('?').all()
-        if 'slug' or 'user__slug' in self.kwargs:
+        if 'slug' in self.kwargs or 'user__slug' in self.kwargs:
             """ could be private mix so don't filter """
             return self.queryset
         else:
