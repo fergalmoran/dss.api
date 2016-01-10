@@ -24,7 +24,7 @@ sorl-thumbnail
 
 git+git://github.com/disqus/django-bitfield.git#django-bitfield
 git+git://github.com/tschellenbach/Django-facebook.git#django-facebook
-git+git://github.com/omab/python-social-auth.git#egg=python-social-auth
+python-social-auth
 django-allauth
 apache-libcloud
 mandrill
