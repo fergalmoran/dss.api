@@ -240,3 +240,11 @@ CORS_ALLOW_HEADERS = (
 )
 
 """ End static settings """
+SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
+    'social.backends.open_id.OpenIdAuth',
+    'social.backends.google.GoogleOpenId',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.google.GoogleOAuth',
+    'social.backends.twitter.TwitterOAuth',
+    'social.backends.yahoo.YahooOpenId'
+)
