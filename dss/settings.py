@@ -248,3 +248,4 @@ SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     'social.backends.twitter.TwitterOAuth',
     'social.backends.yahoo.YahooOpenId'
 )
+

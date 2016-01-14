@@ -1,6 +1,8 @@
 from calendar import timegm
 import datetime
 import logging
+
+from django.http import HttpResponseBadRequest
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework import renderers
@@ -11,8 +13,8 @@ from rest_framework.views import status
 from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.utils import jwt_payload_handler, jwt_encode_handler
 from rest_framework import parsers
-
 from social.apps.django_app.utils import psa
+from social.backends.oauth import BaseOAuth1, BaseOAuth2
 
 logger = logging.getLogger('dss')
 
@@ -25,8 +27,23 @@ BACKENDS = {
 
 @psa()
 def auth_by_token(request, backend):
+    backend = request.backend
+    if isinstance(backend, BaseOAuth1):
+        token = {
+            'oauth_token': request.data.get('access_token'),
+            'oauth_token_secret': request.data.get('access_token_secret'),
+        }
+        """
+        token = "oauth_token=" + request.data.get('access_token') + "&oauth_token_secret=" + request.data.get(
+            'access_token_secret')
+        """
+    elif isinstance(backend, BaseOAuth2):
+        token = request.REQUEST.get('access_token')
+    else:
+        raise HttpResponseBadRequest('Wrong backend type')
+
     user = request.backend.do_auth(
-        access_token=request.data.get('access_token')
+            token, ajax=True
     )
 
     return user if user else None
@@ -59,7 +76,7 @@ class SocialLoginHandler(APIView):
                 payload = jwt_payload_handler(user)
                 if api_settings.JWT_ALLOW_REFRESH:
                     payload['orig_iat'] = timegm(
-                        datetime.datetime.utcnow().utctimetuple()
+                            datetime.datetime.utcnow().utctimetuple()
                     )
 
                 response_data = {
@@ -90,11 +107,29 @@ class ObtainUser(APIView):
     def get(self, request):
         if request.user.is_authenticated():
             return Response(
-                status=status.HTTP_200_OK, data={
-                    'id': request.user.id,
-                    'name': request.user.username,
-                    'slug': request.user.userprofile.slug,
-                    'userRole': 'user'
-                })
+                    status=status.HTTP_200_OK, data={
+                        'id': request.user.id,
+                        'name': request.user.username,
+                        'slug': request.user.userprofile.slug,
+                        'userRole': 'user'
+                    })
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+"""
+class DjangoRESTFrameworkStrategy(DjangoStrategy):
+    def request_data(self, merge=True):
+        if not self.request:
+            return {}
+        if merge:
+            data = self.request.REQUEST
+        elif self.request.method == 'POST':
+            data = self.request.POST
+        else:
+            data = self.request.GET
+        if data.get('_content'):
+            data = data.copy()
+            data.update(data.pop('_content'))
+        return data
+"""
