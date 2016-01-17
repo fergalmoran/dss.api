@@ -59,7 +59,8 @@ urlpatterns = patterns(
     url(r'_search/$', views.SearchResultsView.as_view()),
     url(r'^', include(router.urls)),
 
-    url(r'^_login/', SocialLoginHandler.as_view()),
+    url(r'^_login', SocialLoginHandler.as_view()),
+    url(r'^_a', SocialLoginHandler.as_view()),
     url(r'^token-refresh/', 'rest_framework_jwt.views.refresh_jwt_token'),
 
     url(r'^__u/checkslug', helpers.UserSlugCheckHelper.as_view()),

@@ -1,96 +1,116 @@
-from calendar import timegm
-import datetime
-import logging
+from __future__ import unicode_literals
 
-from django.http import HttpResponseBadRequest
-from rest_framework import permissions
-from rest_framework.response import Response
-from rest_framework import renderers
+import datetime
+from calendar import timegm
+from urllib.parse import parse_qsl
+
+import requests
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.views import status
+from rest_framework import parsers, renderers
 from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.utils import jwt_payload_handler, jwt_encode_handler
-from rest_framework import parsers
 from social.apps.django_app.utils import psa
-from social.backends.oauth import BaseOAuth1, BaseOAuth2
 
-logger = logging.getLogger('dss')
-
-BACKENDS = {
-    'google': 'google-oauth2',
-    'facebook': 'facebook',
-    'twitter': 'twitter'
-}
+from dss import settings
 
 
 @psa()
-def auth_by_token(request, backend):
-    backend = request.backend
-    if isinstance(backend, BaseOAuth1):
-        token = {
-            'oauth_token': request.data.get('access_token'),
-            'oauth_token_secret': request.data.get('access_token_secret'),
-        }
-        """
-        token = "oauth_token=" + request.data.get('access_token') + "&oauth_token_secret=" + request.data.get(
-            'access_token_secret')
-        """
-    elif isinstance(backend, BaseOAuth2):
-        token = request.REQUEST.get('access_token')
-    else:
-        raise HttpResponseBadRequest('Wrong backend type')
+def auth_by_token(request, backend, auth_token):
+    """Decorator that creates/authenticates a user with an access_token"""
 
     user = request.backend.do_auth(
-            token, ajax=True
+            access_token=auth_token
     )
+    if user:
+        return user
+    else:
+        return None
 
-    return user if user else None
+
+def get_access_token(request, backend):
+    """
+    Tries to get the access token from an OAuth Provider
+    :param request:
+    :param backend:
+    :return:
+    """
+    access_token_url = ''
+    secret = ''
+
+    if backend == 'facebook':
+        access_token_url = 'https://graph.facebook.com/oauth/access_token'
+        secret = settings.SOCIAL_AUTH_FACEBOOK_SECRET
+    if backend == 'twitter':
+        access_token_url = 'https://api.twitter.com/oauth/request_token'
+        secret = settings.SOCIAL_AUTH_TWITTER_SECRET
+
+    params = {
+        'client_id': request.data.get('clientId'),
+        'redirect_uri': request.data.get('redirectUri'),
+        'client_secret': secret,
+        'code': request.data.get('code')
+    }
+
+    # Step 1. Exchange authorization code for access token.
+    r = requests.get(access_token_url, params=params)
+    try:
+        access_token = dict(parse_qsl(r.text))['access_token']
+    except KeyError:
+        access_token = 'FAILED'
+    return access_token
 
 
 class SocialLoginHandler(APIView):
-    permission_classes = (permissions.AllowAny,)
+    """View to authenticate users through social media."""
+    permission_classes = (AllowAny,)
+
+    def get(self, request, format=None):
+        pass
 
     def post(self, request, format=None):
-        auth_token = request.data.get('access_token', None)
-        backend = BACKENDS.get(request.data.get('backend', None), 'facebook')
-
+        backend = request.query_params.get(u'backend', None)
+        auth_token = get_access_token(request, backend)
         if auth_token and backend:
             try:
-                user = auth_by_token(request, backend)
-            except Exception as e:
-                logger.exception(e)
-                return Response({
-                    'status': 'Bad request',
-                    'message': e
-                }, status=status.HTTP_400_BAD_REQUEST)
-
+                # Try to authenticate the user using python-social-auth
+                user = auth_by_token(request, backend, auth_token)
+            except Exception:
+                return Response({'status': 'Bad request',
+                                 'message': 'Could not authenticate with the provided token.'},
+                                status=status.HTTP_400_BAD_REQUEST)
             if user:
                 if not user.is_active:
-                    return Response({
-                        'status': 'Unauthorized',
-                        'message': 'User account disabled'
-                    }, status=status.HTTP_401_UNAUTHORIZED)
+                    return Response({'status': 'Unauthorized',
+                                     'message': 'The user account is disabled.'}, status=status.HTTP_401_UNAUTHORIZED)
 
+                # This is the part that differs from the normal python-social-auth implementation.
+                # Return the JWT instead.
+
+                # Get the JWT payload for the user.
                 payload = jwt_payload_handler(user)
+
+                # Include original issued at time for a brand new token,
+                # to allow token refresh
                 if api_settings.JWT_ALLOW_REFRESH:
                     payload['orig_iat'] = timegm(
                             datetime.datetime.utcnow().utctimetuple()
                     )
 
+                # Create the response object with the JWT payload.
                 response_data = {
-                    'token': jwt_encode_handler(payload),
-                    'session': user.userprofile.get_session_id()
+                    'token': jwt_encode_handler(payload)
                 }
 
                 return Response(response_data)
-
         else:
-            return Response({
-                'status': 'Bad request',
-                'message': 'Authentication could not be performed with received data.'
-            }, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'status': 'Bad request',
+                             'message': 'Authentication could not be performed with received data.'},
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 class ObtainUser(APIView):
@@ -115,21 +135,3 @@ class ObtainUser(APIView):
                     })
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
-
-
-"""
-class DjangoRESTFrameworkStrategy(DjangoStrategy):
-    def request_data(self, merge=True):
-        if not self.request:
-            return {}
-        if merge:
-            data = self.request.REQUEST
-        elif self.request.method == 'POST':
-            data = self.request.POST
-        else:
-            data = self.request.GET
-        if data.get('_content'):
-            data = data.copy()
-            data.update(data.pop('_content'))
-        return data
-"""
