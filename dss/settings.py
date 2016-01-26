@@ -6,15 +6,18 @@ from django.core.urlresolvers import reverse_lazy
 from django.conf import global_settings
 from dss import storagesettings
 from utils import here
-from dss.localsettings import *
+
 from dss.storagesettings import *
 from dss.paymentsettings import *
 from dss.logsettings import *
 from dss.pipelinesettings import *
 from dss.psa import *
 from dss.celerysettings import *
+from dss.localsettings import *
 
 DEVELOPMENT = DEBUG
+
+# AUTH_USER_MODEL = 'spa.UserProfile'
 
 TEMPLATE_DEBUG = DEBUG
 VERSION = '2.13.04'
@@ -83,6 +86,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'spa.middleware.auth.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',

@@ -1,5 +1,6 @@
 from .basemodel import BaseModel
 from .userprofile import UserProfile
+from .socialaccountlink import SocialAccountLink
 from .chatmessage import ChatMessage
 from .comment import Comment
 from .venue import Venue
