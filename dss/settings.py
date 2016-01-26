@@ -20,7 +20,7 @@ DEVELOPMENT = DEBUG
 # AUTH_USER_MODEL = 'spa.UserProfile'
 
 TEMPLATE_DEBUG = DEBUG
-VERSION = '2.13.04'
+VERSION = '3.0.1'
 
 ADMINS = (
     ('Fergal Moran', 'fergal.moran@gmail.com'),
