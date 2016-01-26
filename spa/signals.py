@@ -7,10 +7,10 @@ from django.contrib.auth.models import User
 from core.realtime import activity
 
 from core.utils.audio.mp3 import mp3_length
+from spa.models import SocialAccountLink
 from spa.models.activity import ActivityFollow
 from spa.models.userprofile import UserProfile
 from spa.models.mix import Mix
-
 
 waveform_generated_signal = Signal()
 
@@ -136,3 +136,8 @@ def user_followers_changed(sender, **kwargs):
                         ActivityFollow(user=source_user, to_user=target_user).save()
     except Exception as ex:
         print("Error sending new follower: %s" % ex)
+
+@receiver(post_save, sender=SocialAccountLink, dispatch_uid='socialaccountlink_pre_save')
+def socialaccountlink_pre_save(sender, **kwargs):
+    # update image url
+    kwargs['instance'].update_image_url()

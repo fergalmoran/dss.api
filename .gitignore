@@ -34,3 +34,4 @@ reload
 reset
 __krud/
 celerybeat-schedule
+private/

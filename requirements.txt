@@ -15,6 +15,10 @@ django-grappelli==2.5.7
 django-model_utils
 redis
 git+git://github.com/llazzaro/django-scheduler.git#django-scheduler
+
+git+git://github.com/pythonforfacebook/facebook-sdk.git#facebook-sdk
+google-api-python-client
+
 django-celery
 django-scheduler
 django-recurrence
@@ -24,7 +28,7 @@ sorl-thumbnail
 
 git+git://github.com/disqus/django-bitfield.git#django-bitfield
 git+git://github.com/tschellenbach/Django-facebook.git#django-facebook
-python-social-auth
+git+git://github.com/omab/python-social-auth.git#python-social-auth
 django-allauth
 apache-libcloud
 mandrill
@@ -47,3 +51,5 @@ ipdb
 beautifulsoup4
 django-pipeline
 django-pipeline-forgiving
+
+requests-oauthlib
