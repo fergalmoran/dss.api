@@ -1,8 +1,6 @@
 import os
 import ast
 
-print("Importing local settings")
-
 DEBUG = ast.literal_eval(os.environ.get('IS_DEBUG', 'True'))
 
 DSS_TEMP_PATH = os.environ.get('DSS_TEMP_PATH', '/tmp/')
@@ -40,11 +38,16 @@ RADIO_PORT = os.environ.get('RADIO_PORT', 8888)
 
 MANDRILL_API_KEY = os.environ.get('MANDRILL_API_KEY', '')
 
+FACEBOOK_API_VERSION = os.environ.get('FACEBOOK_API_VERSION', '2.5')
+GOOGLE_CREDENTIALS = os.environ.get('GOOGLE_CREDENTIALS',
+                                    '/home/fergalm/Dropbox/development/deepsouthsounds.com/dss.api/googleapikey.json')
 SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('SOCIAL_AUTH_FACEBOOK_KEY', '')
 SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('SOCIAL_AUTH_FACEBOOK_SECRET', '')
 
 SOCIAL_AUTH_TWITTER_KEY = os.environ.get('SOCIAL_AUTH_TWITTER_KEY', '')
 SOCIAL_AUTH_TWITTER_SECRET = os.environ.get('SOCIAL_AUTH_TWITTER_SECRET', '')
+TWITTER_CALLBACK_URL = os.environ.get('TWITTER_CALLBACK_URL',
+                                      'http://ext-test.deepsouthsounds.com/_login/?backend=twitter')
 
 SOCIAL_AUTH_GOOGLE_OAUTH_KEY = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH_KEY', '')
 SOCIAL_AUTH_GOOGLE_OAUTH_SECRET = os.environ.get('SOCIAL_AUTH_GOOGLE_OAUTH_SECRET', '')

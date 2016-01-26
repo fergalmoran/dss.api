@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='mix',
             name='is_private',
-            field=models.BooleanField(default=True),
+            field=models.BooleanField(default=False),
         ),
     ]
