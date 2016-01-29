@@ -103,16 +103,13 @@ class Mix(BaseModel):
             self.slug = unique_slugify(self, self.title)
 
         self.clean_image('mix_image', Mix)
-        # Check for the unlikely event that the waveform has been generated
-        if cdn.file_exists('{0}{1}.png'.format(settings.WAVEFORM_URL, self.uid)):
-            self.waveform_generated = True
-            try:
-                self.duration = mp3_length(self.get_absolute_path())
-            except Mp3FileNotFoundException:
-                # Not really bothered about this in save as it can be called before we have an mp3
-                pass
-
         super(Mix, self).save(force_insert, force_update, using, update_fields)
+
+    def set_cdn_details(self, path):
+        self.waveform_generated = True
+        self.duration = mp3_length(path)
+        self.save(update_fields=["waveform_generated", "duration"])
+        self.update_file_http_headers(self.uid, self.title)
 
     def create_mp3_tags(self, prefix=""):
         try:

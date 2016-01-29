@@ -1,16 +1,13 @@
+from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models.signals import post_save, pre_save, m2m_changed
 from django.dispatch import Signal, receiver
 
-from django.contrib.auth.models import User
-from core.realtime import activity
-
-from core.utils.audio.mp3 import mp3_length
 from spa.models import SocialAccountLink
 from spa.models.activity import ActivityFollow
-from spa.models.userprofile import UserProfile
 from spa.models.mix import Mix
+from spa.models.userprofile import UserProfile
 
 waveform_generated_signal = Signal()
 
@@ -23,10 +20,7 @@ def _waveform_generated_callback(sender, **kwargs):
         if uid is not None:
             mix = Mix.objects.get(uid=uid)
             if mix is not None:
-                mix.waveform_generated = True
-                mix.duration = mp3_length(path)
-                mix.save(update_fields=["waveform_generated", "duration"])
-
+                mix.set_cdn_details(path)
     except ObjectDoesNotExist:
         print("Mix has still not been uploaded")
         pass

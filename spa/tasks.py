@@ -37,6 +37,14 @@ def create_waveform_task(in_file, uid):
 
 
 @task(time_limit=3600)
+def update_file_http_headers(uid, title):
+    cdn.set_azure_details(
+        blob_name='{0}.mp3'.format(uid),
+        download_name='Deep South Sounds - {0}.mp3'.format(title),
+        container_name='mixes')
+
+
+@task(time_limit=3600)
 def upload_to_cdn_task(filetype, uid, container_name):
     source_file = os.path.join(settings.CACHE_ROOT, '{0}/{1}.{2}'.format(container_name, uid, filetype))
     try:
