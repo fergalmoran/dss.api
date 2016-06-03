@@ -181,7 +181,8 @@ class ObtainUser(APIView):
                     'id': request.user.id,
                     'name': request.user.username,
                     'slug': request.user.userprofile.slug,
-                    'userRole': 'user'
+                    'session': request.user.userprofile.get_session_id(),
+                    'userRole': 'user',
                 })
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)
