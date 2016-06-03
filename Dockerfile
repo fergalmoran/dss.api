@@ -3,6 +3,7 @@ FROM fergalmoran/django
 ADD . /code/
 
 
+RUN mkdir /files/
 RUN mkdir /files/static
 RUN mkdir /files/media
 RUN mkdir /files/cache/mixes
