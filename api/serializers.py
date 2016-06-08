@@ -474,7 +474,7 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
     from_user = InlineUserProfileSerializer(source='get_from_user', read_only=True)
     notification_url = serializers.ReadOnlyField()
     verb = serializers.ReadOnlyField()
-    target = serializers.ReadOnlyField()
+    target = serializers.SerializerMethodField()
     date = serializers.ReadOnlyField()
 
     class Meta:
@@ -496,6 +496,9 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_avatar_image(self, obj):
         return settings.DEFAULT_USER_IMAGE if obj.from_user is None else obj.get_sized_avatar_image(253, 157)
+
+    def get_target(self, obj):
+        return "/{}/{}".format(obj.to_user.slug, obj.target)
 
 
 class MessageSerializer(serializers.ModelSerializer):

@@ -17,7 +17,6 @@ class Notification(BaseModel):
     type = models.CharField(max_length=200, null=True)
     target = models.CharField(max_length=200, null=True)
     target_desc = models.CharField(max_length=200, null=True)
-    notification_text = models.CharField(max_length=2048, null=False)
 
     accepted_date = models.DateTimeField(null=True)
 
