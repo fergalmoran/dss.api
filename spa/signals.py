@@ -88,6 +88,8 @@ def post_save_handler(**kwargs):
     # should save post to the activity feed
     if hasattr(instance, 'create_activity'):
         instance.create_activity()
+    if hasattr(instance, 'post_broadcast'):
+        instance.post_broadcast()
 
     # try to get the user's geo profile
     if hasattr(instance, 'update_geo_info'):

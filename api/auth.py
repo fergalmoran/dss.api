@@ -180,6 +180,7 @@ class ObtainUser(APIView):
                 status=status.HTTP_200_OK, data={
                     'id': request.user.id,
                     'name': request.user.username,
+                    'session': request.user.userprofile.get_session_id(),
                     'slug': request.user.userprofile.slug,
                     'session': request.user.userprofile.get_session_id(),
                     'userRole': 'user',

@@ -1,0 +1,5 @@
+sudo -u postgres dropdb deepsouthsounds
+sudo -u postgres createdb deepsouthsounds --owner deepsouthsounds
+
+sudo -u postgres psql deepsouthsounds < /mnt/dev/backup.sql
+

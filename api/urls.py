@@ -27,8 +27,8 @@ router.register(r'user', views.UserProfileViewSet)
 router.register(r'mix', views.MixViewSet)
 
 class DebugView(APIView):
-    permission_classes = (IsAuthenticated,)
-    authentication_classes = (JSONWebTokenAuthentication,)
+    #permission_classes = (IsAuthenticated,)
+    #authentication_classes = (JSONWebTokenAuthentication,)
 
     def get(self, request):
         print(self.request.session)
@@ -38,14 +38,16 @@ class DebugView(APIView):
     def post(self, request, format=None):
         try:
             activity.post_activity(
-                channel='user:message',
+                channel='user:broadcast',
                 message='Hello Sailor',
-                session=request.user.userprofile.get_session_id())
+                session=2,
+                # session=request.user.userprofile.get_session_id(),
+            )
         except Exception as ex:
             print(ex)
 
         return Response({
-            'status': request.user.first_name,
+            'status': 'Hello',
             'message': 'Sailor'
         }, status=status.HTTP_200_OK)
 

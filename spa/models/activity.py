@@ -6,6 +6,7 @@ from django.db import models
 from model_utils.managers import InheritanceManager
 from open_facebook import OpenFacebook
 
+from core.realtime import activity as realtime
 from core.utils.url import wrap_full
 from dss import settings
 from spa.models.notification import Notification
@@ -59,6 +60,18 @@ class Activity(BaseModel):
                 print(result)
         except Exception as ex:
             print(ex)
+            pass
+
+    def post_broadcast(self):
+        try:
+            display_name = self.user.display_name if self.user is not None else 'Anonymous'
+            notice = "{} {} {}".format(
+                display_name,
+                self.get_verb_past(),
+                self.get_object_name())
+            target_user = self.get_target_user()
+            realtime.post_activity('user:broadcast', notice, target_user.get_session_id())
+        except Exception as ex:
             pass
 
     def create_notification(self, accept=False):
