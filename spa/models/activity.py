@@ -12,7 +12,7 @@ from dss import settings
 from spa.models.notification import Notification
 from spa.models.userprofile import UserProfile
 from spa.models.basemodel import BaseModel
-
+import json
 
 ACTIVITYTYPES = (
     ('p', 'played'),
@@ -51,7 +51,8 @@ class Activity(BaseModel):
                 action_type = "deepsouthsounds:play"
 
             if False:
-                social_account = SocialToken.objects.filter(account__user=self.user.user, account__provider='facebook')[0]
+                social_account = SocialToken.objects.filter(account__user=self.user.user, account__provider='facebook')[
+                    0]
                 facebook = OpenFacebook(social_account.token)
                 notification_html = {
                     object: wrap_full(self.get_object_url())
@@ -65,10 +66,15 @@ class Activity(BaseModel):
     def post_broadcast(self):
         try:
             display_name = self.user.display_name if self.user is not None else 'Anonymous'
-            notice = "{} {} {}".format(
-                display_name,
-                self.get_verb_past(),
-                self.get_object_name())
+            image = self.user.get_avatar_image() if self.user is not None else settings.DEFAULT_USER_IMAGE
+            notice = json.dumps({
+                'image': image,
+                'title': 'New Activity',
+                'body': "{} {} {}".format(
+                    display_name,
+                    self.get_verb_past(),
+                    self.get_object_name())
+            })
             target_user = self.get_target_user()
             realtime.post_activity('user:broadcast', notice, target_user.get_session_id())
         except Exception as ex:
