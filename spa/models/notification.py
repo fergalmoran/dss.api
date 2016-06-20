@@ -27,18 +27,6 @@ class Notification(BaseModel):
     def get_notification_url(self):
         return '/api/v1/notification/%s' % self.id
 
-    def save(self, force_insert=False, force_update=False, using=None,
-             update_fields=None):
-        post_activity(
-            channel='user:message',
-            message={
-                'from_user': self.from_user.slug if self.from_user is not None else settings.DEFAULT_USER_NAME,
-                'message': self.target_desc
-            },
-            session=self.to_user.get_session_id(),
-        )
-        return super(Notification, self).save(force_insert, force_update, using, update_fields)
-
     def send_notification_email(self):
         try:
             if settings.DEBUG:
