@@ -177,8 +177,10 @@ class SearchResultsView(views.APIView):
             else:
                 r_s = [
                     {
+                        'id': mix.id,
                         'title': mix.title,
-                        'image': mix.get_image_url(),
+                        'image': mix.get_image_url(size='48x48'),
+                        'user': mix.user.slug,
                         'slug': mix.slug,
                         'user': mix.user.slug,
                         'url': mix.get_absolute_url(),

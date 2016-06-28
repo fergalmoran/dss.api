@@ -138,7 +138,7 @@ class Mix(BaseModel):
         return '%s/mixes/%s%s.%s' % (settings.MEDIA_ROOT, prefix, self.uid, self.filetype)
 
     def get_absolute_url(self):
-        return '/mix/%s' % self.slug
+        return '/%s/%s' % (self.user.slug, self.slug)
 
     def get_full_url(self):
         return 'http://%s%s' % (Site.objects.get_current().domain, self.get_absolute_url())
