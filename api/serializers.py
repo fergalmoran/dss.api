@@ -422,8 +422,11 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_can_edit(self, obj):
         user = self.context['request'].user
-        if user is not None and obj.user is not None and user.is_authenticated():
-            return user.is_staff or obj.user.id == user.userprofile.id
+        if user is not None:
+            if user.is_staff:
+                return True
+            if obj.user is not None and user.is_authenticated():
+                return obj.user.id == user.userprofile.id
 
         return False
 
