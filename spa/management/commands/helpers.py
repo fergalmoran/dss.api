@@ -21,3 +21,4 @@ def download_file( url, file_name):
         print(status, end=' ')
 
     f.close()
+

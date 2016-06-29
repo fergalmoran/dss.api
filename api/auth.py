@@ -1,34 +1,25 @@
 import datetime
 import json
-import logging
 from calendar import timegm
 from urllib.parse import parse_qsl
 
 import requests
 from allauth.socialaccount import models as aamodels
 from requests_oauthlib import OAuth1
-from rest_framework import parsers
-from rest_framework import permissions
-from rest_framework import renderers
+from rest_framework import parsers, renderers
+from rest_framework import status
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.views import status
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.utils import jwt_payload_handler, jwt_encode_handler
 
 from dss import settings
 from spa.models import UserProfile
 from spa.models.socialaccountlink import SocialAccountLink
-
-logger = logging.getLogger('dss')
-
-BACKENDS = {
-    'google': 'google-oauth2',
-    'facebook': 'facebook',
-    'twitter': 'twitter'
-}
 
 
 def _temp_reverse_user(uid, provider, access_token, access_token_secret, payload):
@@ -45,7 +36,7 @@ def _temp_reverse_user(uid, provider, access_token, access_token_secret, payload
         sa.access_token_secret = access_token_secret
         sa.provider_data = payload
         sa.save()
-        user = UserProfile.objects.get(user__id=sa.user.id)
+        user = UserProfile.objects.get(id=sa.user.id)
     except SocialAccountLink.DoesNotExist:
         # try allauth
         try:
@@ -70,7 +61,8 @@ def _temp_reverse_user(uid, provider, access_token, access_token_secret, payload
 
 
 class SocialLoginHandler(APIView):
-    permission_classes = (permissions.AllowAny,)
+    """View to authenticate users through social media."""
+    permission_classes = (AllowAny,)
 
     def post(self, request):
         uid = None
@@ -190,7 +182,8 @@ class ObtainUser(APIView):
                     'name': request.user.username,
                     'session': request.user.userprofile.get_session_id(),
                     'slug': request.user.userprofile.slug,
-                    'userRole': 'user'
+                    'session': request.user.userprofile.get_session_id(),
+                    'userRole': 'user',
                 })
         else:
             return Response(status=status.HTTP_401_UNAUTHORIZED)

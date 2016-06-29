@@ -1,5 +1,6 @@
-import urllib.parse
 import re
+import urllib
+
 from django.contrib.sites.models import Site
 from django.template.defaultfilters import slugify
 

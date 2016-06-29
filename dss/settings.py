@@ -20,7 +20,7 @@ DEVELOPMENT = DEBUG
 # AUTH_USER_MODEL = 'spa.UserProfile'
 
 TEMPLATE_DEBUG = DEBUG
-VERSION = '2.13.04'
+VERSION = '3.0.1'
 
 ADMINS = (
     ('Fergal Moran', 'fergal.moran@gmail.com'),
@@ -212,7 +212,7 @@ THUMBNAIL_PREFIX = '_tn/'
 # THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': timedelta(seconds=900),
+    'JWT_EXPIRATION_DELTA': timedelta(seconds=(60 * 60 * 24) * 14),
     # 'JWT_EXPIRATION_DELTA': timedelta(seconds=5),
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': timedelta(days=30),
@@ -244,3 +244,12 @@ CORS_ALLOW_HEADERS = (
 )
 
 """ End static settings """
+SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
+    'social.backends.open_id.OpenIdAuth',
+    'social.backends.google.GoogleOpenId',
+    'social.backends.google.GoogleOAuth2',
+    'social.backends.google.GoogleOAuth',
+    'social.backends.twitter.TwitterOAuth',
+    'social.backends.yahoo.YahooOpenId'
+)
+

@@ -10,47 +10,8 @@ from dropbox.rest import ErrorResponse
 
 from dss import settings
 
-""" Monkey patch dropbox upload chunked """
-
-
-def __upload_chunked(self, chunk_size = 4 * 1024 * 1024):
-    """Uploads data from this ChunkedUploader's file_obj in chunks, until
-    an error occurs. Throws an exception when an error occurs, and can
-    be called again to resume the upload.
-
-    Parameters
-        chunk_size
-          The number of bytes to put in each chunk. (Default 4 MB.)
-    """
-
-    while self.offset < self.target_length:
-        next_chunk_size = min(chunk_size, self.target_length - self.offset)
-        if self.last_block == None:
-            self.last_block = self.file_obj.read(next_chunk_size)
-
-        try:
-            (self.offset, self.upload_id) = self.client.upload_chunk(
-                self.last_block, next_chunk_size, self.offset, self.upload_id)
-            self.last_block = None
-        except ErrorResponse as e:
-            # Handle the case where the server tells us our offset is wrong.
-            must_reraise = True
-            if e.status == 400:
-                reply = e.body
-                if "offset" in reply and reply['offset'] != 0 and reply['offset'] > self.offset:
-                    self.last_block = None
-                    self.offset = reply['offset']
-                    must_reraise = False
-            if must_reraise:
-                raise
-
-ChunkedUploader.upload_chunked = __upload_chunked
-
-from dropbox.client import ChunkedUploader
 
 """ Monkey patch dropbox upload chunked """
-
-
 def __upload_chunked(self, chunk_size = 4 * 1024 * 1024):
     """Uploads data from this ChunkedUploader's file_obj in chunks, until
     an error occurs. Throws an exception when an error occurs, and can
@@ -122,7 +83,8 @@ def _create_backup_bundle(remote_file, location):
     backup_file = "{0}/{1}".format(settings.DSS_TEMP_PATH, remote_file)
 
     tar = tarfile.open(backup_file, "w:gz")
-    tar.add(location)
+    print("Remote file: {}".format(remote_file.replace(".tar.gz", "")))
+    tar.add(tarfile.TarInfo(remote_file.replace(".tar.gz", "")), location)
     tar.close()
     return backup_file
 

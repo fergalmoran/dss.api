@@ -1,20 +1,17 @@
 from django.conf.urls import patterns, url, include
-from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.routers import DefaultRouter
 from rest_framework.views import APIView
+from rest_framework.views import status
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from api import views, auth, helpers
 from api.auth import SocialLoginHandler
-from rest_framework.views import status
-from rest_framework.response import Response
 from core.realtime import activity
 
 router = DefaultRouter()  # trailing_slash=True)
 
-router.register(r'user', views.UserProfileViewSet)
-router.register(r'mix', views.MixViewSet)
 
 router.register(r'notification', views.NotificationViewSet)
 router.register(r'hitlist', views.HitlistViewSet)
@@ -26,6 +23,8 @@ router.register(r'shows', views.ShowViewSet, base_name='shows')
 router.register(r'blog', views.BlogViewSet, base_name='shows')
 router.register(r'playlist', views.PlaylistViewSet, base_name='playlists')
 
+router.register(r'user', views.UserProfileViewSet)
+router.register(r'mix', views.MixViewSet)
 
 class DebugView(APIView):
     #permission_classes = (IsAuthenticated,)

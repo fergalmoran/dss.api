@@ -3,7 +3,13 @@ import sys
 from dss import localsettings
 
 if os.name == 'posix':
-    LOG_FILE = localsettings.DSS_TEMP_PATH + '/dss.log'
+    LOG_FILE = localsettings.DSS_TEMP_PATH + 'dss.log'
+    if not os.path.exists(LOG_FILE):
+        print("Creating {}".format(LOG_FILE))
+        open(LOG_FILE, 'a').close()
+    else:
+        print("{} already exists.".format(LOG_FILE))
+
 else:
     LOG_FILE = 'c:\\temp\\dss.log'
 

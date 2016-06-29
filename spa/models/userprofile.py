@@ -174,6 +174,7 @@ class UserProfile(BaseModel):
 
     def get_sized_avatar_image(self, width, height):
         try:
+            #import ipdb; ipdb.set_trace()
             image = self.get_avatar_image()
             logger.debug("get_sized_avatar_image: %s".format(image))
             sized = thumbnail.get_thumbnail(image, "%sx%s" % (width, height), crop="center")

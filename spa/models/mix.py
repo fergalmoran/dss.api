@@ -96,35 +96,32 @@ class Mix(BaseModel):
         return self.__unicode__()
 
     def __unicode__(self):
-        return "{} - {}".format(self.user.get_nice_name(),  self.title)
+        return "{} - {}".format(self.user.get_nice_name(), self.title)
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.id:
             self.slug = unique_slugify(self, self.title)
 
         self.clean_image('mix_image', Mix)
-        # Check for the unlikely event that the waveform has been generated
-        if cdn.file_exists('{0}{1}.png'.format(settings.WAVEFORM_URL, self.uid)):
-            self.waveform_generated = True
-            try:
-                self.duration = mp3_length(self.get_absolute_path())
-            except Mp3FileNotFoundException:
-                # Not really bothered about this in save as it can be called before we have an mp3
-                pass
-
         super(Mix, self).save(force_insert, force_update, using, update_fields)
+
+    def set_cdn_details(self, path):
+        self.waveform_generated = True
+        self.duration = mp3_length(path)
+        self.save(update_fields=["waveform_generated", "duration"])
+        self.update_file_http_headers(self.uid, self.title)
 
     def create_mp3_tags(self, prefix=""):
         try:
             tag_mp3(
-                self.get_absolute_path(),
-                artist=self.user.get_nice_name(),
-                title=self.title,
-                url=self.get_full_url(),
-                album="Deep South Sounds Mixes",
-                year=self.upload_date.year,
-                comment=self.description,
-                genres=self.get_nice_genres())
+                    self.get_absolute_path(),
+                    artist=self.user.get_nice_name(),
+                    title=self.title,
+                    url=self.get_full_url(),
+                    album="Deep South Sounds Mixes",
+                    year=self.upload_date.year,
+                    comment=self.description,
+                    genres=self.get_nice_genres())
         except Exception as ex:
             self.logger.exception("Mix: error creating tags: %s" % ex)
             pass
@@ -176,7 +173,7 @@ class Mix(BaseModel):
                 ret = get_thumbnail(self.mix_image, size, crop='center')
                 return url.urlclean("%s/%s" % (settings.MEDIA_URL, ret.name))
             else:
-                return self.user.get_sized_avatar_image(170, 170)
+                return self.user.get_sized_avatar_image(253, 157)
         except Exception as ex:
             pass
 

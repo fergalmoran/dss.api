@@ -101,6 +101,7 @@ class MixViewSet(viewsets.ModelViewSet):
         'slug',
         'user__slug',
         'is_featured',
+        'genres__slug',
     )
 
     ordering_fields = (
@@ -121,7 +122,7 @@ class MixViewSet(viewsets.ModelViewSet):
                 raise PermissionDenied("Not allowed")
         if 'random' in self.request.query_params:
             return self.queryset.order_by('?').all()
-        if 'slug' or 'user__slug' in self.kwargs:
+        if 'slug' in self.kwargs or 'user__slug' in self.kwargs:
             """ could be private mix so don't filter """
             return self.queryset
         else:
@@ -181,6 +182,7 @@ class SearchResultsView(views.APIView):
                         'image': mix.get_image_url(size='48x48'),
                         'user': mix.user.slug,
                         'slug': mix.slug,
+                        'user': mix.user.slug,
                         'url': mix.get_absolute_url(),
                         'description': mix.description
                     } for mix in Mix.objects.filter(title__icontains=q)[0:10]]

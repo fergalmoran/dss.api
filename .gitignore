@@ -16,6 +16,7 @@ dss/celery_settings.py
 dss/devsettings.py
 dss.conf
 dss/debugsettings.py
+logs/
 mysql
 test.py
 mysql2pgsql.yml

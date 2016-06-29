@@ -34,6 +34,9 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
     profile_image_small = serializers.SerializerMethodField()
     profile_image_medium = serializers.SerializerMethodField()
     profile_image_header = serializers.SerializerMethodField()
+    first_name = serializers.ReadOnlyField(source='get_first_name')
+    last_name = serializers.ReadOnlyField(source='get_last_name')
+    display_name = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
@@ -48,15 +51,12 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
             'profile_image_header',
         )
 
-    first_name = serializers.ReadOnlyField(source='get_first_name')
-    last_name = serializers.ReadOnlyField(source='get_last_name')
-    display_name = serializers.ReadOnlyField(source='get_nice_name')
 
     def get_avatar_image(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
+        return obj.get_sized_avatar_image(32, 32)
 
     def get_avatar_image_tiny(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
+        return obj.get_sized_avatar_image(32, 32)
 
     def to_representation(self, instance):
         if instance.user.is_anonymous():
@@ -72,14 +72,20 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
         return obj.is_follower(self.context['request'].user)
 
     def get_profile_image_small(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
+        return obj.get_sized_avatar_image(32, 32)
 
     def get_profile_image_medium(self, obj):
-        return obj.get_sized_avatar_image(170, 170)
+        return obj.get_sized_avatar_image(253, 157)
 
     def get_profile_image_header(self, obj):
         return obj.get_sized_avatar_image(1200, 150)
 
+    def get_display_name(self, obj):
+        n = obj.get_nice_name()
+        if not n or n == "":
+            n = "%s %s".format(obj.first_name, obj.last_name)
+
+        return n
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -196,18 +202,24 @@ class MixSerializer(serializers.ModelSerializer):
                 except UserProfile.DoesNotExist:
                     pass
 
+            genres = self.initial_data['genres']
+            instance.genres.clear()
+            for genre in genres:
+                try:
+                    g = Genre.objects.get(slug=genre.get('slug'))
+                    instance.genres.add(g)
+                except Genre.DoesNotExist:
+                    """ Possibly allow adding genres here """
+                    pass
+
+            validated_data.pop('genres', None)
+
             # get any likes that aren't in passed bundle
             if 'downloads' in validated_data:
                 plays = validated_data['downloads'] or []
                 for play in plays:
                     instance.add_play(play)
                 validated_data.pop('downloads', None)
-
-            if 'genres' in validated_data:
-                genres = validated_data['genres'] or []
-                for genre in genres:
-                    instance.add_genre(genre)
-                validated_data.pop('genres', None)
 
             return super(MixSerializer, self).update(instance, validated_data)
         except MixUpdateException as ex:
@@ -217,7 +229,7 @@ class MixSerializer(serializers.ModelSerializer):
         return super(MixSerializer, self).is_valid(raise_exception)
 
     def get_avatar_image(self, obj):
-        return obj.user.get_sized_avatar_image(64, 64)
+        return obj.user.get_sized_avatar_image(32, 32)
 
     def get_can_edit(self, obj):
         user = self.context['request'].user
@@ -254,6 +266,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     profile_image_small = serializers.SerializerMethodField()
     profile_image_medium = serializers.SerializerMethodField()
     profile_image_header = serializers.SerializerMethodField()
+    display_name = serializers.SerializerMethodField(source='get_display_name')
 
     top_tags = serializers.SerializerMethodField()
 
@@ -304,6 +317,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 pass
         return super(UserProfileSerializer, self).update(instance, validated_data)
 
+    def get_display_name(self, obj):
+        n = obj.get_nice_name()
+        if not n or n == "":
+            n = "%s %s".format(obj.first_name, obj.last_name)
+
+        return n
+
     def get_title(self, obj):
         try:
             if obj.description:
@@ -346,10 +366,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
                     values('total', 'description', 'slug')[0:3])
 
     def get_profile_image_small(self, obj):
-        return obj.get_sized_avatar_image(64, 64)
+        return obj.get_sized_avatar_image(32, 32)
 
     def get_profile_image_medium(self, obj):
-        return obj.get_sized_avatar_image(170, 170)
+        return obj.get_sized_avatar_image(253, 157)
 
     def get_profile_image_header(self, obj):
         return obj.get_sized_avatar_image(1200, 150)
@@ -402,8 +422,11 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_can_edit(self, obj):
         user = self.context['request'].user
-        if user is not None and obj.user is not None and user.is_authenticated():
-            return user.is_staff or obj.user.id == user.userprofile.id
+        if user is not None:
+            if user.is_staff:
+                return True
+            if obj.user is not None and user.is_authenticated():
+                return obj.user.id == user.userprofile.id
 
         return False
 
@@ -425,7 +448,7 @@ class HitlistSerializer(serializers.ModelSerializer):
         return obj.get_nice_name()
 
     def get_avatar_image(self, obj):
-        return obj.get_sized_avatar_image(170, 170)
+        return obj.get_sized_avatar_image(253, 157)
 
 
 class ActivitySerializer(serializers.HyperlinkedModelSerializer):
@@ -454,7 +477,7 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
     from_user = InlineUserProfileSerializer(source='get_from_user', read_only=True)
     notification_url = serializers.ReadOnlyField()
     verb = serializers.ReadOnlyField()
-    target = serializers.ReadOnlyField()
+    target = serializers.SerializerMethodField()
     date = serializers.ReadOnlyField()
 
     class Meta:
@@ -475,7 +498,10 @@ class NotificationSerializer(serializers.HyperlinkedModelSerializer):
         return settings.DEFAULT_USER_NAME if obj.from_user is None else obj.from_user.get_nice_name()
 
     def get_avatar_image(self, obj):
-        return settings.DEFAULT_USER_IMAGE if obj.from_user is None else obj.from_user.get_sized_avatar_image(170, 170)
+        return settings.DEFAULT_USER_IMAGE if obj.from_user is None else obj.get_sized_avatar_image(253, 157)
+
+    def get_target(self, obj):
+        return "/{}/{}".format(obj.to_user.slug, obj.target)
 
 
 class MessageSerializer(serializers.ModelSerializer):
