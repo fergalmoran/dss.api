@@ -1,6 +1,7 @@
 .gitignore~
 .coverage
 .keystore
+._dss_tokens
 tags
 .tags
 .tags_sorted_by_file

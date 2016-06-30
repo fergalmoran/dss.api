@@ -80,7 +80,7 @@ TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
     'django.contrib.auth.context_processors.auth',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -95,13 +95,13 @@ MIDDLEWARE_CLASSES = (
     # 'spa.middleware.uploadify.SWFUploadMiddleware',
     # 'spa.middleware.sqlprinter.SqlPrintingMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
-)
+]
 
 WSGI_APPLICATION = 'dss.wsgi.application'
 TEMPLATE_DIRS = (here('templates'),)
 
 INSTALLED_APPS = (
-    'grappelli',
+    #'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.twitter',
 
     'pipeline',
+    'dbbackup',
 
     'corsheaders',
     'sorl.thumbnail',
@@ -252,3 +253,7 @@ SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     'social.backends.yahoo.YahooOpenId'
 )
 
+DBBACKUP_STORAGE = 'dbbackup.storage.dropbox_storage'
+DBBACKUP_TOKENS_FILEPATH = '._dss_tokens'
+DBBACKUP_DROPBOX_APP_KEY = localsettings.DSS_DB_BACKUP_KEY
+DBBACKUP_DROPBOX_APP_SECRET = localsettings.DSS_DB_BACKUP_SECRET
