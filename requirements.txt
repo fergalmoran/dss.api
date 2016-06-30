@@ -23,7 +23,6 @@ django-celery
 django-scheduler
 django-recurrence
 django-dbbackup
-# django-dbbackup
 
 azure
 
