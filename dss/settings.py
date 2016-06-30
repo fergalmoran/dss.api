@@ -123,7 +123,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.twitter',
 
     'pipeline',
-    'dbbackup',
+    #'dbbackup',
 
     'corsheaders',
     'sorl.thumbnail',
