@@ -93,7 +93,7 @@ MIDDLEWARE_CLASSES = (
     # 'htmlmin.middleware.HtmlMinifyMiddleware',
     # 'htmlmin.middleware.MarkRequestMiddleware',
     # 'spa.middleware.uploadify.SWFUploadMiddleware',
-    # 'spa.middleware.sqlprinter.SqlPrintingMiddleware',
+    'spa.middleware.sqlprinter.SqlPrintingMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
@@ -195,9 +195,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
-    'PAGINATE_BY': 12,  # Default to 10
-    'PAGINATE_BY_PARAM': 'limit',  # Allow client to override, using `?page_size=xxx`.
-    'MAX_PAGINATE_BY': 100  # Maximum limit allowed when using `?page_size=xxx`.}
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
 }
 
 DEFAULT_TRACK_IMAGE = 'assets/images/dyn/default-track-200.png'

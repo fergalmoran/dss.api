@@ -72,6 +72,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     lookup_field = 'slug'
     filter_fields = (
         'slug',
+        'user__first_name',
     )
 
     def get_queryset(self):
@@ -81,6 +82,9 @@ class UserProfileViewSet(viewsets.ModelViewSet):
             ret = UserProfile.objects.filter(followers__slug__in=[self.request.query_params['followers']])
         elif 'messaged_with' in self.request.query_params:
             ret = UserProfile.objects.filter(messages__slug__in=[self.request.query_params['followers']])
+        elif 'initial' in self.request.query_params:
+            ret = UserProfile.objects.filter(user__first_name__startswith=self.request.query_params['initial']) \
+                                     .annotate(mix_count=Count('mixes')).order_by('-mix_count')
         else:
             ret = super(UserProfileViewSet, self).get_queryset()
 
