@@ -93,7 +93,7 @@ MIDDLEWARE_CLASSES = (
     # 'htmlmin.middleware.HtmlMinifyMiddleware',
     # 'htmlmin.middleware.MarkRequestMiddleware',
     # 'spa.middleware.uploadify.SWFUploadMiddleware',
-    'spa.middleware.sqlprinter.SqlPrintingMiddleware',
+    # 'spa.middleware.sqlprinter.SqlPrintingMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
