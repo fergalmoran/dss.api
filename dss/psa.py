@@ -7,7 +7,7 @@ AUTHENTICATION_BACKENDS = global_settings.AUTHENTICATION_BACKENDS + (
     'social.backends.google.GooglePlusAuth',
     'social.backends.twitter.TwitterOAuth',
     'social.backends.yahoo.YahooOpenId',
-    'social.backends.facebook.FacebookOAuth2'
+    'social.backends.facebook.FacebookOAuth2',
 
 )
 
