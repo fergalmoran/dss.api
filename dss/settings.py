@@ -123,13 +123,12 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.twitter',
 
     'pipeline',
-    'dbbackup',
+    'gunicorn',
 
     'corsheaders',
     'sorl.thumbnail',
     'djcelery',
     'spa',
-    'gunicorn',
     'spa.signals',
     'core',
     'storages',
@@ -254,7 +253,9 @@ SOCIAL_AUTH_AUTHENTICATION_BACKENDS = (
     'social.backends.yahoo.YahooOpenId'
 )
 
+"""
 DBBACKUP_STORAGE = 'dbbackup.storage.dropbox_storage'
 DBBACKUP_TOKENS_FILEPATH = '._dss_tokens'
 DBBACKUP_DROPBOX_APP_KEY = localsettings.DSS_DB_BACKUP_KEY
 DBBACKUP_DROPBOX_APP_SECRET = localsettings.DSS_DB_BACKUP_SECRET
+"""

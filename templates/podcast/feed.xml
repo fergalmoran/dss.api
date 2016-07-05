@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">
+    <channel>
+{% load dss_extras %}
+
+        <title>{{ title }}</title>
+        <description>{{ description }}</description>
+        <link>{{ link }}</link>
+        <language>en-ie</language>
+        <copyright>Copyright 2016</copyright>
+        <lastBuildDate>{{ last_build_date|date_to_rfc2822 }}</lastBuildDate>
+        <pubDate>{{ last_build_date|date_to_rfc2822 }}</pubDate>
+        <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+        <webMaster>webmaster@deepsouthsounds.com</webMaster>
+
+        <itunes:author>{{ user }} @ deepsouthsounds</itunes:author>
+        <itunes:subtitle>{{ title }}</itunes:subtitle>
+        <itunes:summary>{{ summary }}</itunes:summary>
+
+        <itunes:owner>
+            <itunes:name>Fergal Moran</itunes:name>
+            <itunes:email>fergal@deepsouthsounds.com</itunes:email>
+        </itunes:owner>
+
+        <itunes:explicit>No</itunes:explicit>
+
+        <itunes:image href="https://dsscdn2.blob.core.windows.net/static/podcast_logo.png"/>
+
+        <itunes:category text="Technology">
+            <itunes:category text="Podcasting"/>
+        </itunes:category>
+        {% for item in objects %}
+        <item>
+            <title>{{ item.title }}</title>
+            <link>{{ item|get_mix_url }}</link>
+            <guid>{{ item|get_mix_url }}</guid>
+            <description>{{ item.description }}</description>
+            <enclosure url="{{ item|get_mix_audio_url }}" length="{{ item.duration }}" type="audio/mpeg"/>
+            <category>Podcasts</category>
+            <pubDate>{{ item.upload_date|date_to_rfc2822 }}</pubDate>
+            <itunes:author>{{ item.user.display_name }}</itunes:author>
+            <itunes:explicit>No</itunes:explicit>
+            <itunes:subtitle>{{ item.description }}</itunes:subtitle>
+            <itunes:summary>{{ item.description }}</itunes:summary>
+            <itunes:duration>{{ item.duration|seconds_to_hms }}</itunes:duration>
+            <itunes:keywords>deep south sounds, deep house, Cork, Fergal Moran, Ed Dunlea, {{ item.title }}, {{ item.user.display_name }}
+            </itunes:keywords>
+        </item>
+        {% endfor %}
+    </channel>
+
+</rss>

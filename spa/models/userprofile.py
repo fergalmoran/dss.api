@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import SuspiciousOperation
 from django.db import models
 from django.db.models import Count
+import uuid
 from django_gravatar.helpers import has_gravatar, get_gravatar_url
 from sorl import thumbnail
 
@@ -41,6 +42,8 @@ class UserProfile(BaseModel):
     ACTIVITY_SHARE_NETWORK_TWITTER = 2
 
     user = models.OneToOneField(User, unique=True, related_name='userprofile')
+    uid = models.UUIDField(primary_key=False, editable=False, null=True)
+
     avatar_type = models.CharField(max_length=15, default='social')
     avatar_image = models.ImageField(max_length=1024, blank=True, upload_to=avatar_name)
     display_name = models.CharField(blank=True, max_length=35)

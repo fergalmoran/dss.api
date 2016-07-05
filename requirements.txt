@@ -22,7 +22,6 @@ google-api-python-client
 django-celery
 django-scheduler
 django-recurrence
-# django-dbbackup
 
 azure
 

@@ -98,6 +98,17 @@ class LikeSerializer(serializers.ModelSerializer):
     display_name = serializers.ReadOnlyField(source='get_nice_name')
 
 
+class FavouriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = (
+            'display_name',
+            'slug',
+        )
+
+    display_name = serializers.ReadOnlyField(source='get_nice_name')
+
+
 class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Genre
@@ -162,6 +173,7 @@ class MixSerializer(serializers.ModelSerializer):
             'plays',
             'downloads',
             'is_liked',
+            'is_favourited',
 
         ]
 
@@ -174,10 +186,11 @@ class MixSerializer(serializers.ModelSerializer):
 
     genres = GenreSerializer(many=True, required=False, read_only=True)
     likes = LikeSerializer(many=True, required=False, read_only=True)  # slug_field='slug', many=True, read_only=True)
-    favourites = serializers.SlugRelatedField(slug_field='slug', many=True, read_only=True)
+    favourites = FavouriteSerializer(many=True, required=False, read_only=True)  # slug_field='slug', many=True, read_only=True)
     plays = InlineActivityPlaySerializer(many=True, read_only=True, source='activity_plays')
     downloads = InlineActivityDownloadSerializer(read_only=True, source='activity_downloads')
     is_liked = serializers.SerializerMethodField(read_only=True)
+    is_favourited = serializers.SerializerMethodField(read_only=True)
 
     def update(self, instance, validated_data):
         # all nested representations need to be serialized separately here
@@ -198,6 +211,25 @@ class MixSerializer(serializers.ModelSerializer):
                     user = UserProfile.objects.get(slug=like['slug'])
                     if user is not None and user == self.context['request'].user.userprofile:
                         instance.update_liked(user, True)
+
+                except UserProfile.DoesNotExist:
+                    pass
+
+            favourites = self.initial_data['favourites']
+            unfavourited = instance.favourites.exclude(user__userprofile__slug__in=[f['slug'] for f in favourites])
+            for uf in unfavourited:
+                # check that the user removing the like is an instance of the current user
+                # for now, only the current user can like stuff
+                if uf == self.context['request'].user.userprofile:
+                    instance.update_favourite(uf, False)
+
+            for favourite in favourites:
+                # check that the user adding the like is an instance of the current user
+                # for now, only the current user can like stuff
+                try:
+                    user = UserProfile.objects.get(slug=favourite['slug'])
+                    if user is not None and user == self.context['request'].user.userprofile:
+                        instance.update_favourite(user, True)
 
                 except UserProfile.DoesNotExist:
                     pass
@@ -223,6 +255,8 @@ class MixSerializer(serializers.ModelSerializer):
 
             return super(MixSerializer, self).update(instance, validated_data)
         except MixUpdateException as ex:
+            raise ex
+        except Exception as ex:
             raise ex
 
     def is_valid(self, raise_exception=False):
