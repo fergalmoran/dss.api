@@ -24,7 +24,7 @@
 
         <itunes:explicit>No</itunes:explicit>
 
-        <itunes:image href="https://dsscdn2.blob.core.windows.net/static/podcast_logo.png"/>
+        <itunes:image href="{{ image }}"/>
 
         <itunes:category text="Technology">
             <itunes:category text="Podcasting"/>

@@ -321,6 +321,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             'profile_image_medium',
             'profile_image_header',
             'slug',
+            'uid',
             'likes',
             'mix_count',
             'isme',
