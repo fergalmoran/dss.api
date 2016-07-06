@@ -14,6 +14,8 @@ urlpatterns = patterns(
     (r'^_embed/', include('spa.embedding.urls')),
     (r'^__redir/blog/', include('spa.blog.urls')),
     (r'^__redir/social/', include('spa.social.urls')),
+    (r'^podcasts/', include('spa.podcast.urls')),
+    (r'^podcast/', include('spa.podcast.urls')),
     url(r'', include('user_sessions.urls', 'user_sessions')),
     url(r'^', include('api.urls')),
 )
