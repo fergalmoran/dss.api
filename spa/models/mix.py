@@ -238,7 +238,7 @@ class Mix(BaseModel):
             if user.user.is_authenticated():
                 if value:
                     if self.favourites.filter(user=user.user).count() == 0:
-                        fav = ActivityFavourite(user=user)  # , mix=self)
+                        fav = ActivityFavourite(user=user, mix=self)
                         fav.save()
                         self.favourites.add(user)
                         self.save()
