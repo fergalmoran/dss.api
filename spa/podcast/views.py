@@ -17,7 +17,7 @@ def _get_user(uid):
 def featured(request):
     podcast_list = Mix.objects.order_by('-id').filter(is_private=False, is_featured=True)
     return _render_podcast(request, 'Deep South Sounds', 'DSS Favourites',
-                           'All your favourites on Deep South Sounds', podcast_list)
+                           'Featured Deep South Sounds mixes', podcast_list)
 
 
 def user(request, slug):
