@@ -258,7 +258,4 @@ DBBACKUP_STORAGE = 'dbbackup.storage.dropbox_storage'
 DBBACKUP_TOKENS_FILEPATH = '._dss_tokens'
 DBBACKUP_DROPBOX_APP_KEY = localsettings.DSS_DB_BACKUP_KEY
 DBBACKUP_DROPBOX_APP_SECRET = localsettings.DSS_DB_BACKUP_SECRET
-<<<<<<< HEAD
-=======
 """
->>>>>>> develop
