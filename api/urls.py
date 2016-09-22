@@ -22,6 +22,7 @@ router.register(r'messages', views.MessageViewSet, base_name='messages')
 router.register(r'shows', views.ShowViewSet, base_name='shows')
 router.register(r'blog', views.BlogViewSet, base_name='shows')
 router.register(r'playlist', views.PlaylistViewSet, base_name='playlists')
+router.register(r'playlist', views.PlaylistViewSet, base_name='playlists')
 
 router.register(r'user', views.UserProfileViewSet)
 router.register(r'mix', views.MixViewSet)

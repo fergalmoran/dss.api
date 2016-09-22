@@ -384,6 +384,6 @@ class PlaylistViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return self.queryset.get(user=self.request.user.userprofile)
+            return self.queryset.filter(user=self.request.user.userprofile)
 
         return Response(status=HTTP_401_UNAUTHORIZED)

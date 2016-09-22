@@ -6,7 +6,7 @@ DEBUG = ast.literal_eval(os.environ.get('IS_DEBUG', 'True'))
 DSS_TEMP_PATH = os.environ.get('DSS_TEMP_PATH', '/tmp/')
 DSS_LAME_PATH = os.environ.get('DSS_LAME_PATH', '/usr/bin/sox')
 DSS_WAVE_PATH = os.environ.get('DSS_WAVE_PATH',
-                               '/home/fergalm/Dropbox/development/deepsouthsounds.com/dss.lib/wav2png/bin/Linux/wav2png')
+                               '/home/fergalm/dev/personal/deepsouthsounds.com/dss.lib/wav2png/bin/Linux/wav2png')
 GEOIP_PATH = os.environ.get('GEOIP_PATH', '/home/fergalm/Dropbox/Private/deepsouthsounds.com/working/geolite')
 
 DATABASE_PASSWORD = os.environ.get('DATABASE_PASSWORD', 'deepsouthsounds')
@@ -17,7 +17,7 @@ DATABASE_HOST = os.environ.get('DATABASE_HOST', 'localhost')
 STATIC_URL = '/assets/'
 
 MEDIA_ROOT = os.environ.get('MEDIA_ROOT', '/mnt/dev/deepsouthsounds.com/media')
-STATIC_ROOT = os.environ.get('STATIC_ROOT', '/home/fergalm/Dropbox/development/deepsouthsounds.com/cache/static')
+STATIC_ROOT = os.environ.get('STATIC_ROOT', '/home/fergalm/dev/personal/deepsouthsounds.com/cache/static')
 CACHE_ROOT = os.environ.get('CACHE_ROOT', '/mnt/dev/deepsouthsounds.com/cache')
 
 MEDIA_URL = os.environ.get('MEDIA_URL', 'http://localhost/DSSMedia/')  # '{0}media/'.format(CDN_URL)
@@ -40,7 +40,7 @@ MANDRILL_API_KEY = os.environ.get('MANDRILL_API_KEY', '')
 
 FACEBOOK_API_VERSION = os.environ.get('FACEBOOK_API_VERSION', '2.5')
 GOOGLE_CREDENTIALS = os.environ.get('GOOGLE_CREDENTIALS',
-                                    '/home/fergalm/Dropbox/development/deepsouthsounds.com/dss.api/googleapikey.json')
+                                    '/home/fergalm/dev/personal/deepsouthsounds.com/dss.api/googleapikey.json')
 SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('SOCIAL_AUTH_FACEBOOK_KEY', '')
 SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('SOCIAL_AUTH_FACEBOOK_SECRET', '')
 
