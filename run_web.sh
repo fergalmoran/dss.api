@@ -1,6 +1,8 @@
 #!/bin/bash
 python manage.py migrate
 
+chmod 777 /files/tmp/dss.log
+
 touch /srv/logs/gunicorn.log
 touch /srv/logs/access.log
 tail -n 0 -f /srv/logs/*.log &
