@@ -37,3 +37,4 @@ reset
 __krud/
 celerybeat-schedule
 private/
+.vscode/

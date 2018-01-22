@@ -20,7 +20,7 @@ DEVELOPMENT = DEBUG
 # AUTH_USER_MODEL = 'spa.UserProfile'
 
 TEMPLATE_DEBUG = DEBUG
-VERSION = '3.0.1'
+VERSION = '3.0.2'
 
 ADMINS = (
     ('Fergal Moran', 'fergal.moran@gmail.com'),
@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.twitter',
 
     'pipeline',
+    #'dbbackup',
     'gunicorn',
 
     'corsheaders',
@@ -195,9 +196,8 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
-    'PAGINATE_BY': 12,  # Default to 10
-    'PAGINATE_BY_PARAM': 'limit',  # Allow client to override, using `?page_size=xxx`.
-    'MAX_PAGINATE_BY': 100  # Maximum limit allowed when using `?page_size=xxx`.}
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
 }
 
 DEFAULT_TRACK_IMAGE = 'assets/images/dyn/default-track-200.png'

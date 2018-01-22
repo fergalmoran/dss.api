@@ -87,6 +87,7 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
 
         return n
 
+
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
@@ -160,6 +161,7 @@ class MixSerializer(serializers.ModelSerializer):
             'description',
             'user',
             'duration',
+            'audio_url',
             'waveform_url',
             'waveform_progress_url',
             'mix_image',
@@ -170,6 +172,7 @@ class MixSerializer(serializers.ModelSerializer):
             'genres',
             'likes',
             'favourites',
+            'playlists',
             'plays',
             'downloads',
             'is_liked',
@@ -179,6 +182,7 @@ class MixSerializer(serializers.ModelSerializer):
 
     slug = serializers.ReadOnlyField(required=False)
     user = InlineUserProfileSerializer(read_only=True)
+    audio_url = serializers.ReadOnlyField(source='get_stream_url')
     waveform_url = serializers.ReadOnlyField(source='get_waveform_url')
     waveform_progress_url = serializers.ReadOnlyField(source='get_waveform_progress_url')
     mix_image = serializers.ReadOnlyField(source='get_image_url')
@@ -187,6 +191,7 @@ class MixSerializer(serializers.ModelSerializer):
     genres = GenreSerializer(many=True, required=False, read_only=True)
     likes = LikeSerializer(many=True, required=False, read_only=True)  # slug_field='slug', many=True, read_only=True)
     favourites = FavouriteSerializer(many=True, required=False, read_only=True)  # slug_field='slug', many=True, read_only=True)
+    playlists = serializers.SerializerMethodField()
     plays = InlineActivityPlaySerializer(many=True, read_only=True, source='activity_plays')
     downloads = InlineActivityDownloadSerializer(read_only=True, source='activity_downloads')
     is_liked = serializers.SerializerMethodField(read_only=True)
@@ -196,53 +201,13 @@ class MixSerializer(serializers.ModelSerializer):
         # all nested representations need to be serialized separately here
         try:
             # get any likes that aren't in passed bundle
-            likes = self.initial_data['likes']
-            unliked = instance.likes.exclude(user__userprofile__slug__in=[l['slug'] for l in likes])
-            for ul in unliked:
-                # check that the user removing the like is an instance of the current user
-                # for now, only the current user can like stuff
-                if ul == self.context['request'].user.userprofile:
-                    instance.update_liked(ul, False)
+            self._update_likes(instance)
 
-            for like in likes:
-                # check that the user adding the like is an instance of the current user
-                # for now, only the current user can like stuff
-                try:
-                    user = UserProfile.objects.get(slug=like['slug'])
-                    if user is not None and user == self.context['request'].user.userprofile:
-                        instance.update_liked(user, True)
+            self._update_favourites(instance)
 
-                except UserProfile.DoesNotExist:
-                    pass
+            self._update_genres(instance)
 
-            favourites = self.initial_data['favourites']
-            unfavourited = instance.favourites.exclude(user__userprofile__slug__in=[f['slug'] for f in favourites])
-            for uf in unfavourited:
-                # check that the user removing the like is an instance of the current user
-                # for now, only the current user can like stuff
-                if uf == self.context['request'].user.userprofile:
-                    instance.update_favourite(uf, False)
-
-            for favourite in favourites:
-                # check that the user adding the like is an instance of the current user
-                # for now, only the current user can like stuff
-                try:
-                    user = UserProfile.objects.get(slug=favourite['slug'])
-                    if user is not None and user == self.context['request'].user.userprofile:
-                        instance.update_favourite(user, True)
-
-                except UserProfile.DoesNotExist:
-                    pass
-
-            genres = self.initial_data['genres']
-            instance.genres.clear()
-            for genre in genres:
-                try:
-                    g = Genre.objects.get(slug=genre.get('slug'))
-                    instance.genres.add(g)
-                except Genre.DoesNotExist:
-                    """ Possibly allow adding genres here """
-                    pass
+            self._update_playlists(instance)
 
             validated_data.pop('genres', None)
 
@@ -259,8 +224,71 @@ class MixSerializer(serializers.ModelSerializer):
         except Exception as ex:
             raise ex
 
-    def is_valid(self, raise_exception=False):
-        return super(MixSerializer, self).is_valid(raise_exception)
+    def _update_genres(self, instance):
+        genres = self.initial_data['genres']
+        instance.genres.clear()
+        for genre in genres:
+            try:
+                g = Genre.objects.get(slug=genre.get('slug'))
+                instance.genres.add(g)
+            except Genre.DoesNotExist:
+                """ Possibly allow adding genres here """
+                pass
+
+    def _update_playlists(self, instance):
+        try:
+            user = self.context['request'].user
+            playlists = self.initial_data['playlists']
+            removed = user.userprofile.playlists.exclude(slug__in=[f['slug'] for f in playlists])
+            if user.is_authenticated():
+
+                for r in removed:
+                    playlist = Playlist.objects.get(slug=r.slug)
+                    playlist.mixes.remove(instance)
+                    playlist.save()
+
+                for p in playlists:
+                    try:
+                        playlist = Playlist.objects.get(slug=p['slug'])
+                        playlist.mixes.add(instance)
+                        playlist.save()
+                    except Playlist.DoesNotExist:
+                        print("Playlist %s not found".format(p['slug']))
+                        pass
+            else:
+                pass
+        except Exception as ex:
+            print(ex)
+
+    def _update_favourites(self, instance):
+        favourites = self.initial_data['favourites']
+        unfavourited = instance.favourites.exclude(user__userprofile__slug__in=[f['slug'] for f in favourites])
+        for uf in unfavourited:
+            if uf == self.context['request'].user.userprofile:
+                instance.update_favourite(uf, False)
+        for favourite in favourites:
+            try:
+                user = UserProfile.objects.get(slug=favourite['slug'])
+                if user is not None and user == self.context['request'].user.userprofile:
+                    instance.update_favourite(user, True)
+
+            except UserProfile.DoesNotExist:
+                pass
+
+    def _update_likes(self, instance):
+        likes = self.initial_data['likes']
+        unliked = instance.likes.exclude(user__userprofile__slug__in=[l['slug'] for l in likes])
+        for ul in unliked:
+            if ul == self.context['request'].user.userprofile:
+                instance.update_liked(ul, False)
+        for like in likes:
+            try:
+                user = UserProfile.objects.get(slug=like['slug'])
+                if user is not None and user == self.context['request'].user.userprofile:
+                    instance.update_liked(user, True)
+
+            except UserProfile.DoesNotExist:
+                pass
 
     def get_avatar_image(self, obj):
         return obj.user.get_sized_avatar_image(32, 32)
@@ -283,6 +311,14 @@ class MixSerializer(serializers.ModelSerializer):
     def get_is_liked(self, obj):
         user = self.context['request'].user
         return obj.is_liked(user) if user.is_authenticated() else False
+
+    def get_playlists(self, obj):
+        user = self.context['request'].user
+        if user.is_authenticated():
+            playlists = user.userprofile.playlists.filter(mixes__in=[obj])
+            return list(playlists.values('slug'))
+        else:
+            return []
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -583,5 +619,22 @@ class BlogSerializer(serializers.ModelSerializer):
 
 
 class PlaylistSerializer(serializers.ModelSerializer):
+    slug = serializers.ReadOnlyField(required=False)
+    user = InlineUserProfileSerializer(read_only=True)
+    mixes = MixSerializer(read_only=True, many=True)
+    date_created = serializers.SerializerMethodField()
+
     class Meta:
         model = Playlist
+        fields = (
+            'id',
+            'name',
+            'slug',
+            'mixes',
+            'public',
+            'user',
+            'date_created',
+        )
+
+    def get_date_created(self, obj):
+        return obj.object_created

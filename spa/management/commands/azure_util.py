@@ -22,7 +22,7 @@ def _check_missing_mixes():
     for m in ms:
         url = m.get_download_url()
         if not cdn.file_exists(url):
-            file = '/mnt/dev/working/Dropbox/Development/deepsouthsounds.com/media/mixes/{0}.mp3'.format(m.uid)
+            file = '/mnt/dev/working/deepsouthsounds.com/media/mixes/{0}.mp3'.format(m.uid)
             if os.path.isfile(file):
                 print(('* {0}'.format(file)))
                 # cdn.upload_file_to_azure(file, '{0}.mp3'.format(m.uid), 'mixes')

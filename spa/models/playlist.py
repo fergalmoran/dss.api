@@ -25,6 +25,12 @@ class Playlist(BaseModel):
 
     objects = PlaylistManager()
 
+    def __str__(self):
+        return self.__unicode__().encode('utf-8')
+
+    def __unicode__(self):
+        return self.name
+
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if not self.id:
             self.slug = unique_slugify(self, self.name)
