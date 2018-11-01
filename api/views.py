@@ -57,7 +57,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                 if mix is not None:
                     serializer.save(
                             mix=mix,
-                            user=self.request.user if self.request.user.is_authenticated() else None
+                            user=self.request.user if self.request.user.is_authenticated else None
                     )
             except Mix.DoesNotExist:
                 pass
@@ -120,7 +120,7 @@ class MixViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         if 'friends' in self.request.query_params:
-            if self.request.user.is_authenticated():
+            if self.request.user.is_authenticated:
                 return self.queryset.filter(user__in=self.request.user.userprofile.following.all())
             else:
                 raise PermissionDenied("Not allowed")
@@ -267,7 +267,7 @@ class ActivityViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             raise PermissionDenied("Not allowed")
 
         ret = ActivityPlay.objects.filter(mix__user=user.userprofile).order_by("-id")
@@ -295,7 +295,7 @@ class NotificationViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             raise PermissionDenied("Not allowed")
 
         return Notification.objects.filter(to_user=user.userprofile).order_by('-id')

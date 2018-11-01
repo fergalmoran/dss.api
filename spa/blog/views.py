@@ -3,7 +3,6 @@ import logging
 
 from django.conf.urls import url
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import resolve
 from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext

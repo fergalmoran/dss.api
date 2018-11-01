@@ -12,9 +12,9 @@ class ShowOverlapException(Exception):
 
 
 class Show(BaseModel):
-    mix = models.ForeignKey(Mix, related_name='show', blank=True, null=True)
-    user = models.ForeignKey(UserProfile, related_name='owned_shows')
-    performer = models.ForeignKey(UserProfile, related_name='shows')
+    mix = models.ForeignKey(Mix, related_name='show', blank=True, null=True, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, related_name='owned_shows', on_delete=models.CASCADE)
+    performer = models.ForeignKey(UserProfile, related_name='shows', on_delete=models.CASCADE)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField(blank=True)
     recurrence = models.CharField(max_length=1)

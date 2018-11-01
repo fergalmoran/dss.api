@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('object_created', models.DateTimeField(auto_now_add=True)),
                 ('object_updated', models.DateTimeField(db_index=True, auto_now=True)),
                 ('test_field', models.CharField(max_length=400)),
-                ('mix', models.ForeignKey(related_name='show', to='spa.Mix')),
+                ('mix', models.ForeignKey(related_name='show', to='spa.Mix', on_delete=models.CASCADE)),
             ],
         ),
     ]

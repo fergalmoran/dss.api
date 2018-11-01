@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('date_created', models.DateField(auto_now=True)),
                 ('title', models.CharField(max_length=1024)),
                 ('body', models.TextField()),
-                ('user', models.ForeignKey(blank=True, to='spa.UserProfile', null=True)),
+                ('user', models.ForeignKey(blank=True, to='spa.UserProfile', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

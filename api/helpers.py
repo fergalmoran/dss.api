@@ -28,7 +28,7 @@ class ChatHelper(ActivityHelper):
 
         # user = self.get_session(request)
         u = request.user
-        if not u.is_anonymous():
+        if not u.is_anonymous:
             image = u.userprofile.get_sized_avatar_image(32, 32)
             user = u.userprofile.get_nice_name()
         else:
@@ -46,7 +46,7 @@ class ActivityPlayHelper(ActivityHelper):
                 mix = Mix.objects.get(slug=self.request.query_params.get('id'))
                 mix.add_play(request.user)
                 data = {
-                    'user': request.user.userprofile.get_nice_name() if request.user.is_authenticated() else settings.DEFAULT_USER_NAME,
+                    'user': request.user.userprofile.get_nice_name() if request.user.is_authenticated else settings.DEFAULT_USER_NAME,
                     'date': datetime.datetime.now()
                 }
                 return Response(data, HTTP_201_CREATED)

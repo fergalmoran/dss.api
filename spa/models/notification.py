@@ -9,8 +9,8 @@ from spa.models import BaseModel, UserProfile
 
 
 class Notification(BaseModel):
-    to_user = models.ForeignKey('spa.UserProfile', related_name='to_notications')
-    from_user = models.ForeignKey('spa.UserProfile', related_name='notifications', null=True, blank=True)
+    to_user = models.ForeignKey('spa.UserProfile', related_name='to_notications', on_delete=models.CASCADE)
+    from_user = models.ForeignKey('spa.UserProfile', related_name='notifications', null=True, blank=True, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
 
     verb = models.CharField(max_length=200, null=True)
@@ -55,7 +55,7 @@ class Notification(BaseModel):
                 'text': 'Get yourself some HTML man!',
             }
 
-            result = mandrill_client.messages.send(message=message, async=False)
+            result = mandrill_client.messages.send(message=message)
             print(result)
 
         except mandrill.Error as e:  # Mandrill errors are thrown as exceptions

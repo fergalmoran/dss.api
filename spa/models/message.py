@@ -21,8 +21,10 @@ class MessageManager(models.Manager):
 class Message(BaseModel):
     objects = MessageManager()
 
-    from_user = models.ForeignKey('spa.UserProfile', null=True, blank=True, related_name='sent_messages')
-    to_user = models.ForeignKey('spa.UserProfile', null=True, blank=True, related_name='messages')
+    from_user = models.ForeignKey('spa.UserProfile', null=True, blank=True, related_name='sent_messages',
+                                  on_delete=models.CASCADE)
+    to_user = models.ForeignKey('spa.UserProfile', null=True, blank=True, related_name='messages',
+                                on_delete=models.CASCADE)
 
     sent_at = models.DateTimeField(null=True, blank=True, auto_now=True)
     read_at = models.DateTimeField(null=True, blank=True)

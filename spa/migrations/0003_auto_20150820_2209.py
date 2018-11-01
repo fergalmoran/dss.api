@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='show',
             name='user',
-            field=models.ForeignKey(default=2, related_name='show', to='spa.UserProfile'),
+            field=models.ForeignKey(default=2, related_name='show', to='spa.UserProfile', on_delete=models.CASCADE),
             preserve_default=False,
         ),
     ]

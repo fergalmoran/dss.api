@@ -25,7 +25,7 @@ ACTIVITYTYPES = (
 
 class Activity(BaseModel):
     objects = InheritanceManager()
-    user = models.ForeignKey(UserProfile, null=True, blank=True)
+    user = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.CASCADE)
     date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
@@ -131,7 +131,7 @@ class Activity(BaseModel):
 
 
 class ActivityLike(Activity):
-    mix = models.ForeignKey('spa.Mix', related_name='activity_likes')
+    mix = models.ForeignKey('spa.Mix', related_name='activity_likes', on_delete=models.CASCADE)
 
     class Meta:
         app_label = 'spa'
@@ -159,7 +159,7 @@ class ActivityLike(Activity):
 
 
 class ActivityFollow(Activity):
-    to_user = models.ForeignKey('spa.UserProfile', related_name='activity_follow')
+    to_user = models.ForeignKey('spa.UserProfile', related_name='activity_follow', on_delete=models.CASCADE)
 
     def get_object_type(self):
         return "user"
@@ -187,7 +187,7 @@ class ActivityFollow(Activity):
 
 
 class ActivityFavourite(Activity):
-    mix = models.ForeignKey('spa.Mix', related_name='activity_favourites')
+    mix = models.ForeignKey('spa.Mix', related_name='activity_favourites', on_delete=models.CASCADE)
 
     def get_object_type(self):
         return "mix"
@@ -212,7 +212,7 @@ class ActivityFavourite(Activity):
 
 
 class ActivityPlay(Activity):
-    mix = models.ForeignKey('spa.Mix', related_name='activity_plays')
+    mix = models.ForeignKey('spa.Mix', related_name='activity_plays', on_delete=models.CASCADE)
 
     def get_object_type(self):
         return "mix"
@@ -237,7 +237,7 @@ class ActivityPlay(Activity):
 
 
 class ActivityDownload(Activity):
-    mix = models.ForeignKey('spa.Mix', related_name='activity_downloads')
+    mix = models.ForeignKey('spa.Mix', related_name='activity_downloads', on_delete=models.CASCADE)
 
     def get_object_type(self):
         return "mix"
@@ -262,7 +262,7 @@ class ActivityDownload(Activity):
 
 
 class ActivityComment(Activity):
-    mix = models.ForeignKey('spa.Mix', related_name='activity_comments')
+    mix = models.ForeignKey('spa.Mix', related_name='activity_comments', on_delete=models.CASCADE)
 
     def get_object_type(self):
         return "mix"

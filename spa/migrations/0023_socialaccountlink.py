@@ -19,7 +19,8 @@ class Migration(migrations.Migration):
                 ('type', models.CharField(max_length=30, choices=[('twitter', 'Twitter'), ('facebook', 'Facebook'),
                                                                   ('google', 'Google')])),
                 ('social_id', models.CharField(max_length=150)),
-                ('user', models.ForeignKey(to='spa.UserProfile', related_name='social_accounts')),
+                ('user',
+                 models.ForeignKey(to='spa.UserProfile', related_name='social_accounts', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

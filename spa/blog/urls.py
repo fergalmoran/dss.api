@@ -1,7 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
-urlpatterns = patterns(
-    '',
-    url(r'^blog/(?P<slug>[\w\d_.-]+)/?$', 'spa.blog.views.entry', name='blog_entry_slug'),
-    url(r'^$', 'spa.blog.views.index', name='blog_index')
-)
+from spa.blog.views import entry, index
+
+urlpatterns = [
+    url(r'^blog/(?P<slug>[\w\d_.-]+)/?$', entry, name='blog_entry_slug'),
+    url(r'^$', index, name='blog_index')
+]

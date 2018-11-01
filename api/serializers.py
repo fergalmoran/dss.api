@@ -59,7 +59,7 @@ class InlineUserProfileSerializer(serializers.ModelSerializer):
         return obj.get_sized_avatar_image(32, 32)
 
     def to_representation(self, instance):
-        if instance.user.is_anonymous():
+        if instance.user.is_anonymous:
             return {
                 'avatar_image': settings.DEFAULT_USER_IMAGE,
                 'display_name': settings.DEFAULT_USER_NAME,
@@ -240,7 +240,7 @@ class MixSerializer(serializers.ModelSerializer):
             user = self.context['request'].user
             playlists = self.initial_data['playlists']
             removed = user.userprofile.playlists.exclude(slug__in=[f['slug'] for f in playlists])
-            if user.is_authenticated():
+            if user.is_authenticated:
 
                 for r in removed:
                     playlist = Playlist.objects.get(slug=r.slug)
@@ -295,14 +295,14 @@ class MixSerializer(serializers.ModelSerializer):
 
     def get_can_edit(self, obj):
         user = self.context['request'].user
-        if user.is_authenticated():
+        if user.is_authenticated:
             return user.is_staff or obj.user.id == user.userprofile.id
 
         return False
 
     def get_is_favourited(self, obj):
         user = self.context['request'].user
-        return obj.is_favourited(user) if user.is_authenticated() else False
+        return obj.is_favourited(user) if user.is_authenticated else False
 
     def get_validation_exclusions(self, instance=None):
         exclusions = super(MixSerializer, self).get_validation_exclusions()
@@ -310,11 +310,11 @@ class MixSerializer(serializers.ModelSerializer):
 
     def get_is_liked(self, obj):
         user = self.context['request'].user
-        return obj.is_liked(user) if user.is_authenticated() else False
+        return obj.is_liked(user) if user.is_authenticated else False
 
     def get_playlists(self, obj):
         user = self.context['request'].user
-        if user.is_authenticated():
+        if user.is_authenticated:
             playlists = user.userprofile.playlists.filter(mixes__in=[obj])
             return list(playlists.values('slug'))
         else:
@@ -496,7 +496,7 @@ class CommentSerializer(serializers.HyperlinkedModelSerializer):
         if user is not None:
             if user.is_staff:
                 return True
-            if obj.user is not None and user.is_authenticated():
+            if obj.user is not None and user.is_authenticated:
                 return obj.user.id == user.userprofile.id
 
         return False

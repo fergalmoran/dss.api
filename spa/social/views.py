@@ -3,12 +3,13 @@ import logging
 
 from django.conf.urls import url
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import resolve
 from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 import requests
 from allauth.socialaccount.models import SocialToken
+from django.urls import resolve
+
 from core.utils.url import wrap_full
 
 from dss import settings

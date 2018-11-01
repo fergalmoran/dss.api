@@ -14,12 +14,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='show',
             name='performer',
-            field=models.ForeignKey(related_name='shows', default=2, to='spa.UserProfile'),
+            field=models.ForeignKey(related_name='shows', default=2, to='spa.UserProfile', on_delete=models.CASCADE),
             preserve_default=False,
         ),
         migrations.AlterField(
             model_name='show',
             name='user',
-            field=models.ForeignKey(related_name='owned_shows', to='spa.UserProfile'),
+            field=models.ForeignKey(related_name='owned_shows', to='spa.UserProfile', on_delete=models.CASCADE),
         ),
     ]

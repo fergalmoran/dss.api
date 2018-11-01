@@ -175,7 +175,7 @@ class ObtainUser(APIView):
         return self.get(request)
 
     def get(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return Response(
                 status=status.HTTP_200_OK, data={
                     'id': request.user.id,

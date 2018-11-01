@@ -20,13 +20,13 @@ class Release(BaseModel):
     release_title = models.CharField(max_length=100)
     release_description = models.TextField()
     release_image = models.ImageField(blank=True, upload_to=release_image_name)
-    release_label = models.ForeignKey(Label)
+    release_label = models.ForeignKey(Label, on_delete=models.CASCADE)
     release_date = models.DateField(auto_now=True)
 
     embed_code = models.TextField(blank=True)
 
     is_active = models.BooleanField(default=True)
-    user = models.ForeignKey(UserProfile, editable=False)
+    user = models.ForeignKey(UserProfile, editable=False, on_delete=models.CASCADE)
 
     def __unicode__(self):
         return self.release_title
@@ -57,5 +57,5 @@ class ReleaseAudio(BaseModel):
     def get_waveform_url(self):
         return settings.MEDIA_URL + 'waveforms/release/%d.%s' % (self.id, "png")
 
-    release = models.ForeignKey(Release, related_name='release_audio', null=True, blank=True)
+    release = models.ForeignKey(Release, related_name='release_audio', null=True, blank=True, on_delete=models.CASCADE)
     description = models.TextField()

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='show',
             name='mix',
-            field=models.ForeignKey(null=True, related_name='show', to='spa.Mix', blank=True),
+            field=models.ForeignKey(null=True, related_name='show', to='spa.Mix', blank=True, on_delete=models.CASCADE),
         ),
         migrations.AlterField(
             model_name='show',

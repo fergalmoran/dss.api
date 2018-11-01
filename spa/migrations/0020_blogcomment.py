@@ -19,8 +19,8 @@ class Migration(migrations.Migration):
                 ('object_updated', models.DateTimeField(auto_now=True, db_index=True)),
                 ('comment', models.CharField(max_length=1024)),
                 ('date_created', models.DateField(auto_now_add=True)),
-                ('blog', models.ForeignKey(to='spa.Blog')),
-                ('user', models.ForeignKey(null=True, to='spa.UserProfile', blank=True)),
+                ('blog', models.ForeignKey(to='spa.Blog', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(null=True, to='spa.UserProfile', blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

@@ -74,7 +74,7 @@ class Mix(BaseModel):
     is_featured = models.BooleanField(default=False)
     is_private = models.BooleanField(default=False)
     is_downloadable = models.BooleanField(default=True)
-    user = models.ForeignKey(UserProfile, related_name='mixes')
+    user = models.ForeignKey(UserProfile, related_name='mixes', on_delete=models.CASCADE)
     waveform_generated = models.BooleanField(default=False)
     waveform_version = models.IntegerField(default=1)
     mp3tags_updated = models.BooleanField(default=False)
@@ -203,7 +203,7 @@ class Mix(BaseModel):
 
     def add_download(self, user):
         try:
-            if user.is_authenticated():
+            if user.is_authenticated:
                 ActivityDownload(user=user, mix=self).save()
         except Exception as e:
             self.logger.exception("Error adding mix download: %s" % e)
@@ -223,7 +223,7 @@ class Mix(BaseModel):
 
     def add_play(self, user):
         try:
-            if user.is_authenticated():
+            if user.is_authenticated:
                 ActivityPlay(user=user.userprofile, mix=self).save()
             else:
                 ActivityPlay(user=None, mix=self).save()
@@ -235,7 +235,7 @@ class Mix(BaseModel):
         try:
             if user is None:
                 return
-            if user.user.is_authenticated():
+            if user.user.is_authenticated:
                 if value:
                     if self.favourites.filter(user=user.user).count() == 0:
                         fav = ActivityFavourite(user=user, mix=self)
@@ -253,7 +253,7 @@ class Mix(BaseModel):
         try:
             if user is None:
                 return
-            if user.user.is_authenticated():
+            if user.user.is_authenticated:
                 if value:
                     if self.likes.filter(user=user.user).count() == 0:
                         v = ActivityLike(user=user, mix=self)
@@ -270,7 +270,7 @@ class Mix(BaseModel):
     def is_favourited(self, user):
         if user is None:
             return False
-        if user.is_authenticated():
+        if user.is_authenticated:
             return self.favourites.filter(user=user).count() != 0
         else:
             return False
@@ -278,7 +278,7 @@ class Mix(BaseModel):
     def is_liked(self, user):
         if user is None:
             return False
-        if user.is_authenticated():
+        if user.is_authenticated:
             return self.likes.filter(user=user).count() != 0
 
         return False

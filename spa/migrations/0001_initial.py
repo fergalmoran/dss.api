@@ -11,7 +11,6 @@ import spa.models.release
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
@@ -122,7 +121,8 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField()),
             ],
             options={
-                'permissions': (('mix_add_homepage', 'Can add a mix to the homepage'), ('mix_allow_download', 'Can allow downloads on a mix')),
+                'permissions': (('mix_add_homepage', 'Can add a mix to the homepage'),
+                                ('mix_allow_download', 'Can allow downloads on a mix')),
                 'ordering': ('-id',),
             },
         ),
@@ -185,7 +185,7 @@ class Migration(migrations.Migration):
                 ('release_date', models.DateField(auto_now=True)),
                 ('embed_code', models.TextField(blank=True)),
                 ('is_active', models.BooleanField(default=True)),
-                ('release_label', models.ForeignKey(to='spa.Label')),
+                ('release_label', models.ForeignKey(to='spa.Label', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -195,7 +195,8 @@ class Migration(migrations.Migration):
                 ('object_created', models.DateTimeField(auto_now_add=True)),
                 ('object_updated', models.DateTimeField(db_index=True, auto_now=True)),
                 ('description', models.TextField()),
-                ('release', models.ForeignKey(related_name='release_audio', blank=True, null=True, to='spa.Release')),
+                ('release', models.ForeignKey(related_name='release_audio', blank=True, null=True, to='spa.Release',
+                                              on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -211,7 +212,7 @@ class Migration(migrations.Migration):
                 ('title', models.CharField(max_length=255)),
                 ('remixer', models.CharField(max_length=255)),
                 ('label', models.CharField(max_length=255)),
-                ('mix', models.ForeignKey(related_name='tracklist', to='spa.Mix')),
+                ('mix', models.ForeignKey(related_name='tracklist', to='spa.Mix', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -224,19 +225,29 @@ class Migration(migrations.Migration):
                 ('object_created', models.DateTimeField(auto_now_add=True)),
                 ('object_updated', models.DateTimeField(db_index=True, auto_now=True)),
                 ('avatar_type', models.CharField(max_length=15, default='social')),
-                ('avatar_image', models.ImageField(upload_to=spa.models.userprofile.avatar_name, max_length=1024, blank=True)),
+                ('avatar_image',
+                 models.ImageField(upload_to=spa.models.userprofile.avatar_name, max_length=1024, blank=True)),
                 ('display_name', models.CharField(max_length=35, blank=True)),
                 ('description', models.CharField(max_length=2048, blank=True)),
                 ('slug', models.SlugField(default=None, null=True, blank=True)),
                 ('activity_sharing_networks', models.IntegerField(default=0)),
-                ('activity_sharing_facebook', bitfield.models.BitField((('plays', 'Plays'), ('likes', 'Likes'), ('favourites', 'Favourites'), ('follows', 'Follows'), ('comments', 'Comments')), default=0)),
-                ('activity_sharing_twitter', bitfield.models.BitField((('plays', 'Plays'), ('likes', 'Likes'), ('favourites', 'Favourites'), ('follows', 'Follows'), ('comments', 'Comments')), default=0)),
-                ('email_notifications', bitfield.models.BitField((('plays', 'Plays'), ('likes', 'Likes'), ('favourites', 'Favourites'), ('follows', 'Follows'), ('comments', 'Comments')), default=0)),
+                ('activity_sharing_facebook', bitfield.models.BitField((('plays', 'Plays'), ('likes', 'Likes'),
+                                                                        ('favourites', 'Favourites'),
+                                                                        ('follows', 'Follows'),
+                                                                        ('comments', 'Comments')), default=0)),
+                ('activity_sharing_twitter', bitfield.models.BitField((('plays', 'Plays'), ('likes', 'Likes'),
+                                                                       ('favourites', 'Favourites'),
+                                                                       ('follows', 'Follows'),
+                                                                       ('comments', 'Comments')), default=0)),
+                ('email_notifications', bitfield.models.BitField((('plays', 'Plays'), ('likes', 'Likes'),
+                                                                  ('favourites', 'Favourites'), ('follows', 'Follows'),
+                                                                  ('comments', 'Comments')), default=0)),
                 ('city', models.CharField(max_length=100, null=True, blank=True)),
                 ('country', models.CharField(max_length=100, null=True, blank=True)),
                 ('last_known_session', models.CharField(max_length=250, null=True, blank=True)),
                 ('following', models.ManyToManyField(related_name='followers', to='spa.UserProfile', blank=True)),
-                ('user', models.OneToOneField(related_name='userprofile', to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(related_name='userprofile', to=settings.AUTH_USER_MODEL,
+                                              on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -248,13 +259,15 @@ class Migration(migrations.Migration):
                 ('venue_name', models.CharField(max_length=250)),
                 ('venue_address', models.CharField(max_length=1024)),
                 ('venue_image', models.ImageField(upload_to=spa.models.venue.venue_image_name, blank=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='ActivityComment',
             fields=[
-                ('activity_ptr', models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True, to='spa.Activity')),
+                ('activity_ptr',
+                 models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True,
+                                      to='spa.Activity', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -264,7 +277,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityDownload',
             fields=[
-                ('activity_ptr', models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True, to='spa.Activity')),
+                ('activity_ptr',
+                 models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True,
+                                      to='spa.Activity', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -274,7 +289,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityFavourite',
             fields=[
-                ('activity_ptr', models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True, to='spa.Activity')),
+                ('activity_ptr',
+                 models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True,
+                                      to='spa.Activity', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -284,8 +301,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityFollow',
             fields=[
-                ('activity_ptr', models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True, to='spa.Activity')),
-                ('to_user', models.ForeignKey(related_name='activity_follow', to='spa.UserProfile')),
+                ('activity_ptr',
+                 models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True,
+                                      to='spa.Activity', on_delete=models.CASCADE)),
+                ('to_user',
+                 models.ForeignKey(related_name='activity_follow', to='spa.UserProfile', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -295,14 +315,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ActivityLike',
             fields=[
-                ('activity_ptr', models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True, to='spa.Activity')),
+                ('activity_ptr',
+                 models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True,
+                                      to='spa.Activity', on_delete=models.CASCADE)),
             ],
             bases=('spa.activity',),
         ),
         migrations.CreateModel(
             name='ActivityPlay',
             fields=[
-                ('activity_ptr', models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True, to='spa.Activity')),
+                ('activity_ptr',
+                 models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True,
+                                      to='spa.Activity', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -312,7 +336,9 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Recurrence',
             fields=[
-                ('_lookup_ptr', models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True, to='spa._Lookup')),
+                ('_lookup_ptr',
+                 models.OneToOneField(auto_created=True, primary_key=True, serialize=False, parent_link=True,
+                                      to='spa._Lookup', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -322,27 +348,28 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='release',
             name='user',
-            field=models.ForeignKey(editable=False, to='spa.UserProfile'),
+            field=models.ForeignKey(editable=False, to='spa.UserProfile', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='purchaselink',
             name='track',
-            field=models.ForeignKey(related_name='purchase_link', to='spa.Tracklist'),
+            field=models.ForeignKey(related_name='purchase_link', to='spa.Tracklist', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='playlist',
             name='user',
-            field=models.ForeignKey(related_name='playlists', to='spa.UserProfile'),
+            field=models.ForeignKey(related_name='playlists', to='spa.UserProfile', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='notification',
             name='from_user',
-            field=models.ForeignKey(related_name='notifications', blank=True, null=True, to='spa.UserProfile'),
+            field=models.ForeignKey(related_name='notifications', blank=True, null=True, to='spa.UserProfile',
+                                    on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='notification',
             name='to_user',
-            field=models.ForeignKey(related_name='to_notications', to='spa.UserProfile'),
+            field=models.ForeignKey(related_name='to_notications', to='spa.UserProfile', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='mix',
@@ -362,17 +389,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='mix',
             name='user',
-            field=models.ForeignKey(related_name='mixes', to='spa.UserProfile'),
+            field=models.ForeignKey(related_name='mixes', to='spa.UserProfile', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='message',
             name='from_user',
-            field=models.ForeignKey(related_name='sent_messages', blank=True, null=True, to='spa.UserProfile'),
+            field=models.ForeignKey(related_name='sent_messages', blank=True, null=True, to='spa.UserProfile',
+                                    on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='message',
             name='to_user',
-            field=models.ForeignKey(related_name='messages', blank=True, null=True, to='spa.UserProfile'),
+            field=models.ForeignKey(related_name='messages', blank=True, null=True, to='spa.UserProfile',
+                                    on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='comment',
@@ -382,46 +411,49 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='comment',
             name='mix',
-            field=models.ForeignKey(related_name='comments', editable=False, blank=True, null=True, to='spa.Mix'),
+            field=models.ForeignKey(related_name='comments', editable=False, blank=True, null=True, to='spa.Mix',
+                                    on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='comment',
             name='user',
-            field=models.ForeignKey(editable=False, blank=True, null=True, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(editable=False, blank=True, null=True, to=settings.AUTH_USER_MODEL,
+                                    on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='chatmessage',
             name='user',
-            field=models.ForeignKey(related_name='chat_messages', blank=True, null=True, to='spa.UserProfile'),
+            field=models.ForeignKey(related_name='chat_messages', blank=True, null=True, to='spa.UserProfile',
+                                    on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='activity',
             name='user',
-            field=models.ForeignKey(blank=True, null=True, to='spa.UserProfile'),
+            field=models.ForeignKey(blank=True, null=True, to='spa.UserProfile', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='activityplay',
             name='mix',
-            field=models.ForeignKey(related_name='activity_plays', to='spa.Mix'),
+            field=models.ForeignKey(related_name='activity_plays', to='spa.Mix', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='activitylike',
             name='mix',
-            field=models.ForeignKey(related_name='activity_likes', to='spa.Mix'),
+            field=models.ForeignKey(related_name='activity_likes', to='spa.Mix', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='activityfavourite',
             name='mix',
-            field=models.ForeignKey(related_name='activity_favourites', to='spa.Mix'),
+            field=models.ForeignKey(related_name='activity_favourites', to='spa.Mix', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='activitydownload',
             name='mix',
-            field=models.ForeignKey(related_name='activity_downloads', to='spa.Mix'),
+            field=models.ForeignKey(related_name='activity_downloads', to='spa.Mix', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='activitycomment',
             name='mix',
-            field=models.ForeignKey(related_name='activity_comments', to='spa.Mix'),
+            field=models.ForeignKey(related_name='activity_comments', to='spa.Mix', on_delete=models.CASCADE),
         ),
     ]

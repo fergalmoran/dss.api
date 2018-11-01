@@ -2,8 +2,9 @@
 import os
 import mimetypes
 from datetime import timedelta
-from django.core.urlresolvers import reverse_lazy
 from django.conf import global_settings
+from django.urls import reverse_lazy
+
 from dss import storagesettings
 from utils import here
 
@@ -69,16 +70,30 @@ STATICFILES_DIRS = (
 )
 
 # STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
-STATICFILES_STORAGE = 'django_pipeline_forgiving.storages.PipelineForgivingStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
-TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + (
-    'django_facebook.context_processors.facebook',
-    'django.core.context_processors.request',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.contrib.auth.context_processors.auth',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            # insert your TEMPLATE_DIRS here
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.gzip.GZipMiddleware',
@@ -101,7 +116,7 @@ WSGI_APPLICATION = 'dss.wsgi.application'
 TEMPLATE_DIRS = (here('templates'),)
 
 INSTALLED_APPS = (
-    #'grappelli',
+    # 'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -113,6 +128,9 @@ INSTALLED_APPS = (
     # 'django_facebook',
     'django_extensions',
     'django_gravatar',
+    'django_filters',
+    'spa',
+    # 'spa.signals',
 
     # TODO: remove
     'allauth',
@@ -123,21 +141,19 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.twitter',
 
     'pipeline',
-    #'dbbackup',
+    # 'dbbackup',
     'gunicorn',
 
     'corsheaders',
     'sorl.thumbnail',
     'djcelery',
-    'spa',
-    'spa.signals',
     'core',
     'storages',
     'social.apps.django_app.default',
 
     'djrill',
     'rest_framework',
-    'rest_framework.authtoken',
+    'rest_framework.authtoken'
 )
 
 # where to redirect users to after logging in
@@ -188,7 +204,7 @@ REST_FRAMEWORK = {
     'DEFAULT_MODEL_SERIALIZER_CLASS':
         'rest_framework.serializers.HyperlinkedModelSerializer',
     'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework.filters.DjangoFilterBackend',
+        'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.OrderingFilter',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (

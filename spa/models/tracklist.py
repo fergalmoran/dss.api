@@ -3,7 +3,7 @@ from spa.models.basemodel import BaseModel
 from django.db import models
 
 class Tracklist(BaseModel):
-    mix = models.ForeignKey(Mix, related_name='tracklist')
+    mix = models.ForeignKey(Mix, related_name='tracklist', on_delete=models.CASCADE)
     index = models.SmallIntegerField()
     timeindex = models.TimeField(null=True)
     description = models.CharField(max_length=255)

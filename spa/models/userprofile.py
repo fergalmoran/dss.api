@@ -41,7 +41,7 @@ class UserProfile(BaseModel):
     ACTIVITY_SHARE_NETWORK_FACEBOOK = 1
     ACTIVITY_SHARE_NETWORK_TWITTER = 2
 
-    user = models.OneToOneField(User, unique=True, related_name='userprofile')
+    user = models.OneToOneField(User, unique=True, related_name='userprofile', on_delete=models.CASCADE)
     uid = models.UUIDField(primary_key=False, editable=False, null=True)
 
     avatar_type = models.CharField(max_length=15, default='social')
@@ -108,7 +108,7 @@ class UserProfile(BaseModel):
         if self.user.is_staff:
             roles.append('staff')
 
-        if self.user.is_authenticated():
+        if self.user.is_authenticated:
             roles.append('user')
 
         return roles
@@ -240,7 +240,7 @@ class UserProfile(BaseModel):
         try:
             if user is None:
                 return
-            if user.user.is_authenticated():
+            if user.user.is_authenticated:
                 v = ActivityFollow(user=self, to_user=user)
                 v.save()
                 self.following.add(user)
@@ -253,7 +253,7 @@ class UserProfile(BaseModel):
         try:
             if user is None:
                 return
-            if user.user.is_authenticated():
+            if user.user.is_authenticated:
                 self.following.remove(user)
                 self.save()
         except Exception as ex:

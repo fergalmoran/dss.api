@@ -1,6 +1,6 @@
 from django.conf import global_settings
 
-AUTHENTICATION_BACKENDS = global_settings.AUTHENTICATION_BACKENDS + (
+AUTHENTICATION_BACKENDS = global_settings.AUTHENTICATION_BACKENDS + [
 
     'social.backends.open_id.OpenIdAuth',
     'social.backends.google.GoogleOAuth2',
@@ -8,8 +8,7 @@ AUTHENTICATION_BACKENDS = global_settings.AUTHENTICATION_BACKENDS + (
     'social.backends.twitter.TwitterOAuth',
     'social.backends.yahoo.YahooOpenId',
     'social.backends.facebook.FacebookOAuth2',
-
-)
+]
 
 SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_details',

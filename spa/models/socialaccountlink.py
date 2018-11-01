@@ -24,7 +24,7 @@ class SocialAccountLink(BaseModel):
     )
     type = models.CharField(max_length=30, choices=ACCOUNT_TYPE)
     social_id = models.CharField(max_length=150)
-    user = models.ForeignKey(UserProfile, related_name='social_accounts')
+    user = models.ForeignKey(UserProfile, related_name='social_accounts', on_delete=models.CASCADE)
     access_token = models.CharField(max_length=500, null=True, blank=True)
     access_token_secret = models.CharField(max_length=500, null=True, blank=True)
     provider_data = models.CharField(max_length=2000, null=True, blank=True)

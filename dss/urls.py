@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import TemplateView, RedirectView
 
@@ -6,19 +6,18 @@ from dss import settings
 
 admin.autodiscover()
 
-urlpatterns = patterns(
-    '',
-    url(r'^admin/', include(admin.site.urls)),
+urlpatterns = [
+    url(r'^admin/', admin.site.urls),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    (r'^grappelli/', include('grappelli.urls')),
-    (r'^_embed/', include('spa.embedding.urls')),
-    (r'^__redir/blog/', include('spa.blog.urls')),
-    (r'^__redir/social/', include('spa.social.urls')),
-    (r'^podcasts/', include('spa.podcast.urls')),
-    (r'^podcast/', include('spa.podcast.urls')),
+    url(r'^grappelli/', include('grappelli.urls')),
+    url(r'^_embed/', include('spa.embedding.urls')),
+    url(r'^__redir/blog/', include('spa.blog.urls')),
+    url(r'^__redir/social/', include('spa.social.urls')),
+    url(r'^podcasts/', include('spa.podcast.urls')),
+    url(r'^podcast/', include('spa.podcast.urls')),
     url(r'', include('user_sessions.urls', 'user_sessions')),
-    url(r'^', include('api.urls')),
-)
+    url(r'^', include('api.urls'))
+]
 
 if settings.DEBUG:
     from django.views.static import serve
@@ -26,9 +25,9 @@ if settings.DEBUG:
     _media_url = settings.MEDIA_URL
     if _media_url.startswith('/'):
         _media_url = _media_url[1:]
-        urlpatterns += patterns(
-            '',
+        urlpatterns += [
             (r'^%s(?P<path>.*)$' % _media_url,
              serve,
-             {'document_root': settings.MEDIA_ROOT}))
+             {'document_root': settings.MEDIA_ROOT})
+        ]
     del (_media_url, serve)

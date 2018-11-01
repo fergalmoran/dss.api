@@ -4,7 +4,7 @@ from django.db import models
 
 
 class Blog(BaseModel):
-    user = models.ForeignKey(UserProfile, null=True, blank=True)
+    user = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.CASCADE)
     date_created = models.DateField(auto_now=True)
     published = models.BooleanField(default=False)
     slug = models.SlugField()
@@ -20,7 +20,7 @@ class Blog(BaseModel):
 
 
 class BlogComment(BaseModel):
-    blog = models.ForeignKey(Blog)
-    user = models.ForeignKey(UserProfile, null=True, blank=True)
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.CASCADE)
     comment = models.CharField(max_length=1024)
     date_created = models.DateField(auto_now_add=True)

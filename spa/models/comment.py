@@ -9,8 +9,8 @@ class Comment(BaseModel):
     class Meta:
         app_label = 'spa'
 
-    user = models.ForeignKey(User, editable=False, null=True, blank=True)
-    mix = models.ForeignKey(Mix, editable=False, null=True, blank=True, related_name='comments')
+    user = models.ForeignKey(User, editable=False, null=True, blank=True, on_delete=models.CASCADE)
+    mix = models.ForeignKey(Mix, editable=False, null=True, blank=True, related_name='comments', on_delete=models.CASCADE)
     comment = models.CharField(max_length=1024)
     date_created = models.DateTimeField(auto_now_add=True)
     time_index = models.IntegerField(default=0)
@@ -23,7 +23,7 @@ class Comment(BaseModel):
         pass
 
     def get_user(self):
-        return self.user.userprofile if self.user.is_authenticated() else self.user
+        return self.user.userprofile if self.user.is_authenticated else self.user
 
     @property
     def avatar_image(self):

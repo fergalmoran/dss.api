@@ -1,0 +1,12 @@
+django-allauth 0.38.0 has requirement Django>=1.11, but you'll have django 1.8.4 which is incompatible.
+django-user-sessions 1.6.0 has requirement Django>=1.11, but you'll have django 1.8.4 which is incompatible.
+social-auth-core 2.0.0 has requirement six>=1.10.0, but you'll have six 1.6.0 which is incompatible.
+django-scheduler 0.8.8 has requirement Django>=1.11, but you'll have django 1.8.4 which is incompatible.
+django-filter 2.0.0 has requirement Django>=1.11, but you'll have django 1.8.4 which is incompatible.
+drf-nested-routers 0.91 has requirement Django>=1.11, but you'll have django 1.8.4 which is incompatible.
+drf-nested-routers 0.91 has requirement djangorestframework>=3.6.0, but you'll have djangorestframework 3.3.3 which is incompatible.
+prompt-toolkit 1.0.15 has requirement six>=1.9.0, but you'll have six 1.6.0 which is incompatible.
+django-celery 3.2.2 has requirement celery<4.0,>=3.1.15, but you'll have celery 4.2.1 which is incompatible.
+django-storages 1.7.1 has requirement Django>=1.11, but you'll have django 1.8.4 which is incompatible.
+google-api-python-client 1.7.4 has requirement six<2dev,>=1.6.1, but you'll have six 1.6.0 which is incompatible.
+google-auth 1.5.1 has requirement six>=1.9.0, but you'll have six 1.6.0 which is incompatible.

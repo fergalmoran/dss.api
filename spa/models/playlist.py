@@ -18,7 +18,7 @@ class PlaylistManager(models.Manager):
 class Playlist(BaseModel):
     name = models.CharField(max_length=255)
     date_created = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(UserProfile, related_name='playlists')
+    user = models.ForeignKey(UserProfile, related_name='playlists', on_delete=models.CASCADE)
     mixes = models.ManyToManyField(Mix)
     public = models.BooleanField(default=True)
     slug = models.SlugField()

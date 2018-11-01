@@ -10,7 +10,7 @@ class Venue(BaseModel):
     class Meta:
         app_label = 'spa'
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     venue_name = models.CharField(max_length=250)
     venue_address = models.CharField(max_length=1024)
     venue_image = models.ImageField(blank=True, upload_to=venue_image_name)

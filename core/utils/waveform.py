@@ -14,7 +14,7 @@ def generate_waveform(input_file, output_file):
         print(result)
 
         if os.path.exists(output_file):
-            #crop the image as it looks nice with zoom
+            # slice image in half across vertical
             from PIL import Image
             import glob
 
@@ -30,4 +30,3 @@ def generate_waveform(input_file, output_file):
 
     except Exception as ex:
         print("Error generating waveform {0}".format(ex))
-
