@@ -1,37 +1,33 @@
 from azure.common import AzureMissingResourceHttpError
-from azure.storage.blob import BlobService
+from azure.storage.blob import BlockBlobService, ContentSettings
 
 from dss import settings
 from dss.storagesettings import AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY, AZURE_CONTAINER
 
 
-def upload_file_to_azure(in_file, file_name, container_name=settings.AZURE_CONTAINER):
+def upload_file_to_azure(in_file, file_name, content_type='audio/mpeg', container_name=settings.AZURE_CONTAINER):
     try:
-        blob_service = BlobService(AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY)
-        blob_service.put_block_blob_from_path(
+        blob_service = BlockBlobService(account_name=AZURE_ACCOUNT_NAME, account_key=AZURE_ACCOUNT_KEY)
+        blob_service.create_blob_from_path(
             container_name=container_name,
             blob_name=file_name,
             file_path=in_file,
-            x_ms_blob_content_type='application/octet-stream'
+            content_settings=ContentSettings(content_type=content_type)
         )
     except Exception as ex:
         print("Failed to upload blob: {0}".format(ex))
 
 
-def set_azure_details(blob_name, download_name, container_name=AZURE_CONTAINER):
+def set_azure_details(blob_name, download_name, content_type='audio/mpeg', container_name=AZURE_CONTAINER):
     try:
-        blob_service = BlobService(AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY)
-        blob = blob_service.get_blob(container_name, blob_name)
-        if blob:
-            blob_service.set_blob_properties(
-                container_name,
-                blob_name,
-                x_ms_blob_content_type='audio/mpeg',
-                x_ms_blob_content_disposition='attachment;filename="{0}"'.format(download_name)
-            )
-            print("Processed: %s" % download_name)
-        else:
-            print("No blob found for: %s" % download_name)
+        blob_service = BlockBlobService(account_name=AZURE_ACCOUNT_NAME, account_key=AZURE_ACCOUNT_KEY)
+        blob_service.set_blob_properties(
+            container_name,
+            blob_name,
+            content_settings=ContentSettings(content_type=content_type,
+                                             content_disposition='attachment;filename="{0}"'.format(download_name))
+        )
+        print("Processed: %s" % download_name)
     except AzureMissingResourceHttpError:
         print("No blob found for: %s" % download_name)
     except Exception as ex:
@@ -50,7 +46,7 @@ def file_exists(url):
 
 
 def enumerate_objects(container):
-    blob_service = BlobService(AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY)
+    blob_service = BlockBlobService(account_name=AZURE_ACCOUNT_NAME, account_key=AZURE_ACCOUNT_KEY)
     blobs = blob_service.list_blobs(container)
     items = []
     for blob in blobs:
@@ -60,5 +56,5 @@ def enumerate_objects(container):
 
 
 def delete_object(container, name):
-    blob_service = BlobService(AZURE_ACCOUNT_NAME, AZURE_ACCOUNT_KEY)
+    blob_service = BlockBlobService(account_name=AZURE_ACCOUNT_NAME, account_key=AZURE_ACCOUNT_KEY)
     blob_service.delete_blob(container, name)

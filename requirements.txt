@@ -2,8 +2,9 @@ Django==2.1.2
 django-extensions
 django-sendfile
 Werkzeug
-psycopg2
 gunicorn
+psycopg2-binary
+
 dropbox
 django-dirtyfields
 django-storages
@@ -23,9 +24,8 @@ django-celery
 django-scheduler
 django-recurrence
 django-compressor
-
 azure
-azure-storage==0.20.0
+
 
 sorl-thumbnail
 

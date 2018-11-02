@@ -16,6 +16,9 @@ from dss.psa import *
 from dss.celerysettings import *
 from dss.localsettings import *
 
+DEBUG = False
+DEFAULT_FILE_STORAGE = 'storages.backends.azure_storage.AzureStorage'
+
 DEVELOPMENT = DEBUG
 
 # AUTH_USER_MODEL = 'spa.UserProfile'
@@ -95,7 +98,7 @@ TEMPLATES = [
     },
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -160,7 +163,7 @@ INSTALLED_APPS = (
 LOGIN_REDIRECT_URL = reverse_lazy('home')
 LOGOUT_URL = reverse_lazy('home')
 
-FACEBOOK_APP_ID = '154504534677009'
+FACEBOOK_APP_ID = '344996219591469'
 
 AVATAR_STORAGE_DIR = MEDIA_ROOT + '/avatars/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/'
@@ -224,8 +227,6 @@ DEFAULT_WAVEFORM_GENERATING = '/assets/images/waveform-interstitial.gif'
 
 SITE_NAME = 'Deep South Sounds'
 THUMBNAIL_PREFIX = '_tn/'
-
-# THUMBNAIL_STORAGE = 'storages.backends.azure_storage.AzureStorage'
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': timedelta(seconds=(60 * 60 * 24) * 14),

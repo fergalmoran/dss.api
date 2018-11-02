@@ -14,4 +14,4 @@ RUN mkdir /files/static && \
     chmod +x /code/run_celery.sh
 
 WORKDIR /code
-RUN pip install -r requirements.txt
+#RUN pip install -r requirements.txt
